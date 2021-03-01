@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="big_padding">16dp</dimen>
+    <dimen name="min_height">48dp</dimen>
+    <dimen name="etComment">200dp</dimen>
+    <dimen name="etcommentTotal">90dp</dimen>
+    <dimen name="marginComment">44dp</dimen>
+    <dimen name="dollarmargin">15dp</dimen>
+    <dimen name="ScrollHeight">230dp</dimen>
+</resources>

@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">MonthlyExpenses</string>
+    <string name="date">Date</string>
+    <string name="expense">Expense</string>
+    <string name="total">Total</string>
+    <string name="add_expense">Add Expense</string>
+    <string name="concept">Concept</string>
+    <string name="dialog_title">Add Expense</string>
+    <string name="add">Add</string>
+    <string name="dollarsign">$</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+    <string name="description_edit_button">Button to edit the expense item</string>
+    <string name="description_button_delete">Button to delete expense item</string>
+    <string name="description_button_add_new_comment">Add new comment</string>
+    <string name="update_button">Update</string>
+</resources>
