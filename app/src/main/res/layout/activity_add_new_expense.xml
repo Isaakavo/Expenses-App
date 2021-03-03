@@ -24,10 +24,13 @@
         android:layout_gravity="center"
         android:layout_marginTop="20dp"
         android:autofillHints="false"
+        android:cursorVisible="true"
+        android:defaultFocusHighlightEnabled="true"
+        android:elegantTextHeight="true"
         android:ems="10"
         android:focusedByDefault="true"
         android:hint="@string/concept"
-        android:inputType="textAutoCorrect|text|textAutoComplete" />
+        android:inputType="textAutoCorrect|text|textCapSentences|textAutoComplete" />
 
     <!--<EditText
         android:id="@+id/etComment"

@@ -86,6 +86,7 @@ class ExpensesListActivity : AppCompatActivity(), ExpenseListAdapter.OnEditSelec
     fab.setOnClickListener {
       val intent = Intent(this@ExpensesListActivity, AddNewExpense::class.java)
       intent.putExtra(flag, newExpenseActivityRequestCode)
+      adapter.closeMenu()
       startForResult.launch(intent)
     }
 
