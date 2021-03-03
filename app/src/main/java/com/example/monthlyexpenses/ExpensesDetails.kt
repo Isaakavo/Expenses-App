@@ -3,7 +3,10 @@ package com.example.monthlyexpenses
 import android.os.Bundle
 import android.os.Parcelable
 import android.util.Log
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
@@ -58,30 +61,35 @@ class ExpensesDetails : DialogFragment() {
         LinearLayout.LayoutParams.MATCH_PARENT,
         LinearLayout.LayoutParams.WRAP_CONTENT)
     parent.orientation = LinearLayout.HORIZONTAL
-    parent.gravity = Gravity.CENTER
-
-    parent.setPadding(resources.getDimensionPixelSize(R.dimen.textPadding), 0, 0, resources.getDimensionPixelSize(R.dimen.textMargin))
+    parent.setPadding(resources.getDimensionPixelSize(R.dimen.textPadding), 0, 0, 0)
 
     val itemTextView = TextView(context)
-    val p: LinearLayout.LayoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT)
-    //p.setMargins(resources.getDimensionPixelSize(R.dimen.textMargin), 0,0,resources.getDimensionPixelSize(R.dimen.textBottomMargin))
+    val p: LinearLayout.LayoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT)
+    p.setMargins(0, 0, 0, resources.getDimensionPixelSize(R.dimen.textMargin))
+    p.weight = 1F
     itemTextView.layoutParams = p
     itemTextView.text = itemText
     itemTextView.textAlignment = View.TEXT_ALIGNMENT_TEXT_START
-    itemTextView.textSize = resources.getDimension(R.dimen.textSize)
+    itemTextView.textSize = pixelsToSp(resources.getDimension(R.dimen.textSize))
 
     val priceTextView = TextView(context)
-    val param = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-    param.setMargins(resources.getDimensionPixelSize(R.dimen.marginComment), 0, 0, 0)
+    val param = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT)
+    param.weight = 1F
+    p.setMargins(0, 0, 0, resources.getDimensionPixelSize(R.dimen.textMargin))
     priceTextView.layoutParams = param
     priceTextView.text = getString(R.string.dollarsingVariable, priceText)
-    priceTextView.textSize = resources.getDimension(R.dimen.textSize)
+    priceTextView.textSize = pixelsToSp(resources.getDimension(R.dimen.textSize))
 
     parent.addView(itemTextView)
     parent.addView(priceTextView)
 
     val finalParent = view.findViewById<LinearLayout>(R.id.items_text_view)
     finalParent?.addView(parent)
+  }
+
+  private fun pixelsToSp(px: Float): Float {
+    val scaleDensity = resources.displayMetrics.scaledDensity
+    return px / scaleDensity
   }
 
   private fun setFormattedDate(timestamp: Long?): String {
