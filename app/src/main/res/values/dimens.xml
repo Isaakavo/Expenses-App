@@ -7,8 +7,9 @@
     <dimen name="marginComment">44dp</dimen>
     <dimen name="dollarmargin">15dp</dimen>
     <dimen name="ScrollHeight">230dp</dimen>
-    <dimen name="textSize">12sp</dimen>
-    <dimen name="textMargin">5dp</dimen>
+    <dimen name="textSize">16sp</dimen>
+    <dimen name="textMargin">3dp</dimen>
     <dimen name="textBottomMargin">1dp</dimen>
-    <dimen name="textPadding">6dp</dimen>
+    <dimen name="textPadding">20dp</dimen>
+    <dimen name="textPaddingBottom">5dp</dimen>
 </resources>
