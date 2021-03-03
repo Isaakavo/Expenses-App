@@ -5,7 +5,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Typeface
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.InputType
 import android.view.View
@@ -14,6 +13,8 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.snackbar.Snackbar
 import data.Expenses
 import data.Items
 import viewmodel.ExpenseViewModel
@@ -64,12 +65,15 @@ class AddNewExpense : AppCompatActivity() {
     flag = intent.getIntExtra(ExpensesListActivity.flag, 0)
     if (flag == ExpensesListActivity.editExpenseActivityRequestCode) {
       val expenseToEdit = intent.getSerializableExtra(EXTRA_EXPENSE) as Expenses
+      timestamp = expenseToEdit.date
       idExpense = expenseToEdit.id
       expenseViewModel.getItemById(expenseToEdit.id).observe(this, { items ->
         editTextConcept.setText(expenseToEdit.concept)
+        val lastChar = editTextConcept.text.length
+        editTextConcept.setSelection(lastChar)
         editTextDate.setText(DateFormat.getDateInstance().format(expenseToEdit.date))
         items?.let {
-          for (item in it){
+          for (item in it) {
             addNewEditText(item.item, item.price)
             idItems.add(item.id)
           }
@@ -110,13 +114,15 @@ class AddNewExpense : AppCompatActivity() {
         putExtra(ExpensesListActivity.returnFlag, ExpensesListActivity.editExpenseActivityRequestCode)
       }
       setResult(Activity.RESULT_OK, replyIntent)
+      finish()
     } else {
       setResult(Activity.RESULT_CANCELED, replyIntent)
     }
-    finish()
   }
 
   private fun addNewEditText(editTextItem: String, editTextPrice: String) {
+
+    var lastChar: Int
 
     val parent = LinearLayout(context)
     parent.layoutParams = LinearLayout.LayoutParams(
@@ -133,6 +139,8 @@ class AddNewExpense : AppCompatActivity() {
     //itemEditText.requestFocus()
     itemEditText.imeOptions = EditorInfo.IME_ACTION_NEXT
     itemEditText.setText(editTextItem)
+    lastChar = itemEditText.text.length
+    itemEditText.setSelection(lastChar)
     itemEditText.id = editTextId
     editTextId++
 
@@ -151,7 +159,8 @@ class AddNewExpense : AppCompatActivity() {
     totalET.width = resources.getDimension(R.dimen.etcommentTotal).toInt()
     totalET.imeOptions = EditorInfo.IME_ACTION_NEXT
     totalET.setText(editTextPrice)
-
+    lastChar = totalET.text.length
+    totalET.setSelection(lastChar)
     parent.addView(itemEditText)
     parent.addView(dollarSign)
     parent.addView(totalET)
@@ -175,6 +184,7 @@ class AddNewExpense : AppCompatActivity() {
       closeKeyboard()
       if (editTextConcept.text.isEmpty()) editTextConcept.backgroundTintList = context.getColorStateList(R.color.red)
       if (editTextDate.text.isEmpty()) editTextDate.backgroundTintList = context.getColorStateList(R.color.red)
+      Snackbar.make(window.decorView.rootView, "All fields must be filled", Snackbar.LENGTH_LONG).show()
       false
     }
   }
