@@ -72,16 +72,13 @@
                             android:text="@string/period"
                             android:textSize="18sp" />
 
-                        <TextView
-                            android:id="@+id/tvMonth"
+                        <androidx.appcompat.widget.AppCompatSpinner
+                            android:id="@+id/monthSpinner"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="25dp"
                             android:layout_weight="2"
-                            android:gravity="center"
-                            android:text="@string/month"
-                            android:textColor="@color/black"
-                            android:textSize="18sp" />
+                            android:gravity="center" />
                     </LinearLayout>
 
 

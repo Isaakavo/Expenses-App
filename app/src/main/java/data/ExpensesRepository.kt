@@ -3,9 +3,7 @@ package data
 import android.util.Log
 import androidx.annotation.WorkerThread
 import androidx.lifecycle.LiveData
-import androidx.room.Transaction
 import kotlinx.coroutines.flow.Flow
-import kotlin.math.exp
 
 class ExpensesRepository(private val expensesDao: ExpensesDao, private val itemsDao: ItemsDao) {
     // Room executes all queries on a separate thread.
@@ -46,9 +44,15 @@ class ExpensesRepository(private val expensesDao: ExpensesDao, private val items
             }
         }
     }
+
     @WorkerThread
     fun getItemById(id: Long): LiveData<List<Items>> {
         return itemsDao.getItemByID(id)
+    }
+
+    @WorkerThread
+    fun getExpensesByDate(desiredDate: String): LiveData<List<Expenses>> {
+        return expensesDao.getExpensesByDate(desiredDate)
     }
 
 }

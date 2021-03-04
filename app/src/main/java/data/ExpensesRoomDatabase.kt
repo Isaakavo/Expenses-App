@@ -4,9 +4,6 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import androidx.sqlite.db.SupportSQLiteDatabase
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
 
 @Database(entities = [Expenses::class, Items::class], version = 1, exportSchema = false)
@@ -37,7 +34,7 @@ abstract class ExpensesRoomDatabase: RoomDatabase() {
             }
         }
     }
-    private class ExpensesDatabaseCallback(
+    /*private class ExpensesDatabaseCallback(
         private val scope: CoroutineScope
     ): RoomDatabase.Callback(){
         override fun onCreate(db: SupportSQLiteDatabase) {
@@ -52,5 +49,5 @@ abstract class ExpensesRoomDatabase: RoomDatabase() {
         suspend fun deleteDatabase(expensesDao: ExpensesDao){
             expensesDao.deleteAll()
         }
-    }
+    }*/
 }
