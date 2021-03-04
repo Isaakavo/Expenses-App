@@ -119,10 +119,10 @@ class ExpensesListActivity : AppCompatActivity(),
 
     val vibrator: Vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      vibrator.vibrate(VibrationEffect.createOneShot(200, VibrationEffect.EFFECT_HEAVY_CLICK))
+      vibrator.vibrate(VibrationEffect.createOneShot(100, VibrationEffect.EFFECT_HEAVY_CLICK))
     }
     expenseViewModel.getItemById(expense.id).observe(this, {
-      val detailsFragment = ExpensesDetails.newInstance(expense.concept, expense.date, it)
+      val detailsFragment = ExpensesDetails.newInstance(expense.concept, expense.total, expense.date, it)
       detailsFragment.show(supportFragmentManager, "Details")
     })
   }

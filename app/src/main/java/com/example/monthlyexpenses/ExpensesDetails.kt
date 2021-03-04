@@ -17,6 +17,7 @@ import java.util.*
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
 private const val ARG_PARAM3 = "param3"
+private const val ARG_TOTAL = "expenseTotal"
 
 class ExpensesDetails : DialogFragment() {
 
@@ -43,11 +44,14 @@ class ExpensesDetails : DialogFragment() {
   private fun setupView(view: View) {
     val detailsConcept = view.findViewById<TextView>(R.id.details_concept)
     val detailsDate = view.findViewById<TextView>(R.id.details_date)
+    val totalDetails = view.findViewById<TextView>(R.id.totalDetails)
 
     detailsConcept.text = arguments?.getString(ARG_PARAM1)
     detailsDate.text = setFormattedDate(arguments?.getLong(ARG_PARAM2))
+    totalDetails.text = getString(R.string.dollasingTotal, arguments?.getFloat(ARG_TOTAL).toString())
 
     val itemsList = arguments?.getParcelableArrayList<Items>(ARG_PARAM3)
+
 
     for (items in itemsList!!) {
       Log.d("items", items.toString())
@@ -99,10 +103,11 @@ class ExpensesDetails : DialogFragment() {
   companion object {
 
     @JvmStatic
-    fun newInstance(concept: String, date: Long, items: List<Items>) =
+    fun newInstance(concept: String, total: Float, date: Long, items: List<Items>) =
         ExpensesDetails().apply {
           arguments = Bundle().apply {
             putString(ARG_PARAM1, concept)
+            putFloat(ARG_TOTAL, total)
             putLong(ARG_PARAM2, date)
             putParcelableArrayList(ARG_PARAM3, items as ArrayList<out Parcelable>)
           }
