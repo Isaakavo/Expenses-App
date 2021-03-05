@@ -17,10 +17,10 @@ interface ExpensesDao {
     @Query("SELECT * FROM expenses_table WHERE (strftime('%Y-%m',date(date/1000, 'unixepoch'))) = :desiredDate ORDER BY date  DESC")
     fun getExpensesByDate(desiredDate: String): LiveData<List<Expenses>>
 
-
-    /*@Query("UPDATE expenses_table SET concept = :concept, date = :date, total = :total WHERE id = :id")
-    suspend fun updateExpense(concept: String, date: Long, total: Float, id: Long)*/
     @Update
     suspend fun updateExpense(expense: Expenses)
+
+    @Delete
+    suspend fun deleteExpense(expense: Expenses)
 
 }

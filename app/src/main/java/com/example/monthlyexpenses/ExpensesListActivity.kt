@@ -114,6 +114,10 @@ class ExpensesListActivity : AppCompatActivity(),
     startForResult.launch(intent)
   }
 
+  override fun sendExpenseToDelete(expense: Expenses) {
+    expenseViewModel.deleteExpense(expense)
+  }
+
   @RequiresApi(Build.VERSION_CODES.Q)
   override fun onClickDetected(expense: Expenses) {
 

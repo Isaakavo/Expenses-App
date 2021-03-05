@@ -1,6 +1,5 @@
 package adapter
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,6 +20,7 @@ class ExpenseListAdapter(private val onEditSelected: OnEditSelectedListener,
 
     interface OnEditSelectedListener {
         fun sendExpenseToEdit(expense: Expenses)
+        fun sendExpenseToDelete(expense: Expenses)
     }
 
     interface OnClickListener {
@@ -61,9 +61,10 @@ class ExpenseListAdapter(private val onEditSelected: OnEditSelectedListener,
             }
         }else if (holder is MenuViewHolder){
             holder.buttonEdit?.setOnClickListener{
-                holder.bind(getItem(position), onEditSelected)
+                holder.editItem(getItem(position), onEditSelected)
             }
             holder.deleteButton?.setOnClickListener{
+                holder.deleteItem(getItem(position), onEditSelected)
             }
         }
     }
@@ -92,23 +93,29 @@ class ExpenseListAdapter(private val onEditSelected: OnEditSelectedListener,
         fun setDateFormat(timestamp: Long): String{
             return DateFormat.getDateInstance().format(timestamp)
         }
-        companion object{
-            fun create(parent: ViewGroup): ExpenseViewHolder{
+
+        companion object {
+            fun create(parent: ViewGroup): ExpenseViewHolder {
                 val view: View = LayoutInflater.from(parent.context)
                     .inflate(R.layout.recyclerview_item, parent, false)
                 return ExpenseViewHolder(view)
             }
         }
     }
-    class MenuViewHolder(view: View): RecyclerView.ViewHolder(view){
+
+    class MenuViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val buttonEdit: LinearLayout? = view.findViewById(R.id.editButton)
         val deleteButton: LinearLayout? = view.findViewById(R.id.deleteButton)
-        fun bind(expense: Expenses, listener: OnEditSelectedListener){
-            Log.d("expense", expense.concept)
+        fun editItem(expense: Expenses, listener: OnEditSelectedListener) {
             listener.sendExpenseToEdit(expense)
         }
-        companion object{
-            fun create(parent: ViewGroup): MenuViewHolder{
+
+        fun deleteItem(expense: Expenses, listener: OnEditSelectedListener) {
+            listener.sendExpenseToDelete(expense)
+        }
+
+        companion object {
+            fun create(parent: ViewGroup): MenuViewHolder {
                 val view: View = LayoutInflater.from(parent.context)
                     .inflate(R.layout.recycler_menu, parent, false)
                 return MenuViewHolder(view)

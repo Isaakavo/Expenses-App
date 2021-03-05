@@ -26,6 +26,12 @@ class ExpenseViewModel(private val repository: ExpensesRepository): ViewModel() 
     repository.updateExpenseAndItems(expense, item)
   }
 
+  fun deleteExpense(expense: Expenses) {
+    viewModelScope.launch {
+      repository.deleteExpense(expense)
+    }
+  }
+
 }
 
 class ExpenseViewModelFactory(private val repository: ExpensesRepository): ViewModelProvider.Factory{

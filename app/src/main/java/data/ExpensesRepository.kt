@@ -12,14 +12,20 @@ class ExpensesRepository(private val expensesDao: ExpensesDao, private val items
 
     val allItems: Flow<List<Items>> = itemsDao.getAllItems()
 
+    @WorkerThread
+    suspend fun deleteExpense(expense: Expenses) {
+        return expensesDao.deleteExpense(expense)
+    }
+
     // By default Room runs suspend queries off the main thread, therefore, we don't need to
     // implement anything else to ensure we're not doing long running database work
     // off the main thread.
     @Suppress("RedundantSuspendModifier")
     @WorkerThread
     suspend fun insert(expense: Expenses): Long {
-         return expensesDao.insert(expense)
+        return expensesDao.insert(expense)
     }
+
     @WorkerThread
     suspend fun insertExpenseAndItem(expense: Expenses, items: List<Items>){
 
