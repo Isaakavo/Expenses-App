@@ -32,21 +32,6 @@
         android:hint="@string/concept"
         android:inputType="textAutoCorrect|text|textCapSentences|textAutoComplete" />
 
-    <!--<EditText
-        android:id="@+id/etComment"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="20dp"
-        android:hint="@string/comment"
-        android:importantForAutofill="no"
-        android:inputType="textMultiLine|textCapSentences"
-        android:lines="8"
-        android:maxLines="10"
-        android:minLines="6"
-        android:scrollbars="vertical" />-->
-
-
     <ScrollView
         android:id="@+id/scrollviewLayout"
         android:layout_width="320dp"

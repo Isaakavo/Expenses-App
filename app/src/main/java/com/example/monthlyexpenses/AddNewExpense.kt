@@ -14,6 +14,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import com.google.android.material.snackbar.Snackbar
 import data.Expenses
 import data.Items
@@ -31,6 +32,7 @@ class AddNewExpense : AppCompatActivity() {
   private lateinit var imageViewAdd: ImageView
   private lateinit var editTextDate: EditText
   private lateinit var buttonAdd: Button
+  private lateinit var toolbar: Toolbar
 
   private var flag = 0
   private var editTextId = 0
@@ -50,6 +52,14 @@ class AddNewExpense : AppCompatActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_add_new_expense)
+
+    supportActionBar?.apply {
+      title = "Add New Expense"
+      setDisplayHomeAsUpEnabled(true)
+      setDisplayShowHomeEnabled(true)
+    }
+
+
     editTextConcept = findViewById(R.id.etConcept)
     imageViewAdd = findViewById(R.id.addNewComment)
     editTextDate = findViewById(R.id.etDate)

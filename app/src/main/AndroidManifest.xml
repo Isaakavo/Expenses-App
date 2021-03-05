@@ -14,7 +14,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MonthlyExpenses"
         tools:ignore="AllowBackup">
-        <activity android:name=".AddNewExpense" />
+        <activity
+            android:name=".AddNewExpense"
+            android:parentActivityName=".ExpensesListActivity" />
         <activity android:name=".ExpensesListActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
