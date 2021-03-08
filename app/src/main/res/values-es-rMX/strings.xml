@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MonthlyExpenses</string>
+    <string name="date" translatable="false">Fecha</string>
+    <string name="expense">Gasto</string>
+    <string name="total">Total</string>
+    <string name="add_expense">Agregar Gasto</string>
+    <string name="concept">Concepto</string>
+    <string name="add">Agregar</string>
+    <string name="edit">Editar</string>
+    <string name="delete">Borrar</string>
+    <string name="description_edit_button">Botón para editar el gasto</string>
+    <string name="description_button_delete">Botón para borrar el gasto</string>
+    <string name="description_button_add_new_comment">Agregar nuevo comentario</string>
+    <string name="update_button">Actualizar</string>
+    <string name="monthlyExpenses">Total del mes</string>
+    <string name="month">Mes</string>
+    <string name="period">Periodo</string>
+    <string name="concept_title">Título del concepto</string>
+    <string name="first_half_of_the_month">Primera mitad</string>
+    <string name="second_half_of_the_month">Segunda mitad</string>
+</resources>
