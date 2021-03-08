@@ -76,7 +76,7 @@ class AddNewExpense : AppCompatActivity() {
 
   private fun bindViews() {
     supportActionBar?.apply {
-      title = "Add New Expense"
+      title = getString(R.string.add_new_expense)
       setDisplayHomeAsUpEnabled(true)
       setDisplayShowHomeEnabled(true)
     }
@@ -142,7 +142,7 @@ class AddNewExpense : AppCompatActivity() {
     val itemEditText = EditText(context)
     val p: LinearLayout.LayoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
     itemEditText.layoutParams = p
-    itemEditText.hint = "Item"
+    itemEditText.hint = getString(R.string.item)
     itemEditText.inputType = InputType.TYPE_TEXT_FLAG_CAP_WORDS or InputType.TYPE_CLASS_TEXT
     itemEditText.width = resources.getDimension(R.dimen.etComment).toInt()
     itemEditText.requestFocus()
