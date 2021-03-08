@@ -64,15 +64,12 @@ class ExpensesListActivity : AppCompatActivity(),
       val intentExpenses = result.data?.extras?.getSerializable(AddNewExpense.EXTRA_EXPENSE) as Expenses
       val itemList = result.data!!.extras?.getParcelableArrayList<Items>(AddNewExpense.EXTRA_ITEMS)
       expenseViewModel.insert(intentExpenses, itemList as List<Items>)
-      expenseViewModel.getExpensesByDate(desiredDate).observe(this, {
-        it?.let {
-          adapter.submitList(it)
-        }
-      })
+      updateListByDesiredDate()
     }else if (result.resultCode == Activity.RESULT_OK && flag == editExpenseActivityRequestCode) {
       val intentExpenses = result.data?.extras?.getSerializable(AddNewExpense.EXTRA_EXPENSE) as Expenses
       val itemList = result.data!!.extras?.getParcelableArrayList<Items>(AddNewExpense.EXTRA_ITEMS)
       expenseViewModel.updateExpenseAndItems(intentExpenses, itemList as List<Items>)
+      updateListByDesiredDate()
     } else if (result.resultCode != Activity.RESULT_CANCELED) {
       Snackbar.make(this.window.decorView.rootView, "Something went wrong!", Snackbar.LENGTH_LONG).show()
     }
@@ -111,6 +108,11 @@ class ExpensesListActivity : AppCompatActivity(),
         HalfMonthTotals.newInstance(totalFirstHalf.toString(), totalSecondHalf.toString())
       halfMonthTotals.show(supportFragmentManager, "Totals")
     }
+
+    supportActionBar.apply {
+      title = getString(R.string.app_title)
+    }
+
   }
   private fun bindRecyclerView() {
     val recyclerView = findViewById<RecyclerView>(R.id.recyclerview)
@@ -134,10 +136,12 @@ class ExpensesListActivity : AppCompatActivity(),
     intent.putExtra(AddNewExpense.EXTRA_EXPENSE, expense)
     startForResult.launch(intent)
   }
+
   override fun sendExpenseToDelete(expense: Expenses) {
     expenseViewModel.deleteExpense(expense)
   }
-  override fun onExpenseItemSelected(expense: Expenses) {
+
+  override fun onExpenseItemClicked(expense: Expenses) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       vibrator.vibrate(VibrationEffect.createOneShot(150, 1))
     }
@@ -239,12 +243,10 @@ class ExpensesListActivity : AppCompatActivity(),
       val secondMonthHalfStartCompare = formatter.format(secondMonthHalfStart)
       val secondMonthHalf = formatter.parse(secondMonthHalfString)!!
       val secondMonthHalfCompare = formatter.format(secondMonthHalf)
-
       expenseViewModel.getExpensesByDate(desiredDate).observe(this, { expenses ->
         expenses?.let {
           adapter.submitList(it)
           var total = 0F
-
           for (expense in it) {
             total += expense.total
             val dateFormatted = formatter.format(expense.date)
@@ -262,5 +264,13 @@ class ExpensesListActivity : AppCompatActivity(),
 
   override fun onNothingSelected(parent: AdapterView<*>?) {
     return
+  }
+
+  private fun updateListByDesiredDate() {
+    expenseViewModel.getExpensesByDate(desiredDate).observe(this, {
+      it?.let {
+        adapter.submitList(it)
+      }
+    })
   }
 }
