@@ -11,14 +11,10 @@ import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.view.View
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.Spinner
-import android.widget.TextView
+import android.widget.*
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -37,9 +33,19 @@ class ExpensesListActivity : AppCompatActivity(),
     ExpenseListAdapter.OnClickListener,
     AdapterView.OnItemSelectedListener {
 
+  private val firstMonthHalfString = "15/01/2021"
+  private val firstMonthHalfStringStart = "01/01/2021"
+  private val secondMonthHalfStringStart = "16/01/2021"
+  private val secondMonthHalfString = "31/01/2021"
+
   private lateinit var adapter: ExpenseListAdapter
   private lateinit var totalOfMonth: TextView
   private lateinit var desiredDate: String
+
+  private lateinit var vibrator: Vibrator
+
+  private var totalFirstHalf = 0F
+  private var totalSecondHalf = 0F
 
 
   companion object {
@@ -71,22 +77,14 @@ class ExpensesListActivity : AppCompatActivity(),
       Snackbar.make(this.window.decorView.rootView, "Something went wrong!", Snackbar.LENGTH_LONG).show()
     }
   }
-
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_main)
 
-    totalOfMonth = findViewById(R.id.tvTotalMonth)
-    val currentMonth = findViewById<Spinner>(R.id.monthSpinner)
-    val arrayAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, getSpinnerMonths())
-    arrayAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item)
-    currentMonth.adapter = arrayAdapter
-    currentMonth.onItemSelectedListener = this
+    vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
 
-    val recyclerView = findViewById<RecyclerView>(R.id.recyclerview)
-    adapter = ExpenseListAdapter(this, this)
-    recyclerView.adapter = adapter
-    recyclerView.layoutManager = LinearLayoutManager(this)
+    bindViews()
+    bindRecyclerView()
 
     val fab = findViewById<FloatingActionButton>(R.id.fab)
     fab.setOnClickListener {
@@ -95,6 +93,33 @@ class ExpensesListActivity : AppCompatActivity(),
       adapter.closeMenu()
       startForResult.launch(intent)
     }
+
+  }
+
+  private fun bindViews() {
+    val currentMonth = findViewById<Spinner>(R.id.monthSpinner)
+    val arrayAdapter =
+      ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, getSpinnerMonths())
+    arrayAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item)
+    currentMonth.adapter = arrayAdapter
+    currentMonth.onItemSelectedListener = this
+
+    totalOfMonth = findViewById(R.id.tvTotalMonth)
+    totalOfMonth.setOnClickListener {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        vibrator.vibrate(VibrationEffect.createOneShot(150, 1))
+      }
+      val halfMonthTotals =
+        HalfMonthTotals.newInstance(totalFirstHalf.toString(), totalSecondHalf.toString())
+      halfMonthTotals.show(supportFragmentManager, "Totals")
+    }
+  }
+
+  private fun bindRecyclerView() {
+    val recyclerView = findViewById<RecyclerView>(R.id.recyclerview)
+    adapter = ExpenseListAdapter(this, this)
+    recyclerView.adapter = adapter
+    recyclerView.layoutManager = LinearLayoutManager(this)
 
     val itemTouchHelper = ItemTouchHelper(touchHelperCallback(adapter))
     itemTouchHelper.attachToRecyclerView(recyclerView)
@@ -118,15 +143,14 @@ class ExpensesListActivity : AppCompatActivity(),
     expenseViewModel.deleteExpense(expense)
   }
 
-  @RequiresApi(Build.VERSION_CODES.Q)
-  override fun onClickDetected(expense: Expenses) {
+  override fun onExpenseItemSelected(expense: Expenses) {
 
-    val vibrator: Vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      vibrator.vibrate(VibrationEffect.createOneShot(100, VibrationEffect.EFFECT_HEAVY_CLICK))
+      vibrator.vibrate(VibrationEffect.createOneShot(150, 1))
     }
     expenseViewModel.getItemById(expense.id).observe(this, {
-      val detailsFragment = ExpensesDetails.newInstance(expense.concept, expense.total, expense.date, it)
+      val detailsFragment =
+        ExpensesDetails.newInstance(expense.concept, expense.total, expense.date, it)
       detailsFragment.show(supportFragmentManager, "Details")
     })
   }
@@ -148,18 +172,31 @@ class ExpensesListActivity : AppCompatActivity(),
       override fun onChildDraw(c: Canvas, recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, dX: Float, dY: Float, actionState: Int, isCurrentlyActive: Boolean) {
         super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
         val itemView = viewHolder.itemView
-        if (dX > 0){
-          background.setBounds(itemView.left, itemView.top, itemView.left + dX.toInt(), itemView.bottom)
-        } else if (dX < 0) {
-          background.setBounds(itemView.right + dX.toInt(), itemView.top, itemView.right, itemView.bottom)
-        } else {
-          background.setBounds(0, 0, 0, 0)
+        when {
+          dX > 0 -> {
+            background.setBounds(
+              itemView.left,
+              itemView.top,
+              itemView.left + dX.toInt(),
+              itemView.bottom
+            )
+          }
+          dX < 0 -> {
+            background.setBounds(
+              itemView.right + dX.toInt(),
+              itemView.top,
+              itemView.right,
+              itemView.bottom
+            )
+          }
+          else -> {
+            background.setBounds(0, 0, 0, 0)
+          }
         }
         background.draw(c)
       }
     }
   }
-
   private fun getSpinnerMonths(): ArrayList<String> {
     val formatter = SimpleDateFormat("MMMM yyyy", Locale.getDefault())
     val list = arrayListOf<String>()
@@ -179,6 +216,7 @@ class ExpensesListActivity : AppCompatActivity(),
     return list
   }
 
+  //Spinner item selected
   override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
     val selectedItem = parent?.getItemAtPosition(position) as String
 
@@ -194,15 +232,34 @@ class ExpensesListActivity : AppCompatActivity(),
         }
       })
     } else {
-      val selectedItemFormatter = SimpleDateFormat("MMM yyyy", Locale.getDefault()).parse(selectedItem)
+      val selectedItemFormatter =
+        SimpleDateFormat("MMM yyyy", Locale.getDefault()).parse(selectedItem)
       desiredDate = SimpleDateFormat("y-MM", Locale.getDefault()).format(selectedItemFormatter!!)
+      val formatter = SimpleDateFormat("dd", Locale.getDefault())
+
+      val firstMonthHalfStart = formatter.parse(firstMonthHalfStringStart)!!
+      val firstMontHalfStartCompare = formatter.format(firstMonthHalfStart)
+      val firstMonthDate = formatter.parse(firstMonthHalfString)!!
+      val firstMonthCompare = formatter.format(firstMonthDate)
+
+      val secondMonthHalfStart = formatter.parse(secondMonthHalfStringStart)!!
+      val secondMonthHalfStartCompare = formatter.format(secondMonthHalfStart)
+      val secondMonthHalf = formatter.parse(secondMonthHalfString)!!
+      val secondMonthHalfCompare = formatter.format(secondMonthHalf)
 
       expenseViewModel.getExpensesByDate(desiredDate).observe(this, { expenses ->
         expenses?.let {
           adapter.submitList(it)
           var total = 0F
+
           for (expense in it) {
             total += expense.total
+            val dateFormatted = formatter.format(expense.date)
+            if (dateFormatted in firstMontHalfStartCompare..firstMonthCompare) {
+              totalFirstHalf += expense.total
+            } else if (dateFormatted in secondMonthHalfStartCompare..secondMonthHalfCompare) {
+              totalSecondHalf += expense.total
+            }
           }
           totalOfMonth.text = getString(R.string.dollarsingVariable, total.toString())
         }

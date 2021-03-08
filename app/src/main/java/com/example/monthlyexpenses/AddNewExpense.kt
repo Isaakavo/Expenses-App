@@ -14,7 +14,6 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import com.google.android.material.snackbar.Snackbar
 import data.Expenses
 import data.Items
@@ -32,7 +31,6 @@ class AddNewExpense : AppCompatActivity() {
   private lateinit var imageViewAdd: ImageView
   private lateinit var editTextDate: EditText
   private lateinit var buttonAdd: Button
-  private lateinit var toolbar: Toolbar
 
   private var flag = 0
   private var editTextId = 0
@@ -53,24 +51,7 @@ class AddNewExpense : AppCompatActivity() {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_add_new_expense)
 
-    supportActionBar?.apply {
-      title = "Add New Expense"
-      setDisplayHomeAsUpEnabled(true)
-      setDisplayShowHomeEnabled(true)
-    }
-
-
-    editTextConcept = findViewById(R.id.etConcept)
-    imageViewAdd = findViewById(R.id.addNewComment)
-    editTextDate = findViewById(R.id.etDate)
-    buttonAdd = findViewById(R.id.okbutton)
-
-    editTextDate.setText(setFormattedDate())
-    buttonAdd.setOnClickListener(onClickListener)
-    editTextDate.setOnClickListener(onClickListener)
-    imageViewAdd.setOnClickListener(onClickListener)
-
-    editTextConcept.requestFocus()
+    bindViews()
 
     flag = intent.getIntExtra(ExpensesListActivity.flag, 0)
     if (flag == ExpensesListActivity.editExpenseActivityRequestCode) {
@@ -93,6 +74,26 @@ class AddNewExpense : AppCompatActivity() {
     } else if (flag == ExpensesListActivity.newExpenseActivityRequestCode) {
       addNewEditText("", "")
     }
+  }
+
+  private fun bindViews() {
+    supportActionBar?.apply {
+      title = "Add New Expense"
+      setDisplayHomeAsUpEnabled(true)
+      setDisplayShowHomeEnabled(true)
+    }
+
+    editTextConcept = findViewById(R.id.etConcept)
+    imageViewAdd = findViewById(R.id.addNewComment)
+    editTextDate = findViewById(R.id.etDate)
+    buttonAdd = findViewById(R.id.okbutton)
+
+    editTextDate.setText(setFormattedDate())
+    buttonAdd.setOnClickListener(onClickListener)
+    editTextDate.setOnClickListener(onClickListener)
+    imageViewAdd.setOnClickListener(onClickListener)
+
+    editTextConcept.requestFocus()
   }
 
   private fun sendExpenseToAdd() {
@@ -146,7 +147,7 @@ class AddNewExpense : AppCompatActivity() {
     itemEditText.hint = "Item"
     itemEditText.inputType = InputType.TYPE_TEXT_FLAG_CAP_WORDS or InputType.TYPE_CLASS_TEXT
     itemEditText.width = resources.getDimension(R.dimen.etComment).toInt()
-    //itemEditText.requestFocus()
+    itemEditText.requestFocus()
     itemEditText.imeOptions = EditorInfo.IME_ACTION_NEXT
     itemEditText.setText(editTextItem)
     lastChar = itemEditText.text.length

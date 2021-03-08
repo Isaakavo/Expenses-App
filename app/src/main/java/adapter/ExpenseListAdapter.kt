@@ -24,7 +24,7 @@ class ExpenseListAdapter(private val onEditSelected: OnEditSelectedListener,
     }
 
     interface OnClickListener {
-        fun onClickDetected(expense: Expenses)
+        fun onExpenseItemSelected(expense: Expenses)
     }
 
     private val SHOW_MENU = 1
@@ -54,10 +54,22 @@ class ExpenseListAdapter(private val onEditSelected: OnEditSelectedListener,
                 val previousExpense = getItem(position - 1)
                 val previousExpenseDate = holder.setDateFormat(previousExpense.date)
                 holder.setSectionDate(expenseDateFormatted, previousExpenseDate, expense)
-                holder.itemView.setOnClickListener { onClickListener.onClickDetected(getItem(position)) }
+                holder.itemView.setOnClickListener {
+                    onClickListener.onExpenseItemSelected(
+                        getItem(
+                            position
+                        )
+                    )
+                }
             } else if (position == 0) {
                 holder.bind(expense)
-                holder.itemView.setOnClickListener { onClickListener.onClickDetected(getItem(position)) }
+                holder.itemView.setOnClickListener {
+                    onClickListener.onExpenseItemSelected(
+                        getItem(
+                            position
+                        )
+                    )
+                }
             }
         }else if (holder is MenuViewHolder){
             holder.buttonEdit?.setOnClickListener{

@@ -21,4 +21,6 @@
     <string name="period">Period</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="concept_title">Concept Title</string>
+    <string name="first_half_of_the_month">First Half</string>
+    <string name="second_half_of_the_month">Second Half</string>
 </resources>
