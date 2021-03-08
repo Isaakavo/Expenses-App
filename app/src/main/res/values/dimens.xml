@@ -12,4 +12,5 @@
     <dimen name="textBottomMargin">1dp</dimen>
     <dimen name="textPadding">20dp</dimen>
     <dimen name="textPaddingBottom">5dp</dimen>
+    <dimen name="totalsFragmentSize">20sp</dimen>
 </resources>
