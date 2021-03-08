@@ -19,4 +19,7 @@
     <string name="concept_title">Título del concepto</string>
     <string name="first_half_of_the_month">Primera mitad</string>
     <string name="second_half_of_the_month">Segunda mitad</string>
+    <string name="item">Artículo</string>
+    <string name="add_new_expense">Agregar Nuevo Gasto</string>
+    <string name="app_title">Gastos Mensuales</string>
 </resources>

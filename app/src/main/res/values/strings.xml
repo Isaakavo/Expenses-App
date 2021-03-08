@@ -1,11 +1,13 @@
 <resources>
     <string name="app_name">MonthlyExpenses</string>
+    <string name="app_title">Monthly Expenses</string>
     <string name="date">Date</string>
     <string name="expense">Expense</string>
     <string name="total">Total</string>
+    <string name="item">Item</string>
     <string name="add_expense">Add Expense</string>
+    <string name="add_new_expense">Add New Expense</string>
     <string name="concept">Concept</string>
-    <string name="dialog_title" translatable="false">Add Expense</string>
     <string name="add">Add</string>
     <string name="dollarsign" translatable="false">$</string>
     <string name="edit">Edit</string>
