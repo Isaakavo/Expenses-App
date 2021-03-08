@@ -49,18 +49,21 @@ class ExpenseListAdapter(private val onEditSelected: OnEditSelectedListener,
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         expense = getItem(position)
         if (holder is ExpenseViewHolder){
-            if (position != 0) {
-                val expenseDateFormatted = holder.setDateFormat(expense.date)
-                val previousExpense = getItem(position - 1)
-                val previousExpenseDate = holder.setDateFormat(previousExpense.date)
-                holder.setSectionDate(expenseDateFormatted, previousExpenseDate, expense)
-                holder.itemView.setOnClickListener {
-                    onClickListener.onExpenseItemClicked(getItem(position))
+            when {
+                position != 0 -> {
+                    val expenseDateFormatted: String = holder.setDateFormat(expense.date)
+                    val previousExpense: Expenses = getItem(position - 1)
+                    val previousExpenseDate: String = holder.setDateFormat(previousExpense.date)
+                    holder.setSectionDate(expenseDateFormatted, previousExpenseDate, expense)
+                    holder.itemView.setOnClickListener {
+                        onClickListener.onExpenseItemClicked(getItem(position))
+                    }
                 }
-            } else if (position == 0) {
-                holder.bind(expense)
-                holder.itemView.setOnClickListener {
-                    onClickListener.onExpenseItemClicked(getItem(position))
+                position == 0 -> {
+                    holder.bind(expense)
+                    holder.itemView.setOnClickListener {
+                        onClickListener.onExpenseItemClicked(getItem(position))
+                    }
                 }
             }
         }else if (holder is MenuViewHolder){
@@ -92,6 +95,7 @@ class ExpenseListAdapter(private val onEditSelected: OnEditSelectedListener,
                     tvSectionDate.visibility = View.GONE
                 }else{
                     bind(expense)
+                    tvSectionDate.visibility = View.VISIBLE
                 }
         }
         fun setDateFormat(timestamp: Long): String{
