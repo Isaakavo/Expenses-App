@@ -24,8 +24,6 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 class AddNewExpense : AppCompatActivity() {
-
-
   //UI components
   private lateinit var editTextConcept: EditText
   private lateinit var imageViewAdd: ImageView

@@ -90,15 +90,15 @@ class ExpenseListAdapter(private val onEditSelected: OnEditSelectedListener,
             tvExpense.text = expense.concept
             tvTotal.text = "$" + expense.total.toString()
             tvSectionDate.text = setDateFormat(expense.date)
+            tvSectionDate.visibility = View.VISIBLE
         }
 
         fun setSectionDate(actualExpenseDate: String, previousExpenseDate: String,
                            expense: Expenses){
                 if (actualExpenseDate == previousExpenseDate){
-                    tvSectionDate.visibility = View.GONE
                     bind(expense)
+                    tvSectionDate.visibility = View.GONE
                 }else{
-                    tvSectionDate.visibility = View.VISIBLE
                     bind(expense)
                 }
         }

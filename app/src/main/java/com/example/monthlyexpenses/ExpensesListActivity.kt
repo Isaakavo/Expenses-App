@@ -93,9 +93,7 @@ class ExpensesListActivity : AppCompatActivity(),
       adapter.closeMenu()
       startForResult.launch(intent)
     }
-
   }
-
   private fun bindViews() {
     val currentMonth = findViewById<Spinner>(R.id.monthSpinner)
     val arrayAdapter =
@@ -114,7 +112,6 @@ class ExpensesListActivity : AppCompatActivity(),
       halfMonthTotals.show(supportFragmentManager, "Totals")
     }
   }
-
   private fun bindRecyclerView() {
     val recyclerView = findViewById<RecyclerView>(R.id.recyclerview)
     adapter = ExpenseListAdapter(this, this)
@@ -131,20 +128,16 @@ class ExpensesListActivity : AppCompatActivity(),
       }
     })
   }
-
   override fun sendExpenseToEdit(expense: Expenses) {
     val intent = Intent(this@ExpensesListActivity, AddNewExpense::class.java)
     intent.putExtra(flag, editExpenseActivityRequestCode)
     intent.putExtra(AddNewExpense.EXTRA_EXPENSE, expense)
     startForResult.launch(intent)
   }
-
   override fun sendExpenseToDelete(expense: Expenses) {
     expenseViewModel.deleteExpense(expense)
   }
-
   override fun onExpenseItemSelected(expense: Expenses) {
-
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       vibrator.vibrate(VibrationEffect.createOneShot(150, 1))
     }
