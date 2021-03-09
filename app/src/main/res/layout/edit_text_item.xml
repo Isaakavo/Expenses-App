@@ -15,13 +15,14 @@
         android:orientation="horizontal">
 
         <EditText
+            style="@style/Widget.AppCompat.Light.AutoCompleteTextView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:autofillHints="false"
             android:focusable="true"
             android:hint="@string/item"
-            android:inputType="text"
+            android:inputType="textAutoCorrect|text|textCapSentences"
             android:text="@={item.item}"
             android:textSize="18sp" />
 
