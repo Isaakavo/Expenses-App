@@ -42,7 +42,9 @@ class ExpenseListAdapter(private val onEditSelected: OnEditSelectedListener,
         return if (viewType == SHOW_MENU){
             MenuViewHolder.create(parent)
         }else{
-            ExpenseViewHolder.create(parent)
+            val view: View = LayoutInflater.from(parent.context)
+                .inflate(R.layout.recyclerview_item, parent, false)
+            return ExpenseViewHolder(view)
         }
     }
 
@@ -55,15 +57,9 @@ class ExpenseListAdapter(private val onEditSelected: OnEditSelectedListener,
                     val previousExpense: Expenses = getItem(position - 1)
                     val previousExpenseDate: String = holder.setDateFormat(previousExpense.date)
                     holder.setSectionDate(expenseDateFormatted, previousExpenseDate, expense)
-                    holder.itemView.setOnClickListener {
-                        onClickListener.onExpenseItemClicked(getItem(position))
-                    }
                 }
                 position == 0 -> {
                     holder.bind(expense)
-                    holder.itemView.setOnClickListener {
-                        onClickListener.onExpenseItemClicked(getItem(position))
-                    }
                 }
             }
         }else if (holder is MenuViewHolder){
@@ -76,16 +72,25 @@ class ExpenseListAdapter(private val onEditSelected: OnEditSelectedListener,
         }
     }
 
-    class ExpenseViewHolder(view: View): RecyclerView.ViewHolder(view){
+    inner class ExpenseViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val tvExpense: TextView = view.findViewById(R.id.tvExpenseTitle)
         private val tvTotal: TextView = view.findViewById(R.id.tvTotal)
         private val tvSectionDate: TextView = view.findViewById(R.id.sectionDate)
 
-        fun bind(expense: Expenses){
+        private lateinit var expenses: Expenses
+
+        init {
+            view.setOnClickListener {
+                onClickListener.onExpenseItemClicked(expenses)
+            }
+        }
+
+        fun bind(expense: Expenses) {
             tvExpense.text = expense.concept
             tvTotal.text = "$" + expense.total.toString()
             tvSectionDate.text = setDateFormat(expense.date)
             tvSectionDate.visibility = View.VISIBLE
+            expenses = expense
         }
 
         fun setSectionDate(actualExpenseDate: String, previousExpenseDate: String,
@@ -100,14 +105,6 @@ class ExpenseListAdapter(private val onEditSelected: OnEditSelectedListener,
         }
         fun setDateFormat(timestamp: Long): String{
             return DateFormat.getDateInstance().format(timestamp)
-        }
-
-        companion object {
-            fun create(parent: ViewGroup): ExpenseViewHolder {
-                val view: View = LayoutInflater.from(parent.context)
-                    .inflate(R.layout.recyclerview_item, parent, false)
-                return ExpenseViewHolder(view)
-            }
         }
     }
 
