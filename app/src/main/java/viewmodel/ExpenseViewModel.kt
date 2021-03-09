@@ -32,6 +32,12 @@ class ExpenseViewModel(private val repository: ExpensesRepository): ViewModel() 
     }
   }
 
+  fun deleteItems(items: ArrayList<Items>) {
+    viewModelScope.launch {
+      repository.deleteItem(items)
+    }
+  }
+
 }
 
 class ExpenseViewModelFactory(private val repository: ExpensesRepository): ViewModelProvider.Factory{

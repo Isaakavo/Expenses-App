@@ -19,4 +19,6 @@ interface ItemsDao {
     @Update
     suspend fun updateItems(item: Items)
 
+    @Delete
+    suspend fun deleteItem(item: ArrayList<Items>)
 }

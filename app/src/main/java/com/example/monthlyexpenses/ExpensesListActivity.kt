@@ -68,8 +68,11 @@ class ExpensesListActivity : AppCompatActivity(),
     }else if (result.resultCode == Activity.RESULT_OK && flag == editExpenseActivityRequestCode) {
       val intentExpenses = result.data?.extras?.getSerializable(AddNewExpense.EXTRA_EXPENSE) as Expenses
       val itemList = result.data!!.extras?.getParcelableArrayList<Items>(AddNewExpense.EXTRA_ITEMS)
+      val itemsToDelete =
+        result.data!!.extras?.getParcelableArrayList<Items>(AddNewExpense.EXTRA_ITEMS_DELETE)
       expenseViewModel.updateExpenseAndItems(intentExpenses, itemList as List<Items>)
       updateListByDesiredDate()
+      expenseViewModel.deleteItems(itemsToDelete as ArrayList)
     } else if (result.resultCode != Activity.RESULT_CANCELED) {
       Snackbar.make(this.window.decorView.rootView, "Something went wrong!", Snackbar.LENGTH_LONG).show()
     }
