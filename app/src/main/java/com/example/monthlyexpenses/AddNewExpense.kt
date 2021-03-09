@@ -62,7 +62,7 @@ class AddNewExpense : AppCompatActivity(), View.OnClickListener {
       val expenseToEdit = intent.getSerializableExtra(EXTRA_EXPENSE) as Expenses
       timestamp = expenseToEdit.date
       idExpense = expenseToEdit.id
-      expenseViewModel.getItemById(expenseToEdit.id).observe(this, { items ->
+      /*expenseViewModel.getItemById(expenseToEdit.id).observe(this, { items ->
         editTextConcept.setText(expenseToEdit.concept)
         val lastChar = editTextConcept.text.length
         editTextConcept.setSelection(lastChar)
@@ -73,7 +73,7 @@ class AddNewExpense : AppCompatActivity(), View.OnClickListener {
             editTextAdapter.notifyItemInserted(itemList.size - 1)
           }
         }
-      })
+      })*/
       buttonAdd.text = getString(R.string.update_button)
     } else if (flag == ExpensesListActivity.newExpenseActivityRequestCode) {
       itemList.add(Items())

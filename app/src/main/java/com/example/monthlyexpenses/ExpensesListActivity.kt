@@ -139,22 +139,21 @@ class ExpensesListActivity : AppCompatActivity(),
     intent.putExtra(AddNewExpense.EXTRA_EXPENSE, expense)
     startForResult.launch(intent)
   }
-
   override fun sendExpenseToDelete(expense: Expenses) {
     expenseViewModel.deleteExpense(expense)
   }
-
   override fun onExpenseItemClicked(expense: Expenses) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       vibrator.vibrate(VibrationEffect.createOneShot(150, 1))
     }
     expenseViewModel.getItemById(expense.id).observe(this, {
-      val detailsFragment =
-        ExpensesDetails.newInstance(expense.concept, expense.total, expense.date, it)
-      detailsFragment.show(supportFragmentManager, "Details")
+      it?.let {
+        val detailsFragment =
+          ExpensesDetails.newInstance(expense.concept, expense.total, expense.date, it)
+        detailsFragment.show(supportFragmentManager, "Details")
+      }
     })
   }
-
   private fun touchHelperCallback(adapter: ExpenseListAdapter): ItemTouchHelper.SimpleCallback {
     return object :
         ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
@@ -215,7 +214,6 @@ class ExpensesListActivity : AppCompatActivity(),
     list.add("All Expenses")
     return list
   }
-
   //Spinner item selected
   override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
     val selectedItem = parent?.getItemAtPosition(position) as String
@@ -264,11 +262,9 @@ class ExpensesListActivity : AppCompatActivity(),
       })
     }
   }
-
   override fun onNothingSelected(parent: AdapterView<*>?) {
     return
   }
-
   private fun updateListByDesiredDate() {
     expenseViewModel.getExpensesByDate(desiredDate).observe(this, {
       it?.let {

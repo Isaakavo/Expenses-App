@@ -57,7 +57,7 @@ class ExpensesRepository(private val expensesDao: ExpensesDao, private val items
     }
 
     @WorkerThread
-    fun getItemById(id: Long): LiveData<List<Items>> {
+    fun getItemById(id: Long): Flow<List<Items>> {
         return itemsDao.getItemByID(id)
     }
 

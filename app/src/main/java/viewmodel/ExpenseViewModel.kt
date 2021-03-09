@@ -19,7 +19,7 @@ class ExpenseViewModel(private val repository: ExpensesRepository): ViewModel() 
   }
 
   fun getItemById(id: Long): LiveData<List<Items>> {
-    return repository.getItemById(id)
+    return repository.getItemById(id).asLiveData()
   }
 
   fun updateExpenseAndItems(expense: Expenses, item: List<Items>) = viewModelScope.launch {
