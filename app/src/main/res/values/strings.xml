@@ -1,9 +1,9 @@
 <resources>
     <string name="app_name">MonthlyExpenses</string>
     <string name="app_title">Monthly Expenses</string>
-    <string name="date">Date</string>
     <string name="expense">Expense</string>
     <string name="total">Total</string>
+    <string name="price">Price</string>
     <string name="item">Item</string>
     <string name="add_expense">Add Expense</string>
     <string name="add_new_expense">Add New Expense</string>
@@ -24,4 +24,5 @@
     <string name="concept_title">Concept Title</string>
     <string name="first_half_of_the_month">First Half</string>
     <string name="second_half_of_the_month">Second Half</string>
+    <string name="date">Date</string>
 </resources>
