@@ -1,105 +1,116 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".AddNewExpense">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/tvTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="35dp"
-        android:text="@string/add_expense"
-        android:textAlignment="center"
-        android:textSize="24sp"
-        android:layout_gravity="center"/>
+    <data>
 
-    <EditText
-        android:id="@+id/etConcept"
-        android:layout_width="320dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="20dp"
-        android:autofillHints="false"
-        android:cursorVisible="true"
-        android:defaultFocusHighlightEnabled="true"
-        android:elegantTextHeight="true"
-        android:ems="10"
-        android:focusedByDefault="true"
-        android:hint="@string/concept"
-        android:inputType="textAutoCorrect|text|textCapSentences|textAutoComplete" />
+    </data>
 
-    <ScrollView
-        android:id="@+id/scrollviewLayout"
-        android:layout_width="320dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="2dp"
-        android:fillViewport="true"
-        android:isScrollContainer="true"
-        tools:ignore="UselessParent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context=".AddNewExpense">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="35dp"
+            android:text="@string/add_expense"
+            android:textAlignment="center"
+            android:textSize="24sp" />
+
+        <EditText
+            android:id="@+id/etConcept"
+            android:layout_width="320dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="20dp"
+            android:autofillHints="false"
+            android:cursorVisible="true"
+            android:defaultFocusHighlightEnabled="true"
+            android:elegantTextHeight="true"
+            android:ems="10"
+            android:focusedByDefault="true"
+            android:hint="@string/concept"
+            android:inputType="textAutoCorrect|text|textCapSentences|textAutoComplete" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerviewAddExpense"
+            android:layout_width="320dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="2dp"
+            android:isScrollContainer="true"
+            tools:listitem="@layout/edit_text_item">
+
+        </androidx.recyclerview.widget.RecyclerView>
 
         <LinearLayout
-            android:id="@+id/commentLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:gravity="end"
+            android:orientation="horizontal">
 
-            <LinearLayout
-                android:layout_width="match_parent"
+            <ImageButton
+                android:id="@+id/addNewComment"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                tools:ignore="UselessLeaf">
-            </LinearLayout>
+                android:layout_marginTop="15dp"
+                android:layout_marginEnd="10dp"
+                android:background="?android:selectableItemBackground"
+                android:clickable="true"
+                android:contentDescription="@string/description_button_add_new_comment"
+                android:src="@drawable/ic_baseline_add_circle_outline_24" />
 
+            <ImageButton
+                android:id="@+id/removeNewComment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:layout_marginEnd="50dp"
+                android:background="?android:selectableItemBackground"
+                android:clickable="true"
+                android:contentDescription="@string/description_button_add_new_comment"
+                android:src="@drawable/ic_baseline_remove_circle_outline_24" />
         </LinearLayout>
-    </ScrollView>
 
-    <ImageButton
-        android:id="@+id/addNewComment"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_baseline_add_circle_outline_24"
-        android:clickable="true"
-        android:background="?android:selectableItemBackground"
-        android:layout_gravity="end"
-        android:layout_marginTop="15dp"
-        android:layout_marginEnd="49dp"
-        android:contentDescription="@string/description_button_add_new_comment" />
-
-    <EditText
-        android:id="@+id/etDate"
-        android:layout_width="170dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:layout_marginEnd="50dp"
-        android:layout_marginTop="40dp"
-        android:backgroundTint="@color/purple_700"
-        android:clickable="true"
-        android:ems="10"
-        android:focusable="false"
-        android:hint="@string/date"
-        android:importantForAutofill="no"
-        android:inputType="date"
-        android:maxLines="1" />
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <Button
-            android:id="@+id/okbutton"
-            android:layout_width="200dp"
+        <EditText
+            android:id="@+id/etDate"
+            android:layout_width="170dp"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="@string/add"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.122" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            android:layout_gravity="end"
+            android:layout_marginTop="40dp"
+            android:layout_marginEnd="50dp"
+            android:backgroundTint="@color/purple_700"
+            android:clickable="true"
+            android:ems="10"
+            android:focusable="false"
+            android:hint="@string/date"
+            android:importantForAutofill="no"
+            android:inputType="date"
+            android:maxLines="1" />
 
-</LinearLayout>
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <Button
+                android:id="@+id/okbutton"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/add"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.122" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </LinearLayout>
+</layout>

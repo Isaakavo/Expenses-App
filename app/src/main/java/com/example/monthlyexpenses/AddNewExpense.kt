@@ -1,19 +1,20 @@
 package com.example.monthlyexpenses
 
 import UI.DatePickerFragment
+import adapter.EditTextAdapter
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.graphics.Typeface
 import android.os.Bundle
-import android.text.InputType
 import android.view.View
-import android.view.ViewGroup
-import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.databinding.DataBindingUtil
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.monthlyexpenses.databinding.ActivityAddNewExpenseBinding
 import com.google.android.material.snackbar.Snackbar
 import data.Expenses
 import data.Items
@@ -23,23 +24,27 @@ import java.text.DateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-class AddNewExpense : AppCompatActivity() {
+class AddNewExpense : AppCompatActivity(), View.OnClickListener {
   //UI components
   private lateinit var editTextConcept: EditText
-  private lateinit var imageViewAdd: ImageView
   private lateinit var editTextDate: EditText
   private lateinit var buttonAdd: Button
+  private lateinit var addNewComment: ImageView
+  private lateinit var removeNewComent: ImageView
+  private lateinit var recyclerView: RecyclerView
 
   private var flag = 0
-  private var editTextId = 0
   private var timestamp: Long = 0
 
   private var idExpense = 0L
-  private val idItems: MutableList<Long> = mutableListOf()
 
   private val context: Context = this
 
-  private val itemETList: MutableList<EditText> = mutableListOf()
+  private val itemList: ArrayList<Items> = arrayListOf()
+  private val itemListToDelete: ArrayList<Items> = arrayListOf()
+  private lateinit var editTextAdapter: EditTextAdapter
+  private lateinit var binding: ActivityAddNewExpenseBinding
+
 
   private val expenseViewModel: ExpenseViewModel by viewModels {
     ExpenseViewModelFactory((application as ExpensesApplication).repository)
@@ -47,9 +52,10 @@ class AddNewExpense : AppCompatActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    setContentView(R.layout.activity_add_new_expense)
-
+    binding = DataBindingUtil.setContentView(this, R.layout.activity_add_new_expense)
     bindViews()
+    setAdapter()
+    setListener()
 
     flag = intent.getIntExtra(ExpensesListActivity.flag, 0)
     if (flag == ExpensesListActivity.editExpenseActivityRequestCode) {
@@ -63,17 +69,17 @@ class AddNewExpense : AppCompatActivity() {
         editTextDate.setText(DateFormat.getDateInstance().format(expenseToEdit.date))
         items?.let {
           for (item in it) {
-            addNewEditText(item.item, item.price)
-            idItems.add(item.id)
+            itemList.add(item)
+            editTextAdapter.notifyItemInserted(itemList.size - 1)
           }
         }
       })
       buttonAdd.text = getString(R.string.update_button)
     } else if (flag == ExpensesListActivity.newExpenseActivityRequestCode) {
-      addNewEditText("", "")
+      itemList.add(Items())
+      editTextAdapter.notifyItemInserted(itemList.size - 1)
     }
   }
-
   private fun bindViews() {
     supportActionBar?.apply {
       title = getString(R.string.add_new_expense)
@@ -81,109 +87,53 @@ class AddNewExpense : AppCompatActivity() {
       setDisplayShowHomeEnabled(true)
     }
 
-    editTextConcept = findViewById(R.id.etConcept)
-    imageViewAdd = findViewById(R.id.addNewComment)
-    editTextDate = findViewById(R.id.etDate)
-    buttonAdd = findViewById(R.id.okbutton)
+    editTextConcept = binding.etConcept
+    editTextDate = binding.etDate
+    buttonAdd = binding.okbutton
+    addNewComment = binding.addNewComment
+    removeNewComent = binding.removeNewComment
 
     editTextDate.setText(setFormattedDate())
-    buttonAdd.setOnClickListener(onClickListener)
-    editTextDate.setOnClickListener(onClickListener)
-    imageViewAdd.setOnClickListener(onClickListener)
+  }
 
-    editTextConcept.requestFocus()
+  private fun setAdapter() {
+    editTextAdapter = EditTextAdapter(itemList)
+    recyclerView = binding.recyclerviewAddExpense.apply {
+      layoutManager = LinearLayoutManager(this@AddNewExpense)
+      adapter = editTextAdapter
+    }
+  }
+
+  private fun setListener() {
+    addNewComment.setOnClickListener(this)
+    removeNewComent.setOnClickListener(this)
+    buttonAdd.setOnClickListener(this)
+    editTextDate.setOnClickListener(this)
   }
 
   private fun sendExpenseToAdd() {
     val replyIntent = Intent()
-
     if (editTextIsNotEmpty()) {
-      val itemsArray = getItemComment()
-      val priceArray = getItemPrice()
-      val itemList: MutableList<Items> = mutableListOf()
-      val expense = Expenses(editTextConcept.text.toString(), timestamp, "expense", getTotals())
+      val editTextConcept = binding.etConcept.text.toString()
+      val expense = Expenses(editTextConcept, timestamp, "expense", getTotals())
       expense.id = idExpense
-      for (i in 0 until itemsArray.size){
-        val item = Items(itemsArray[i], priceArray[i])
-        itemList.add(item)
-      }
-      for (i in 0 until idItems.size){
-        if (flag == ExpensesListActivity.editExpenseActivityRequestCode){
-          itemList[i].id = idItems[i]
-          itemList[i].expenseId = idExpense
-        }
-      }
       replyIntent.putExtra(EXTRA_EXPENSE, expense)
       replyIntent.putParcelableArrayListExtra(EXTRA_ITEMS, ArrayList(itemList))
+      replyIntent.putParcelableArrayListExtra(EXTRA_ITEMS_DELETE, ArrayList(itemListToDelete))
 
-      when(intent.getIntExtra(ExpensesListActivity.flag, 0)){
-        ExpensesListActivity.newExpenseActivityRequestCode -> replyIntent.
-        putExtra(ExpensesListActivity.returnFlag, ExpensesListActivity.newExpenseActivityRequestCode)
-        ExpensesListActivity.editExpenseActivityRequestCode -> replyIntent.
-        putExtra(ExpensesListActivity.returnFlag, ExpensesListActivity.editExpenseActivityRequestCode)
+      when (intent.getIntExtra(ExpensesListActivity.flag, 0)) {
+        ExpensesListActivity.newExpenseActivityRequestCode -> replyIntent.putExtra(
+          ExpensesListActivity.returnFlag,
+          ExpensesListActivity.newExpenseActivityRequestCode
+        )
+        ExpensesListActivity.editExpenseActivityRequestCode -> replyIntent.putExtra(
+          ExpensesListActivity.returnFlag,
+          ExpensesListActivity.editExpenseActivityRequestCode
+        )
       }
       setResult(Activity.RESULT_OK, replyIntent)
       finish()
-    } else {
-      setResult(Activity.RESULT_CANCELED, replyIntent)
     }
-  }
-
-  private fun addNewEditText(editTextItem: String, editTextPrice: String) {
-
-    var lastChar: Int
-
-    val parent = LinearLayout(context)
-    parent.layoutParams = LinearLayout.LayoutParams(
-        LinearLayout.LayoutParams.MATCH_PARENT,
-        LinearLayout.LayoutParams.WRAP_CONTENT)
-    parent.orientation = LinearLayout.HORIZONTAL
-
-    val itemEditText = EditText(context)
-    val p: LinearLayout.LayoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-    itemEditText.layoutParams = p
-    itemEditText.hint = getString(R.string.item)
-    itemEditText.inputType = InputType.TYPE_TEXT_FLAG_CAP_WORDS or InputType.TYPE_CLASS_TEXT
-    itemEditText.width = resources.getDimension(R.dimen.etComment).toInt()
-    itemEditText.requestFocus()
-    itemEditText.imeOptions = EditorInfo.IME_ACTION_NEXT
-    itemEditText.setText(editTextItem)
-    lastChar = itemEditText.text.length
-    itemEditText.setSelection(lastChar)
-    itemEditText.id = editTextId
-    editTextId++
-
-    val dollarSign = TextView(context)
-    val param = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-    param.setMargins(resources.getDimension(R.dimen.dollarmargin).toInt(), 0, 0, 0)
-    dollarSign.layoutParams = param
-    dollarSign.textSize = 20F
-    dollarSign.text = resources.getString(R.string.dollarsign)
-    dollarSign.typeface = Typeface.DEFAULT_BOLD
-
-    val totalET = EditText(context)
-    val par = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-    totalET.setRawInputType(InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL)
-    totalET.layoutParams = par
-    totalET.width = resources.getDimension(R.dimen.etcommentTotal).toInt()
-    totalET.imeOptions = EditorInfo.IME_ACTION_NEXT
-    totalET.setText(editTextPrice)
-    lastChar = totalET.text.length
-    totalET.setSelection(lastChar)
-    parent.addView(itemEditText)
-    parent.addView(dollarSign)
-    parent.addView(totalET)
-
-    if (editTextId == 5) {
-      val scroll = findViewById<ScrollView>(R.id.scrollviewLayout)
-      scroll?.layoutParams?.height = resources.getDimension(R.dimen.ScrollHeight).toInt()
-    }
-
-    val finalParent = findViewById<LinearLayout>(R.id.commentLayout)
-    finalParent?.addView(parent)
-
-    itemETList.add(itemEditText)
-    itemETList.add(totalET)
   }
 
   private fun editTextIsNotEmpty(): Boolean {
@@ -191,9 +141,19 @@ class AddNewExpense : AppCompatActivity() {
       true
     } else {
       closeKeyboard()
-      if (editTextConcept.text.isEmpty()) editTextConcept.backgroundTintList = context.getColorStateList(R.color.red)
-      if (editTextDate.text.isEmpty()) editTextDate.backgroundTintList = context.getColorStateList(R.color.red)
-      Snackbar.make(window.decorView.rootView, "All fields must be filled", Snackbar.LENGTH_LONG).show()
+      if (editTextConcept.text.isEmpty()) editTextConcept.backgroundTintList =
+        context.getColorStateList(R.color.red)
+      if (editTextDate.text.isEmpty()) editTextDate.backgroundTintList =
+        context.getColorStateList(R.color.red)
+      itemList.forEach {
+        if (it.item.isEmpty() or it.price.isEmpty()) Snackbar.make(
+          window.decorView.rootView,
+          "Dont leave Items and prices blank",
+          Snackbar.LENGTH_LONG
+        ).show()
+      }
+      Snackbar.make(window.decorView.rootView, "All fields must be filled", Snackbar.LENGTH_LONG)
+        .show()
       false
     }
   }
@@ -204,33 +164,10 @@ class AddNewExpense : AppCompatActivity() {
     return DateFormat.getDateInstance().format(timestamp)
   }
 
-  private fun getItemComment(): ArrayList<String> {
-    val resultString: ArrayList<String> = arrayListOf()
-    for (e: EditText in itemETList) {
-      if (e.inputType == InputType.TYPE_TEXT_FLAG_CAP_WORDS or InputType.TYPE_CLASS_TEXT) {
-        resultString.add(e.text.toString())
-      }
-    }
-    return resultString
-  }
-
-  private fun getItemPrice(): ArrayList<String> {
-    val itemsPrice: ArrayList<String> = arrayListOf()
-    for (e: EditText in itemETList) {
-      if (e.inputType == InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL) {
-        val convertedNumber = e.text.toString().toFloat()
-        itemsPrice.add(String.format("%.2f", convertedNumber))
-      }
-    }
-    return itemsPrice
-  }
-
   private fun getTotals(): Float {
     var totalItems = 0F
-    for (e: EditText in itemETList) {
-      if (e.inputType == InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL) {
-        totalItems += e.text.toString().toFloat()
-      }
+    itemList.forEachIndexed { index, items ->
+      totalItems += items.price.toFloat()
     }
     return totalItems
   }
@@ -258,13 +195,29 @@ class AddNewExpense : AppCompatActivity() {
   companion object {
     const val EXTRA_EXPENSE = "com.example.android.expenselistsql.EXPENSE"
     const val EXTRA_ITEMS = "com.example.android.expenselistsql.ITEM"
+    const val EXTRA_ITEMS_DELETE = "com.example.android.expenselistsql.ITEMDELETE"
   }
 
-  private val onClickListener = View.OnClickListener {
-    when (it.id) {
-      R.id.etDate -> showDatePickerDialog()
-      R.id.okbutton -> sendExpenseToAdd()
-      R.id.addNewComment -> addNewEditText("", "")
+  override fun onClick(v: View?) {
+    when (v?.id) {
+      addNewComment.id -> {
+        itemList.add(Items())
+        editTextAdapter.notifyItemInserted(itemList.size - 1)
+        if (itemList.size == 6) {
+          recyclerView.setHasFixedSize(true)
+        }
+      }
+      removeNewComent.id -> {
+        itemListToDelete.add(itemList.last())
+        itemList.removeLast()
+        editTextAdapter.notifyItemRemoved(itemList.size)
+      }
+      buttonAdd.id -> {
+        sendExpenseToAdd()
+      }
+      editTextDate.id -> {
+        showDatePickerDialog()
+      }
     }
   }
 }
