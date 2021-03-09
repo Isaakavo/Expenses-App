@@ -10,6 +10,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.Vibrator
+import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.activity.result.ActivityResult
@@ -137,6 +138,7 @@ class ExpensesListActivity : AppCompatActivity(),
     val intent = Intent(this@ExpensesListActivity, AddNewExpense::class.java)
     intent.putExtra(flag, editExpenseActivityRequestCode)
     intent.putExtra(AddNewExpense.EXTRA_EXPENSE, expense)
+    Log.d("quepedos", expense.toString())
     startForResult.launch(intent)
   }
   override fun sendExpenseToDelete(expense: Expenses) {
@@ -146,13 +148,15 @@ class ExpensesListActivity : AppCompatActivity(),
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       vibrator.vibrate(VibrationEffect.createOneShot(150, 1))
     }
-    expenseViewModel.getItemById(expense.id).observe(this, {
+    expenseViewModel.getItemById(expense.id).getContentIfNotHandled()?.observe(this, {
       it?.let {
         val detailsFragment =
           ExpensesDetails.newInstance(expense.concept, expense.total, expense.date, it)
         detailsFragment.show(supportFragmentManager, "Details")
       }
     })
+
+
   }
   private fun touchHelperCallback(adapter: ExpenseListAdapter): ItemTouchHelper.SimpleCallback {
     return object :
