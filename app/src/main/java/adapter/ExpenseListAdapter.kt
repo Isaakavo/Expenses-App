@@ -145,11 +145,22 @@ class ExpenseListAdapter(private val onEditSelected: OnEditSelectedListener,
         expenseList[position].showMenu = true
         notifyDataSetChanged()
     }
-    fun closeMenu(){
+
+    fun closeMenu() {
         val expenseList = currentList
-        for (i in 0 until expenseList.size){
-            expenseList[i].showMenu= false
+        for (i in 0 until expenseList.size) {
+            expenseList[i].showMenu = false
         }
         notifyDataSetChanged()
+    }
+
+    fun isMenuShown(): Boolean {
+        val expenseList = currentList
+        for (i in 0 until expenseList.size) {
+            if (expenseList[i].showMenu) {
+                return true
+            }
+        }
+        return false
     }
 }
