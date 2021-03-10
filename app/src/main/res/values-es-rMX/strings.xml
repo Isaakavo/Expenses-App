@@ -23,4 +23,5 @@
     <string name="add_new_expense">Agregar Nuevo Gasto</string>
     <string name="app_title">Gastos Mensuales</string>
     <string name="price">Precio</string>
+    <string name="bank_account">Cuenta de banco</string>
 </resources>
