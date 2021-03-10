@@ -1,4 +1,4 @@
-package com.example.monthlyexpenses
+package com.example.monthlyexpenses.expenses
 
 import adapter.ExpenseListAdapter
 import android.app.Activity
@@ -10,29 +10,32 @@ import android.os.Build
 import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.Vibrator
-import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
-import android.widget.*
+import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.Spinner
+import android.widget.TextView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.monthlyexpenses.R
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.snackbar.Snackbar
 import data.Expenses
 import data.Items
 import viewmodel.ExpenseViewModel
-import viewmodel.ExpenseViewModelFactory
 import java.text.SimpleDateFormat
 import java.util.*
 
-class ExpensesListActivity : AppCompatActivity(),
-    ExpenseListAdapter.OnEditSelectedListener,
-    ExpenseListAdapter.OnClickListener,
-    AdapterView.OnItemSelectedListener {
+class ExpensesListFragment : Fragment(),
+  ExpenseListAdapter.OnEditSelectedListener,
+  ExpenseListAdapter.OnClickListener,
+  AdapterView.OnItemSelectedListener {
 
   private val firstMonthHalfString = "15/01/2021"
   private val firstMonthHalfStringStart = "01/01/2021"
@@ -48,6 +51,9 @@ class ExpensesListActivity : AppCompatActivity(),
   private var totalFirstHalf = 0F
   private var totalSecondHalf = 0F
 
+  private val expenseViewModel: ExpenseViewModel by viewModels {
+    requireActivity().defaultViewModelProviderFactory
+  }
 
   companion object {
     const val flag = "FLAG"
@@ -56,78 +62,90 @@ class ExpensesListActivity : AppCompatActivity(),
     const val editExpenseActivityRequestCode = 2
   }
 
-  private val expenseViewModel: ExpenseViewModel by viewModels {
-    ExpenseViewModelFactory((application as ExpensesApplication).repository)
-  }
-  private val startForResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-    val flag = result.data?.getIntExtra(returnFlag, 0)
-    if (result.resultCode == Activity.RESULT_OK && flag == newExpenseActivityRequestCode) {
-      val intentExpenses = result.data?.extras?.getSerializable(AddNewExpense.EXTRA_EXPENSE) as Expenses
-      val itemList = result.data!!.extras?.getParcelableArrayList<Items>(AddNewExpense.EXTRA_ITEMS)
-      expenseViewModel.insert(intentExpenses, itemList as List<Items>)
-      updateListByDesiredDate()
-    }else if (result.resultCode == Activity.RESULT_OK && flag == editExpenseActivityRequestCode) {
-      val intentExpenses = result.data?.extras?.getSerializable(AddNewExpense.EXTRA_EXPENSE) as Expenses
-      val itemList = result.data!!.extras?.getParcelableArrayList<Items>(AddNewExpense.EXTRA_ITEMS)
-      val itemsToDelete =
-        result.data!!.extras?.getParcelableArrayList<Items>(AddNewExpense.EXTRA_ITEMS_DELETE)
-      expenseViewModel.updateExpenseAndItems(intentExpenses, itemList as List<Items>)
-      updateListByDesiredDate()
-      expenseViewModel.deleteItems(itemsToDelete as ArrayList)
-    } else if (result.resultCode != Activity.RESULT_CANCELED) {
-      Snackbar.make(this.window.decorView.rootView, "Something went wrong!", Snackbar.LENGTH_LONG).show()
+  private val startForResult =
+    registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+      val flag = result.data?.getIntExtra(returnFlag, 0)
+      if (result.resultCode == Activity.RESULT_OK && flag == newExpenseActivityRequestCode) {
+        val intentExpenses =
+          result.data?.extras?.getSerializable(AddNewExpense.EXTRA_EXPENSE) as Expenses
+        val itemList =
+          result.data!!.extras?.getParcelableArrayList<Items>(AddNewExpense.EXTRA_ITEMS)
+        expenseViewModel.insert(intentExpenses, itemList as List<Items>)
+        updateListByDesiredDate()
+      } else if (result.resultCode == Activity.RESULT_OK && flag == editExpenseActivityRequestCode) {
+        val intentExpenses =
+          result.data?.extras?.getSerializable(AddNewExpense.EXTRA_EXPENSE) as Expenses
+        val itemList =
+          result.data!!.extras?.getParcelableArrayList<Items>(AddNewExpense.EXTRA_ITEMS)
+        val itemsToDelete =
+          result.data!!.extras?.getParcelableArrayList<Items>(AddNewExpense.EXTRA_ITEMS_DELETE)
+        expenseViewModel.updateExpenseAndItems(intentExpenses, itemList as List<Items>)
+        updateListByDesiredDate()
+        expenseViewModel.deleteItems(itemsToDelete as ArrayList)
+      } else if (result.resultCode != Activity.RESULT_CANCELED) {
+        //Snackbar.make(this.window.decorView.rootView, "Something went wrong!", Snackbar.LENGTH_LONG).show()
+      }
     }
-  }
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-    setContentView(R.layout.activity_main)
 
-    vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+  override fun onCreateView(
+    inflater: LayoutInflater,
+    container: ViewGroup?,
+    savedInstanceState: Bundle?
+  ): View? {
+    val root = inflater.inflate(R.layout.fragment_expense_list, container, false)
+    vibrator = activity?.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
 
-    bindViews()
-    bindRecyclerView()
+    bindViews(root)
+    bindRecyclerView(root)
 
-    val fab = findViewById<FloatingActionButton>(R.id.fab)
-    fab.setOnClickListener {
-      val intent = Intent(this@ExpensesListActivity, AddNewExpense::class.java)
+    val fab = root.findViewById<FloatingActionButton>(R.id.fab)
+    fab?.setOnClickListener {
+      val intent = Intent(activity, AddNewExpense::class.java)
       intent.putExtra(flag, newExpenseActivityRequestCode)
       adapter.closeMenu()
       startForResult.launch(intent)
     }
+    return root
   }
-  private fun bindViews() {
-    val currentMonth = findViewById<Spinner>(R.id.monthSpinner)
-    val arrayAdapter =
-      ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, getSpinnerMonths())
-    arrayAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item)
-    currentMonth.adapter = arrayAdapter
-    currentMonth.onItemSelectedListener = this
 
-    totalOfMonth = findViewById(R.id.tvTotalMonth)
+  private fun bindViews(view: View?) {
+    val currentMonth = view?.findViewById<Spinner>(R.id.monthSpinner)
+    val arrayAdapter =
+      ArrayAdapter(
+        activity?.applicationContext!!,
+        android.R.layout.simple_spinner_dropdown_item,
+        getSpinnerMonths()
+      )
+    arrayAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item)
+    currentMonth?.adapter = arrayAdapter
+    currentMonth?.onItemSelectedListener = this
+
+    totalOfMonth = view?.findViewById(R.id.tvTotalMonth)!!
     totalOfMonth.setOnClickListener {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         vibrator.vibrate(VibrationEffect.createOneShot(150, 1))
       }
       val halfMonthTotals =
         HalfMonthTotals.newInstance(totalFirstHalf.toString(), totalSecondHalf.toString())
-      halfMonthTotals.show(supportFragmentManager, "Totals")
+      halfMonthTotals.show(childFragmentManager, "Totals")
     }
 
-    supportActionBar.apply {
-      title = getString(R.string.app_title)
-    }
+    /* activity.supportActionBar.apply {
+       title = getString(R.string.app_title)
+     }*/
 
   }
-  private fun bindRecyclerView() {
-    val recyclerView = findViewById<RecyclerView>(R.id.recyclerview)
+
+  private fun bindRecyclerView(view: View?) {
+    val recyclerView = view?.findViewById<RecyclerView>(R.id.recyclerview)
     adapter = ExpenseListAdapter(this, this)
-    recyclerView.adapter = adapter
-    recyclerView.layoutManager = LinearLayoutManager(this)
+    recyclerView?.adapter = adapter
+    recyclerView?.layoutManager = LinearLayoutManager(activity?.applicationContext)
 
     val itemTouchHelper = ItemTouchHelper(touchHelperCallback(adapter))
     itemTouchHelper.attachToRecyclerView(recyclerView)
 
-    recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+    recyclerView?.addOnScrollListener(object : RecyclerView.OnScrollListener() {
       override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
         super.onScrollStateChanged(recyclerView, newState)
         adapter.closeMenu()
@@ -135,10 +153,9 @@ class ExpensesListActivity : AppCompatActivity(),
     })
   }
   override fun sendExpenseToEdit(expense: Expenses) {
-    val intent = Intent(this@ExpensesListActivity, AddNewExpense::class.java)
+    val intent = Intent(activity, AddNewExpense::class.java)
     intent.putExtra(flag, editExpenseActivityRequestCode)
     intent.putExtra(AddNewExpense.EXTRA_EXPENSE, expense)
-    Log.d("quepedos", expense.toString())
     startForResult.launch(intent)
   }
   override fun sendExpenseToDelete(expense: Expenses) {
@@ -152,7 +169,7 @@ class ExpensesListActivity : AppCompatActivity(),
       it?.let {
         val detailsFragment =
           ExpensesDetails.newInstance(expense.concept, expense.total, expense.date, it)
-        detailsFragment.show(supportFragmentManager, "Details")
+        detailsFragment.show(parentFragmentManager, "Details")
       }
     })
 
@@ -162,7 +179,7 @@ class ExpensesListActivity : AppCompatActivity(),
     return object :
         ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
 
-      private val background = ColorDrawable(getColor(R.color.background))
+      private val background = ColorDrawable(resources.getColor(R.color.background))
       override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder,
                           target: RecyclerView.ViewHolder): Boolean {
         return false
@@ -252,6 +269,8 @@ class ExpensesListActivity : AppCompatActivity(),
         expenses?.let {
           adapter.submitList(it)
           var total = 0F
+          totalFirstHalf = 0F
+          totalSecondHalf = 0F
           for (expense in it) {
             total += expense.total
             val dateFormatted = formatter.format(expense.date)

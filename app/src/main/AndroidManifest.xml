@@ -6,7 +6,7 @@
     <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
-        android:name=".ExpensesApplication"
+        android:name=".expenses.ExpensesApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -15,12 +15,11 @@
         android:theme="@style/Theme.MonthlyExpenses"
         tools:ignore="AllowBackup">
         <activity
-            android:name=".AddNewExpense"
-            android:parentActivityName=".ExpensesListActivity" />
-        <activity android:name=".ExpensesListActivity">
+            android:name=".expenses.AddNewExpense"
+            android:parentActivityName=".expenses.ExpensesListFragment" />
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
