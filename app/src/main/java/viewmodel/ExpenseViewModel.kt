@@ -37,7 +37,6 @@ class ExpenseViewModel(private val repository: ExpensesRepository): ViewModel() 
       repository.deleteItem(items)
     }
   }
-
 }
 
 class ExpenseViewModelFactory(private val repository: ExpensesRepository): ViewModelProvider.Factory{

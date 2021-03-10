@@ -26,6 +26,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.monthlyexpenses.R
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.snackbar.Snackbar
 import data.Expenses
 import data.Items
 import viewmodel.ExpenseViewModel
@@ -36,6 +37,10 @@ class ExpensesListFragment : Fragment(),
   ExpenseListAdapter.OnEditSelectedListener,
   ExpenseListAdapter.OnClickListener,
   AdapterView.OnItemSelectedListener {
+
+  private val expenseViewModel: ExpenseViewModel by viewModels {
+    requireActivity().defaultViewModelProviderFactory
+  }
 
   private val firstMonthHalfString = "15/01/2021"
   private val firstMonthHalfStringStart = "01/01/2021"
@@ -50,10 +55,6 @@ class ExpensesListFragment : Fragment(),
 
   private var totalFirstHalf = 0F
   private var totalSecondHalf = 0F
-
-  private val expenseViewModel: ExpenseViewModel by viewModels {
-    requireActivity().defaultViewModelProviderFactory
-  }
 
   companion object {
     const val flag = "FLAG"
@@ -83,7 +84,7 @@ class ExpensesListFragment : Fragment(),
         updateListByDesiredDate()
         expenseViewModel.deleteItems(itemsToDelete as ArrayList)
       } else if (result.resultCode != Activity.RESULT_CANCELED) {
-        //Snackbar.make(this.window.decorView.rootView, "Something went wrong!", Snackbar.LENGTH_LONG).show()
+        Snackbar.make(requireView(), "Something went wrong!", Snackbar.LENGTH_LONG).show()
       }
     }
 
@@ -129,11 +130,6 @@ class ExpensesListFragment : Fragment(),
         HalfMonthTotals.newInstance(totalFirstHalf.toString(), totalSecondHalf.toString())
       halfMonthTotals.show(childFragmentManager, "Totals")
     }
-
-    /* activity.supportActionBar.apply {
-       title = getString(R.string.app_title)
-     }*/
-
   }
 
   private fun bindRecyclerView(view: View?) {
@@ -164,6 +160,10 @@ class ExpensesListFragment : Fragment(),
   override fun onExpenseItemClicked(expense: Expenses) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       vibrator.vibrate(VibrationEffect.createOneShot(150, 1))
+    }
+
+    if (adapter.isMenuShown()) {
+      adapter.closeMenu()
     }
     expenseViewModel.getItemById(expense.id).getContentIfNotHandled()?.observe(this, {
       it?.let {
@@ -295,4 +295,5 @@ class ExpensesListFragment : Fragment(),
       }
     })
   }
+
 }
