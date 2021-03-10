@@ -1,4 +1,4 @@
-package com.example.monthlyexpenses
+package com.example.monthlyexpenses.expenses
 
 import android.os.Bundle
 import android.os.Parcelable
@@ -10,6 +10,7 @@ import android.view.WindowManager
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
+import com.example.monthlyexpenses.R
 import data.Items
 import java.text.DateFormat
 import java.util.*

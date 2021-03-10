@@ -1,4 +1,4 @@
-package com.example.monthlyexpenses
+package com.example.monthlyexpenses.expenses
 
 import android.app.Application
 import data.ExpensesRepository

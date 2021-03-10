@@ -1,4 +1,4 @@
-package com.example.monthlyexpenses
+package com.example.monthlyexpenses.expenses
 
 import UI.DatePickerFragment
 import adapter.EditTextAdapter
@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.monthlyexpenses.R
 import com.example.monthlyexpenses.databinding.ActivityAddNewExpenseBinding
 import com.google.android.material.snackbar.Snackbar
 import data.Expenses
@@ -57,8 +58,8 @@ class AddNewExpense : AppCompatActivity(), View.OnClickListener {
     setAdapter()
     setListener()
 
-    flag = intent.getIntExtra(ExpensesListActivity.flag, 0)
-    if (flag == ExpensesListActivity.editExpenseActivityRequestCode) {
+    flag = intent.getIntExtra(ExpensesListFragment.flag, 0)
+    if (flag == ExpensesListFragment.editExpenseActivityRequestCode) {
       val expenseToEdit = intent.getSerializableExtra(EXTRA_EXPENSE) as Expenses
       timestamp = expenseToEdit.date
       idExpense = expenseToEdit.id
@@ -76,7 +77,7 @@ class AddNewExpense : AppCompatActivity(), View.OnClickListener {
           }
         })
       buttonAdd.text = getString(R.string.update_button)
-    } else if (flag == ExpensesListActivity.newExpenseActivityRequestCode) {
+    } else if (flag == ExpensesListFragment.newExpenseActivityRequestCode) {
       itemList.add(Items())
       editTextAdapter.notifyItemInserted(itemList.size - 1)
     }
@@ -122,14 +123,14 @@ class AddNewExpense : AppCompatActivity(), View.OnClickListener {
       replyIntent.putParcelableArrayListExtra(EXTRA_ITEMS, ArrayList(itemList))
       replyIntent.putParcelableArrayListExtra(EXTRA_ITEMS_DELETE, ArrayList(itemListToDelete))
 
-      when (intent.getIntExtra(ExpensesListActivity.flag, 0)) {
-        ExpensesListActivity.newExpenseActivityRequestCode -> replyIntent.putExtra(
-          ExpensesListActivity.returnFlag,
-          ExpensesListActivity.newExpenseActivityRequestCode
+      when (intent.getIntExtra(ExpensesListFragment.flag, 0)) {
+        ExpensesListFragment.newExpenseActivityRequestCode -> replyIntent.putExtra(
+          ExpensesListFragment.returnFlag,
+          ExpensesListFragment.newExpenseActivityRequestCode
         )
-        ExpensesListActivity.editExpenseActivityRequestCode -> replyIntent.putExtra(
-          ExpensesListActivity.returnFlag,
-          ExpensesListActivity.editExpenseActivityRequestCode
+        ExpensesListFragment.editExpenseActivityRequestCode -> replyIntent.putExtra(
+          ExpensesListFragment.returnFlag,
+          ExpensesListFragment.editExpenseActivityRequestCode
         )
       }
       setResult(Activity.RESULT_OK, replyIntent)

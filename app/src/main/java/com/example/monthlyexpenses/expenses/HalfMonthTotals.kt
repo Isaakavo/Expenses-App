@@ -1,4 +1,4 @@
-package com.example.monthlyexpenses
+package com.example.monthlyexpenses.expenses
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
+import com.example.monthlyexpenses.R
 
 private const val FIRST_HALF = "param1"
 private const val SECOND_HALF = "param2"
