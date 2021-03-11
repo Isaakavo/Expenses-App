@@ -15,9 +15,6 @@ import viewmodel.ExpenseViewModel
 import java.text.DateFormat
 
 private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-private const val ARG_PARAM3 = "param3"
-private const val ARG_TOTAL = "expenseTotal"
 
 class ExpensesDetails : DialogFragment() {
 
@@ -107,7 +104,6 @@ class ExpensesDetails : DialogFragment() {
   }
 
   companion object {
-
     @JvmStatic
     fun newInstance(expense: Expenses) =
         ExpensesDetails().apply {
@@ -118,17 +114,5 @@ class ExpensesDetails : DialogFragment() {
           fragment.arguments = arguments
           return fragment
         }
-    /*fun newInstance(concept: String, total: Float, date: Long, items: List<Items>) =
-        ExpensesDetails().apply {
-          arguments = Bundle().apply {
-            putString(ARG_PARAM1, concept)
-            putFloat(ARG_TOTAL, total)
-            putLong(ARG_PARAM2, date)
-            putParcelableArrayList(ARG_PARAM3, items as ArrayList<out Parcelable>)
-          }
-          val fragment = ExpensesDetails()
-          fragment.arguments = arguments
-          return fragment
-        }*/
   }
 }
