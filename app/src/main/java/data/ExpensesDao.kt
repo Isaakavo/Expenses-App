@@ -3,8 +3,10 @@ package data
 import androidx.lifecycle.LiveData
 import androidx.room.*
 import kotlinx.coroutines.flow.Flow
+import model.Expenses
 
 
+//interface to make database query's
 @Dao
 interface ExpensesDao {
 

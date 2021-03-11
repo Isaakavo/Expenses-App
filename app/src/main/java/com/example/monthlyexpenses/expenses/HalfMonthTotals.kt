@@ -11,9 +11,8 @@ import com.example.monthlyexpenses.R
 
 private const val FIRST_HALF = "param1"
 private const val SECOND_HALF = "param2"
-
+//Fragment to show the expenses of the month every fifteen days
 class HalfMonthTotals : DialogFragment() {
-    // TODO: Rename and change types of parameters
     private var firstHalfValue: String? = null
     private var secondHalfValue: String? = null
 

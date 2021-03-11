@@ -10,12 +10,13 @@ import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import com.example.monthlyexpenses.R
-import data.Expenses
+import model.Expenses
 import viewmodel.ExpenseViewModel
 import java.text.DateFormat
 
 private const val ARG_PARAM1 = "param1"
 
+//Fragment to show the details of the expenses
 class ExpensesDetails : DialogFragment() {
 
   private val expenseViewModel: ExpenseViewModel by viewModels {
@@ -34,6 +35,7 @@ class ExpensesDetails : DialogFragment() {
     setupView(view)
   }
 
+  //Make the card size of the screen
   override fun onStart() {
     super.onStart()
     dialog?.window?.setLayout(
@@ -53,6 +55,7 @@ class ExpensesDetails : DialogFragment() {
     detailsDate.text = setFormattedDate(expense.date)
     totalDetails.text = getString(R.string.dollasingTotal, expense.total.toString())
 
+    //Get the items to make text views dynamically from database
     expenseViewModel.getItemById(expense.id).observe(this, { itemsList ->
       itemsList?.let {
         for (items in itemsList) {
@@ -94,6 +97,7 @@ class ExpensesDetails : DialogFragment() {
     finalParent?.addView(parent)
   }
 
+  //Transform text size to SP
   private fun pixelsToSp(px: Float): Float {
     val scaleDensity = resources.displayMetrics.scaledDensity
     return px / scaleDensity
@@ -103,6 +107,7 @@ class ExpensesDetails : DialogFragment() {
     return DateFormat.getDateInstance().format(timestamp)
   }
 
+  //We create the dialog with the data we want from here
   companion object {
     @JvmStatic
     fun newInstance(expense: Expenses) =

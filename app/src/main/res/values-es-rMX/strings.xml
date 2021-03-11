@@ -24,4 +24,6 @@
     <string name="app_title">Gastos Mensuales</string>
     <string name="price">Precio</string>
     <string name="bank_account">Cuenta de banco</string>
+    <string name="emptyEditText">No deje articulos vacíos</string>
+    <string name="all_field_must_be_filled">Todos los campos se deben llenar</string>
 </resources>

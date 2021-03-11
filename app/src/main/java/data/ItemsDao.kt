@@ -2,6 +2,7 @@ package data
 
 import androidx.room.*
 import kotlinx.coroutines.flow.Flow
+import model.Items
 
 @Dao
 interface ItemsDao {

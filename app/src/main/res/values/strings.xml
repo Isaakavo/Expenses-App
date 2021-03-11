@@ -26,4 +26,6 @@
     <string name="second_half_of_the_month">Second Half</string>
     <string name="date">Date</string>
     <string name="bank_account"> Bank Account</string>
+    <string name="emptyEditText">Dont leave Items and prices blank</string>
+    <string name="all_field_must_be_filled">"All fields must be filled"</string>
 </resources>

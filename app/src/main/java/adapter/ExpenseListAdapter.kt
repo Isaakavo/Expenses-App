@@ -1,5 +1,6 @@
 package adapter
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,20 +10,24 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.monthlyexpenses.R
-import data.Expenses
+import model.Expenses
 import java.text.DateFormat
 
+//Recycler view adapter to show the list of expenses or display a menu on a selected expense to
+//Delete or edit
 class ExpenseListAdapter(private val onEditSelected: OnEditSelectedListener,
                          private val onClickListener: OnClickListener) :
     ListAdapter<Expenses, RecyclerView.ViewHolder>(ExpenseComparator()) {
 
     lateinit var expense: Expenses
 
+    //Interfaces to know which expense has been selected for edit or delete
     interface OnEditSelectedListener {
         fun sendExpenseToEdit(expense: Expenses)
         fun sendExpenseToDelete(expense: Expenses)
     }
 
+    //Interface to display the items of the desired expense
     interface OnClickListener {
         fun onExpenseItemClicked(expense: Expenses)
     }
@@ -38,6 +43,7 @@ class ExpenseListAdapter(private val onEditSelected: OnEditSelectedListener,
             HIDE_MENU
         }
     }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return if (viewType == SHOW_MENU){
             MenuViewHolder.create(parent)
@@ -50,7 +56,9 @@ class ExpenseListAdapter(private val onEditSelected: OnEditSelectedListener,
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         expense = getItem(position)
-        if (holder is ExpenseViewHolder){
+        if (holder is ExpenseViewHolder) {
+            //When two or more expenses has the same date, the date text view is hide to only show one
+            //date text view
             when {
                 position != 0 -> {
                     val expenseDateFormatted: String = holder.setDateFormat(expense.date)
@@ -79,12 +87,14 @@ class ExpenseListAdapter(private val onEditSelected: OnEditSelectedListener,
 
         private lateinit var expenses: Expenses
 
+        //Init the interface to displat data of expense
         init {
             view.setOnClickListener {
                 onClickListener.onExpenseItemClicked(expenses)
             }
         }
 
+        @SuppressLint("SetTextI18n")
         fun bind(expense: Expenses) {
             tvExpense.text = expense.concept
             tvTotal.text = "$" + expense.total.toString()
@@ -93,24 +103,28 @@ class ExpenseListAdapter(private val onEditSelected: OnEditSelectedListener,
             expenses = expense
         }
 
+        //Function that set show or hide the date text view
         fun setSectionDate(actualExpenseDate: String, previousExpenseDate: String,
                            expense: Expenses){
-                if (actualExpenseDate == previousExpenseDate){
-                    bind(expense)
-                    tvSectionDate.visibility = View.GONE
-                }else{
-                    bind(expense)
-                    tvSectionDate.visibility = View.VISIBLE
-                }
+            if (actualExpenseDate == previousExpenseDate){
+                bind(expense)
+                tvSectionDate.visibility = View.GONE
+            }else{
+                bind(expense)
+                tvSectionDate.visibility = View.VISIBLE
+            }
         }
+
         fun setDateFormat(timestamp: Long): String{
             return DateFormat.getDateInstance().format(timestamp)
         }
     }
 
+    //Menu view holder
     class MenuViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val buttonEdit: LinearLayout? = view.findViewById(R.id.editButton)
         val deleteButton: LinearLayout? = view.findViewById(R.id.deleteButton)
+
         fun editItem(expense: Expenses, listener: OnEditSelectedListener) {
             listener.sendExpenseToEdit(expense)
         }
@@ -132,6 +146,7 @@ class ExpenseListAdapter(private val onEditSelected: OnEditSelectedListener,
         override fun areItemsTheSame(oldItem: Expenses, newItem: Expenses): Boolean {
             return oldItem.id == newItem.id
         }
+
         override fun areContentsTheSame(oldItem: Expenses, newItem: Expenses): Boolean {
             return oldItem.date == newItem.date
         }

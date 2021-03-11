@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import model.Expenses
+import model.Items
 
 
 @Database(entities = [Expenses::class, Items::class], version = 1, exportSchema = false)

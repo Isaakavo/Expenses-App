@@ -4,6 +4,8 @@ import android.util.Log
 import androidx.annotation.WorkerThread
 import androidx.lifecycle.LiveData
 import kotlinx.coroutines.flow.Flow
+import model.Expenses
+import model.Items
 
 class ExpensesRepository(private val expensesDao: ExpensesDao, private val itemsDao: ItemsDao) {
     // Room executes all queries on a separate thread.
@@ -25,7 +27,6 @@ class ExpensesRepository(private val expensesDao: ExpensesDao, private val items
     // By default Room runs suspend queries off the main thread, therefore, we don't need to
     // implement anything else to ensure we're not doing long running database work
     // off the main thread.
-    @Suppress("RedundantSuspendModifier")
     @WorkerThread
     suspend fun insert(expense: Expenses): Long {
         return expensesDao.insert(expense)
@@ -35,7 +36,7 @@ class ExpensesRepository(private val expensesDao: ExpensesDao, private val items
     suspend fun insertExpenseAndItem(expense: Expenses, items: List<Items>){
 
         val id = expensesDao.insert(expense)
-        for (item: Items in items){
+        for (item: Items in items) {
             item.expenseId = id
             Log.d("repository", "The id to insert ${item.id}")
             Log.d("repository", "The item to insert $item")
@@ -43,11 +44,11 @@ class ExpensesRepository(private val expensesDao: ExpensesDao, private val items
         }
 
     }
-    suspend fun updateExpenseAndItems(expense: Expenses, items: List<Items>){
-        /*expensesDao.updateExpense(expense.concept, expense.date, expense.total, expense.id)*/
+
+    //First update the expense then the items
+    suspend fun updateExpenseAndItems(expense: Expenses, items: List<Items>) {
         expensesDao.updateExpense(expense)
-        Log.d("upsert", items.toString())
-        for (item in items){
+        for (item in items) {
             if (item.id != 0L) itemsDao.updateItems(item)
             else {
                 item.expenseId = expense.id

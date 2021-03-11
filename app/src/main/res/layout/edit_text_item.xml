@@ -5,7 +5,7 @@
 
         <variable
             name="item"
-            type="data.Items" />
+            type="model.Items" />
 
     </data>
 

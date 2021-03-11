@@ -1,10 +1,10 @@
 package viewmodel
 
 import androidx.lifecycle.*
-import data.Expenses
 import data.ExpensesRepository
-import data.Items
 import kotlinx.coroutines.launch
+import model.Expenses
+import model.Items
 
 class ExpenseViewModel(private val repository: ExpensesRepository): ViewModel() {
   val allExpenses: LiveData<List<Expenses>> = repository.allExpenses.asLiveData()

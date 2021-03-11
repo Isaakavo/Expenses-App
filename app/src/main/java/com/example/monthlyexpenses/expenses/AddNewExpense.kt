@@ -17,8 +17,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.monthlyexpenses.R
 import com.example.monthlyexpenses.databinding.ActivityAddNewExpenseBinding
 import com.google.android.material.snackbar.Snackbar
-import data.Expenses
-import data.Items
+import model.Expenses
+import model.Items
 import viewmodel.ExpenseViewModel
 import viewmodel.ExpenseViewModelFactory
 import java.text.DateFormat
@@ -37,6 +37,7 @@ class AddNewExpense : AppCompatActivity(), View.OnClickListener {
   private var flag = 0
   private var timestamp: Long = 0
 
+  //Variable to get the id of the expense for edit
   private var idExpense = 0L
 
   private val context: Context = this
@@ -58,16 +59,16 @@ class AddNewExpense : AppCompatActivity(), View.OnClickListener {
     setAdapter()
     setListener()
 
+    //Get the flag to know if user want to add or update an expense.
+    //If user want to edit we populate the edit text for expense data and create dynamically edit text for items
     flag = intent.getIntExtra(ExpensesListFragment.flag, 0)
     if (flag == ExpensesListFragment.editExpenseActivityRequestCode) {
       val expenseToEdit = intent.getSerializableExtra(EXTRA_EXPENSE) as Expenses
       timestamp = expenseToEdit.date
       idExpense = expenseToEdit.id
+      editTextConcept.setText(expenseToEdit.concept)
+      editTextDate.setText(DateFormat.getDateInstance().format(expenseToEdit.date))
       expenseViewModel.getItemById(expenseToEdit.id).observe(this, { items ->
-        editTextConcept.setText(expenseToEdit.concept)
-        val lastChar = editTextConcept.text.length
-        editTextConcept.setSelection(lastChar)
-        editTextDate.setText(DateFormat.getDateInstance().format(expenseToEdit.date))
         items?.let {
           for (item in it) {
             itemList.add(item)
@@ -79,6 +80,7 @@ class AddNewExpense : AppCompatActivity(), View.OnClickListener {
     } else if (flag == ExpensesListFragment.newExpenseActivityRequestCode) {
       itemList.add(Items())
       editTextAdapter.notifyItemInserted(itemList.size - 1)
+      editTextDate.setText(setFormattedDate())
     }
   }
   private fun bindViews() {
@@ -93,10 +95,9 @@ class AddNewExpense : AppCompatActivity(), View.OnClickListener {
     buttonAdd = binding.okbutton
     addNewComment = binding.addNewComment
     removeNewComent = binding.removeNewComment
-
-    editTextDate.setText(setFormattedDate())
   }
 
+  //Set the adapter for data binding recycler view
   private fun setAdapter() {
     editTextAdapter = EditTextAdapter(itemList)
     recyclerView = binding.recyclerviewAddExpense.apply {
@@ -105,6 +106,7 @@ class AddNewExpense : AppCompatActivity(), View.OnClickListener {
     }
   }
 
+  //set the listener for click functions
   private fun setListener() {
     addNewComment.setOnClickListener(this)
     removeNewComent.setOnClickListener(this)
@@ -112,11 +114,12 @@ class AddNewExpense : AppCompatActivity(), View.OnClickListener {
     editTextDate.setOnClickListener(this)
   }
 
+  //Send the data to be added to data base in main viewmodel
   private fun sendExpenseToAdd() {
     val replyIntent = Intent()
     if (editTextIsNotEmpty()) {
-      val editTextConcept = binding.etConcept.text.toString()
-      val expense = Expenses(editTextConcept, timestamp, "expense", getTotals())
+      //val editTextConcept = binding.etConcept.text.toString()
+      val expense = Expenses(editTextConcept.text.toString(), timestamp, "expense", getTotals())
       expense.id = idExpense
       replyIntent.putExtra(EXTRA_EXPENSE, expense)
       replyIntent.putParcelableArrayListExtra(EXTRA_ITEMS, ArrayList(itemList))
@@ -124,12 +127,12 @@ class AddNewExpense : AppCompatActivity(), View.OnClickListener {
 
       when (intent.getIntExtra(ExpensesListFragment.flag, 0)) {
         ExpensesListFragment.newExpenseActivityRequestCode -> replyIntent.putExtra(
-          ExpensesListFragment.returnFlag,
-          ExpensesListFragment.newExpenseActivityRequestCode
+            ExpensesListFragment.returnFlag,
+            ExpensesListFragment.newExpenseActivityRequestCode
         )
         ExpensesListFragment.editExpenseActivityRequestCode -> replyIntent.putExtra(
-          ExpensesListFragment.returnFlag,
-          ExpensesListFragment.editExpenseActivityRequestCode
+            ExpensesListFragment.returnFlag,
+            ExpensesListFragment.editExpenseActivityRequestCode
         )
       }
       setResult(Activity.RESULT_OK, replyIntent)
@@ -148,12 +151,12 @@ class AddNewExpense : AppCompatActivity(), View.OnClickListener {
         context.getColorStateList(R.color.red)
       itemList.forEach {
         if (it.item.isEmpty() or it.price.isEmpty()) Snackbar.make(
-          window.decorView.rootView,
-          "Dont leave Items and prices blank",
-          Snackbar.LENGTH_LONG
+            window.decorView.rootView,
+            getString(R.string.emptyEditText),
+            Snackbar.LENGTH_LONG
         ).show()
       }
-      Snackbar.make(window.decorView.rootView, "All fields must be filled", Snackbar.LENGTH_LONG)
+      Snackbar.make(window.decorView.rootView, getString(R.string.all_field_must_be_filled), Snackbar.LENGTH_LONG)
         .show()
       false
     }
