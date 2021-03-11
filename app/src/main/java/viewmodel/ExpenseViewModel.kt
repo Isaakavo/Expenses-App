@@ -18,8 +18,8 @@ class ExpenseViewModel(private val repository: ExpensesRepository): ViewModel() 
     repository.insertExpenseAndItem(expense, item)
   }
 
-  fun getItemById(id: Long): Event<LiveData<List<Items>>> {
-    return Event(repository.getItemById(id).asLiveData())
+  fun getItemById(id: Long): LiveData<List<Items>> {
+    return repository.getItemById(id).asLiveData()
   }
 
   fun updateExpenseAndItems(expense: Expenses, item: List<Items>) = viewModelScope.launch {

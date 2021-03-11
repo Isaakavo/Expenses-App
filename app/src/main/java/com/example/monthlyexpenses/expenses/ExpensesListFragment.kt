@@ -161,25 +161,25 @@ class ExpensesListFragment : Fragment(),
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       vibrator.vibrate(VibrationEffect.createOneShot(150, 1))
     }
-
     if (adapter.isMenuShown()) {
       adapter.closeMenu()
     }
-    expenseViewModel.getItemById(expense.id).getContentIfNotHandled()?.observe(this, {
+    val detailsFragment =
+        ExpensesDetails.newInstance(expense)
+    detailsFragment.show(parentFragmentManager, "Details")
+    /*expenseViewModel.getItemById(expense.id).getContentIfNotHandled()?.observe(this, {
       it?.let {
         val detailsFragment =
           ExpensesDetails.newInstance(expense.concept, expense.total, expense.date, it)
         detailsFragment.show(parentFragmentManager, "Details")
       }
-    })
-
-
+    })*/
   }
   private fun touchHelperCallback(adapter: ExpenseListAdapter): ItemTouchHelper.SimpleCallback {
     return object :
         ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
 
-      private val background = ColorDrawable(resources.getColor(R.color.background))
+      private val background = ColorDrawable(activity!!.getColor(R.color.background))
       override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder,
                           target: RecyclerView.ViewHolder): Boolean {
         return false

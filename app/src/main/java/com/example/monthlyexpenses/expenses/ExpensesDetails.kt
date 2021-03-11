@@ -1,8 +1,6 @@
 package com.example.monthlyexpenses.expenses
 
 import android.os.Bundle
-import android.os.Parcelable
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,10 +8,11 @@ import android.view.WindowManager
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.viewModels
 import com.example.monthlyexpenses.R
-import data.Items
+import data.Expenses
+import viewmodel.ExpenseViewModel
 import java.text.DateFormat
-import java.util.*
 
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
@@ -21,6 +20,10 @@ private const val ARG_PARAM3 = "param3"
 private const val ARG_TOTAL = "expenseTotal"
 
 class ExpensesDetails : DialogFragment() {
+
+  private val expenseViewModel: ExpenseViewModel by viewModels {
+    requireActivity().defaultViewModelProviderFactory
+  }
 
   override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
@@ -47,17 +50,19 @@ class ExpensesDetails : DialogFragment() {
     val detailsDate = view.findViewById<TextView>(R.id.details_date)
     val totalDetails = view.findViewById<TextView>(R.id.totalDetails)
 
-    detailsConcept.text = arguments?.getString(ARG_PARAM1)
-    detailsDate.text = setFormattedDate(arguments?.getLong(ARG_PARAM2))
-    totalDetails.text = getString(R.string.dollasingTotal, arguments?.getFloat(ARG_TOTAL).toString())
+    val expense = arguments?.getSerializable(ARG_PARAM1) as Expenses
 
-    val itemsList = arguments?.getParcelableArrayList<Items>(ARG_PARAM3)
+    detailsConcept.text = expense.concept
+    detailsDate.text = setFormattedDate(expense.date)
+    totalDetails.text = getString(R.string.dollasingTotal, expense.total.toString())
 
-
-    for (items in itemsList!!) {
-      Log.d("items", items.toString())
-      createTextView(view, items.item, items.price)
-    }
+    expenseViewModel.getItemById(expense.id).observe(this, { itemsList ->
+      itemsList?.let {
+        for (items in itemsList) {
+          createTextView(view, items.item, items.price)
+        }
+      }
+    })
   }
 
   private fun createTextView(view: View, itemText: String, priceText: String) {
@@ -104,7 +109,16 @@ class ExpensesDetails : DialogFragment() {
   companion object {
 
     @JvmStatic
-    fun newInstance(concept: String, total: Float, date: Long, items: List<Items>) =
+    fun newInstance(expense: Expenses) =
+        ExpensesDetails().apply {
+          arguments = Bundle().apply {
+            putSerializable(ARG_PARAM1, expense)
+          }
+          val fragment = ExpensesDetails()
+          fragment.arguments = arguments
+          return fragment
+        }
+    /*fun newInstance(concept: String, total: Float, date: Long, items: List<Items>) =
         ExpensesDetails().apply {
           arguments = Bundle().apply {
             putString(ARG_PARAM1, concept)
@@ -115,6 +129,6 @@ class ExpensesDetails : DialogFragment() {
           val fragment = ExpensesDetails()
           fragment.arguments = arguments
           return fragment
-        }
+        }*/
   }
 }
