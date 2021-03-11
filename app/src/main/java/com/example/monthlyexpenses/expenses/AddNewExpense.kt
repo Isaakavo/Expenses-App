@@ -63,19 +63,18 @@ class AddNewExpense : AppCompatActivity(), View.OnClickListener {
       val expenseToEdit = intent.getSerializableExtra(EXTRA_EXPENSE) as Expenses
       timestamp = expenseToEdit.date
       idExpense = expenseToEdit.id
-      expenseViewModel.getItemById(expenseToEdit.id).getContentIfNotHandled()
-        ?.observe(this, { items ->
-          editTextConcept.setText(expenseToEdit.concept)
-          val lastChar = editTextConcept.text.length
-          editTextConcept.setSelection(lastChar)
-          editTextDate.setText(DateFormat.getDateInstance().format(expenseToEdit.date))
-          items?.let {
-            for (item in it) {
-              itemList.add(item)
-              editTextAdapter.notifyItemInserted(itemList.size - 1)
-            }
+      expenseViewModel.getItemById(expenseToEdit.id).observe(this, { items ->
+        editTextConcept.setText(expenseToEdit.concept)
+        val lastChar = editTextConcept.text.length
+        editTextConcept.setSelection(lastChar)
+        editTextDate.setText(DateFormat.getDateInstance().format(expenseToEdit.date))
+        items?.let {
+          for (item in it) {
+            itemList.add(item)
+            editTextAdapter.notifyItemInserted(itemList.size - 1)
           }
-        })
+        }
+      })
       buttonAdd.text = getString(R.string.update_button)
     } else if (flag == ExpensesListFragment.newExpenseActivityRequestCode) {
       itemList.add(Items())
@@ -168,7 +167,7 @@ class AddNewExpense : AppCompatActivity(), View.OnClickListener {
 
   private fun getTotals(): Float {
     var totalItems = 0F
-    itemList.forEachIndexed { index, items ->
+    itemList.forEach { items ->
       totalItems += items.price.toFloat()
     }
     return totalItems
@@ -210,9 +209,11 @@ class AddNewExpense : AppCompatActivity(), View.OnClickListener {
         }
       }
       removeNewComent.id -> {
-        itemListToDelete.add(itemList.last())
-        itemList.removeLast()
-        editTextAdapter.notifyItemRemoved(itemList.size)
+        if (itemList.size > 1) {
+          itemListToDelete.add(itemList.last())
+          itemList.removeLast()
+          editTextAdapter.notifyItemRemoved(itemList.size)
+        }
       }
       buttonAdd.id -> {
         sendExpenseToAdd()
