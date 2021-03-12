@@ -61,10 +61,11 @@ class ExpenseListAdapter(private val onEditSelected: OnEditSelectedListener,
             //date text view
             when {
                 position != 0 -> {
-                    val expenseDateFormatted: String = holder.setDateFormat(expense.date)
                     val previousExpense: Expenses = getItem(position - 1)
-                    val previousExpenseDate: String = holder.setDateFormat(previousExpense.date)
-                    holder.setSectionDate(expenseDateFormatted, previousExpenseDate, expense)
+                    val currentExpenseDate = holder.setDateFormat(expense.date)
+                    val previousExpenseDate = holder.setDateFormat(previousExpense.date)
+                    holder.bind(expense)
+                    holder.setSectionDate(currentExpenseDate, previousExpenseDate)
                 }
                 position == 0 -> {
                     holder.bind(expense)
@@ -84,10 +85,11 @@ class ExpenseListAdapter(private val onEditSelected: OnEditSelectedListener,
         private val tvExpense: TextView = view.findViewById(R.id.tvExpenseTitle)
         private val tvTotal: TextView = view.findViewById(R.id.tvTotal)
         private val tvSectionDate: TextView = view.findViewById(R.id.sectionDate)
+        private val itemDivider: View = view.findViewById(R.id.itemDivider)
 
         private lateinit var expenses: Expenses
 
-        //Init the interface to displat data of expense
+        //Init the interface to display data of expense
         init {
             view.setOnClickListener {
                 onClickListener.onExpenseItemClicked(expenses)
@@ -104,13 +106,10 @@ class ExpenseListAdapter(private val onEditSelected: OnEditSelectedListener,
         }
 
         //Function that set show or hide the date text view
-        fun setSectionDate(actualExpenseDate: String, previousExpenseDate: String,
-                           expense: Expenses){
-            if (actualExpenseDate == previousExpenseDate){
-                bind(expense)
+        fun setSectionDate(actualExpenseDate: String, previousExpenseDate: String) {
+            if (actualExpenseDate == previousExpenseDate) {
                 tvSectionDate.visibility = View.GONE
-            }else{
-                bind(expense)
+            } else {
                 tvSectionDate.visibility = View.VISIBLE
             }
         }
@@ -148,7 +147,7 @@ class ExpenseListAdapter(private val onEditSelected: OnEditSelectedListener,
         }
 
         override fun areContentsTheSame(oldItem: Expenses, newItem: Expenses): Boolean {
-            return oldItem.date == newItem.date
+            return oldItem == newItem
         }
     }
 

@@ -48,7 +48,7 @@ class ExpensesListFragment : Fragment(),
   private val secondMonthHalfStringStart = "16/01/2021"
   private val secondMonthHalfString = "31/01/2021"
 
-  private lateinit var adapter: ExpenseListAdapter
+  private lateinit var recyclerAdapter: ExpenseListAdapter
   private lateinit var totalOfMonth: TextView
   private lateinit var desiredDate: String
 
@@ -109,7 +109,7 @@ class ExpensesListFragment : Fragment(),
     fab?.setOnClickListener {
       val intent = Intent(activity, AddNewExpense::class.java)
       intent.putExtra(flag, newExpenseActivityRequestCode)
-      adapter.closeMenu()
+      recyclerAdapter.closeMenu()
       startForResult.launch(intent)
     }
     return root
@@ -141,17 +141,19 @@ class ExpensesListFragment : Fragment(),
 
   private fun bindRecyclerView(view: View?) {
     val recyclerView = view?.findViewById<RecyclerView>(R.id.recyclerview)
-    adapter = ExpenseListAdapter(this, this)
-    recyclerView?.adapter = adapter
-    recyclerView?.layoutManager = LinearLayoutManager(activity?.applicationContext)
+    recyclerAdapter = ExpenseListAdapter(this, this)
+    recyclerView?.apply {
+      adapter = recyclerAdapter
+      layoutManager = LinearLayoutManager(activity?.applicationContext)
+    }
     //Set the adapter to swipe function
-    val itemTouchHelper = ItemTouchHelper(touchHelperCallback(adapter))
+    val itemTouchHelper = ItemTouchHelper(touchHelperCallback(recyclerAdapter))
     itemTouchHelper.attachToRecyclerView(recyclerView)
 
     recyclerView?.addOnScrollListener(object : RecyclerView.OnScrollListener() {
       override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
         super.onScrollStateChanged(recyclerView, newState)
-        adapter.closeMenu()
+        recyclerAdapter.closeMenu()
       }
     })
   }
@@ -174,8 +176,8 @@ class ExpensesListFragment : Fragment(),
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       vibrator.vibrate(VibrationEffect.createOneShot(150, 1))
     }
-    if (adapter.isMenuShown()) {
-      adapter.closeMenu()
+    if (recyclerAdapter.isMenuShown()) {
+      recyclerAdapter.closeMenu()
     }
     val detailsFragment =
         ExpensesDetails.newInstance(expense)
@@ -256,7 +258,7 @@ class ExpensesListFragment : Fragment(),
     if (selectedItem == "All Expenses") {
       expenseViewModel.allExpenses.observe(this, { expenses ->
         expenses?.let {
-          adapter.submitList(it)
+          recyclerAdapter.submitList(it)
           var total = 0F
           for (expense in it) {
             total += expense.total
@@ -286,7 +288,7 @@ class ExpensesListFragment : Fragment(),
       //Make the query by desired date
       expenseViewModel.getExpensesByDate(desiredDate).observe(this, { expenses ->
         expenses?.let {
-          adapter.submitList(it)
+          recyclerAdapter.submitList(it)
           var total = 0F
           totalFirstHalf = 0F
           totalSecondHalf = 0F
@@ -313,7 +315,7 @@ class ExpensesListFragment : Fragment(),
   private fun updateListByDesiredDate() {
     expenseViewModel.getExpensesByDate(desiredDate).observe(this, {
       it?.let {
-        adapter.submitList(it)
+        recyclerAdapter.submitList(it)
       }
     })
   }

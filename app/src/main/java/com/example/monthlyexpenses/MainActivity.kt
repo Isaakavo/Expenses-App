@@ -13,10 +13,6 @@ import viewmodel.ExpenseViewModelFactory
 
 class MainActivity : AppCompatActivity() {
 
-    /*val expenseViewModel: ExpenseViewModel by viewModels {
-        ExpenseViewModelFactory((application as ExpensesApplication).repository)
-    }*/
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)

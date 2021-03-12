@@ -11,4 +11,5 @@
     <color name="background">#4643D3</color>
     <color name="editBackground">#43A047</color>
     <color name="deleteBackground">#F44336</color>
+    <color name="grey">#e0e0e0</color>
 </resources>
