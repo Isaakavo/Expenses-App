@@ -68,7 +68,7 @@ class ExpenseListAdapter(private val onEditSelected: OnEditSelectedListener,
                     holder.setSectionDate(currentExpenseDate, previousExpenseDate)
                 }
                 position == 0 -> {
-                    holder.bind(expense)
+                    holder.bindPositionZero(expense)
                 }
             }
         }else if (holder is MenuViewHolder){
@@ -85,7 +85,6 @@ class ExpenseListAdapter(private val onEditSelected: OnEditSelectedListener,
         private val tvExpense: TextView = view.findViewById(R.id.tvExpenseTitle)
         private val tvTotal: TextView = view.findViewById(R.id.tvTotal)
         private val tvSectionDate: TextView = view.findViewById(R.id.sectionDate)
-        private val itemDivider: View = view.findViewById(R.id.itemDivider)
 
         private lateinit var expenses: Expenses
 
@@ -100,6 +99,11 @@ class ExpenseListAdapter(private val onEditSelected: OnEditSelectedListener,
         fun bind(expense: Expenses) {
             tvExpense.text = expense.concept
             tvTotal.text = "$" + expense.total.toString()
+            expenses = expense
+        }
+        fun bindPositionZero(expense: Expenses){
+            tvExpense.text = expense.concept
+            tvTotal.text = "$" + expense.total.toString()
             tvSectionDate.text = setDateFormat(expense.date)
             tvSectionDate.visibility = View.VISIBLE
             expenses = expense
@@ -110,6 +114,7 @@ class ExpenseListAdapter(private val onEditSelected: OnEditSelectedListener,
             if (actualExpenseDate == previousExpenseDate) {
                 tvSectionDate.visibility = View.GONE
             } else {
+                tvSectionDate.text = setDateFormat(expense.date)
                 tvSectionDate.visibility = View.VISIBLE
             }
         }

@@ -22,6 +22,7 @@
             android:autofillHints="false"
             android:focusable="true"
             android:hint="@string/item"
+            android:imeOptions="actionNext"
             android:inputType="textAutoCorrect|text|textCapSentences"
             android:text="@={item.item}"
             android:textSize="18sp" />
@@ -39,6 +40,7 @@
             android:layout_weight="1"
             android:autofillHints="false"
             android:hint="@string/price"
+            android:imeOptions="actionNext"
             android:inputType="numberDecimal"
             android:text="@={item.price}"
             android:textSize="18sp" />
