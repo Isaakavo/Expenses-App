@@ -207,9 +207,6 @@ class AddNewExpense : AppCompatActivity(), View.OnClickListener {
       addNewComment.id -> {
         itemList.add(Items())
         editTextAdapter.notifyItemInserted(itemList.size - 1)
-        if (itemList.size == 6) {
-          recyclerView.setHasFixedSize(true)
-        }
       }
       removeNewComent.id -> {
         if (itemList.size > 1) {

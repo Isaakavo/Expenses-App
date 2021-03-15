@@ -26,4 +26,5 @@
     <string name="bank_account">Cuenta de banco</string>
     <string name="emptyEditText">No deje articulos vacíos</string>
     <string name="all_field_must_be_filled">Todos los campos se deben llenar</string>
+    <string name="budget">Presupuesto</string>
 </resources>

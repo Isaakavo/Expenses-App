@@ -28,4 +28,5 @@
     <string name="bank_account"> Bank Account</string>
     <string name="emptyEditText">Dont leave Items and prices blank</string>
     <string name="all_field_must_be_filled">"All fields must be filled"</string>
+    <string name="budget">Budget</string>
 </resources>

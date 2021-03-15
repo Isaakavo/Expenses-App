@@ -10,13 +10,11 @@ import android.os.Build
 import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.Vibrator
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.Spinner
-import android.widget.TextView
+import android.widget.*
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
@@ -105,8 +103,29 @@ class ExpensesListFragment : Fragment(),
     bindViews(root)
     bindRecyclerView(root)
 
-    val fab = root.findViewById<FloatingActionButton>(R.id.fab)
+    val fab = root.findViewById<FloatingActionButton>(R.id.fabMenu)
+    val fabAddExpense = root.findViewById<FloatingActionButton>(R.id.fabAddExpense)
+    val fabAddBudget = root.findViewById<FloatingActionButton>(R.id.fabAddBudget)
+    var clicked = false
     fab?.setOnClickListener {
+      if (clicked){
+        fab.animate().rotationBy(-45F)
+        fabAddExpense.animate().translationY(0F)
+        fabAddBudget.animate().translationY(0F)
+        clicked = false
+      }else{
+        fab.animate().rotationBy(45F)
+        fabAddExpense.animate().translationY(130F)
+        fabAddBudget.animate().translationY(260F)
+        clicked = true
+      }
+
+      /*val intent = Intent(activity, AddNewExpense::class.java)
+      intent.putExtra(flag, newExpenseActivityRequestCode)
+      recyclerAdapter.closeMenu()
+      startForResult.launch(intent)*/
+    }
+    fabAddExpense.setOnClickListener{
       val intent = Intent(activity, AddNewExpense::class.java)
       intent.putExtra(flag, newExpenseActivityRequestCode)
       recyclerAdapter.closeMenu()
@@ -145,6 +164,8 @@ class ExpensesListFragment : Fragment(),
     recyclerView?.apply {
       adapter = recyclerAdapter
       layoutManager = LinearLayoutManager(activity?.applicationContext)
+      setItemViewCacheSize(15)
+      setHasFixedSize(true)
     }
     //Set the adapter to swipe function
     val itemTouchHelper = ItemTouchHelper(touchHelperCallback(recyclerAdapter))
@@ -288,7 +309,6 @@ class ExpensesListFragment : Fragment(),
       //Make the query by desired date
       expenseViewModel.getExpensesByDate(desiredDate).observe(this, { expenses ->
         expenses?.let {
-          recyclerAdapter.submitList(it)
           var total = 0F
           totalFirstHalf = 0F
           totalSecondHalf = 0F
@@ -302,6 +322,8 @@ class ExpensesListFragment : Fragment(),
             }
           }
           totalOfMonth.text = getString(R.string.dollarsingVariable, total.toString())
+          Log.d("date", it.toString())
+          recyclerAdapter.submitList(it)
         }
       })
     }
