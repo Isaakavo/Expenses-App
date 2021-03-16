@@ -4,10 +4,12 @@ import android.util.Log
 import androidx.annotation.WorkerThread
 import androidx.lifecycle.LiveData
 import kotlinx.coroutines.flow.Flow
+import model.Budget
 import model.Expenses
 import model.Items
 
-class ExpensesRepository(private val expensesDao: ExpensesDao, private val itemsDao: ItemsDao) {
+class ExpensesRepository(private val expensesDao: ExpensesDao, private val itemsDao: ItemsDao,
+                         private val budgetDao: BudgetDao) {
     // Room executes all queries on a separate thread.
     // Observed Flow will notify the observer when the data has changed.
     val allExpenses: Flow<List<Expenses>> = expensesDao.getAllExpenses()
@@ -65,6 +67,16 @@ class ExpensesRepository(private val expensesDao: ExpensesDao, private val items
     @WorkerThread
     fun getExpensesByDate(desiredDate: String): LiveData<List<Expenses>> {
         return expensesDao.getExpensesByDate(desiredDate)
+    }
+
+    @WorkerThread
+    suspend fun insertBudget(budget: Budget){
+        return budgetDao.insert(budget)
+    }
+
+    @WorkerThread
+    fun getBudgetByMonth(desiredMonth: String): Flow<List<Budget>>{
+        return budgetDao.getBudgetByMonth(desiredMonth)
     }
 
 }

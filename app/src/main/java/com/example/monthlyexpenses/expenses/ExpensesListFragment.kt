@@ -1,6 +1,7 @@
 package com.example.monthlyexpenses.expenses
 
 import adapter.ExpenseListAdapter
+import android.animation.Animator
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -49,6 +50,13 @@ class ExpensesListFragment : Fragment(),
   private lateinit var recyclerAdapter: ExpenseListAdapter
   private lateinit var totalOfMonth: TextView
   private lateinit var desiredDate: String
+  private lateinit var fabMenu: FloatingActionButton
+  private lateinit var fabLayoutAddExpense: LinearLayout
+  private lateinit var fabAddExpense: FloatingActionButton
+  private lateinit var fabLayoutAddIncome: LinearLayout
+  private lateinit var fabAddBudget: FloatingActionButton
+
+  var clicked = true
 
   private lateinit var vibrator: Vibrator
 
@@ -60,10 +68,11 @@ class ExpensesListFragment : Fragment(),
     const val returnFlag = "RETURN_FLAG"
     const val newExpenseActivityRequestCode = 1
     const val editExpenseActivityRequestCode = 2
+    const val newBudgetActivityRequestCode = 3
   }
 
   //From here we can decide what to do. If we want to add new expense to DB or edit one existing expense
-  private val startForResult =
+  private val startAddNewExpenseForResult =
       registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
         val flag = result.data?.getIntExtra(returnFlag, 0)
         if (result.resultCode == Activity.RESULT_OK && flag == newExpenseActivityRequestCode) {
@@ -91,6 +100,11 @@ class ExpensesListFragment : Fragment(),
           Snackbar.make(requireView(), "Something went wrong!", Snackbar.LENGTH_LONG).show()
         }
       }
+  private val startAddNewBudgetForResult =
+    registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ result ->
+      val flag = result.data?.getIntExtra(returnFlag, 0)
+
+    }
 
   override fun onCreateView(
     inflater: LayoutInflater,
@@ -103,34 +117,27 @@ class ExpensesListFragment : Fragment(),
     bindViews(root)
     bindRecyclerView(root)
 
-    val fab = root.findViewById<FloatingActionButton>(R.id.fabMenu)
-    val fabAddExpense = root.findViewById<FloatingActionButton>(R.id.fabAddExpense)
-    val fabAddBudget = root.findViewById<FloatingActionButton>(R.id.fabAddBudget)
-    var clicked = false
-    fab?.setOnClickListener {
-      if (clicked){
-        fab.animate().rotationBy(-45F)
-        fabAddExpense.animate().translationY(0F)
-        fabAddBudget.animate().translationY(0F)
-        clicked = false
+    fabMenu.setOnClickListener {
+      if (fabLayoutAddExpense.visibility == View.GONE){
+        showFabMenu()
       }else{
-        fab.animate().rotationBy(45F)
-        fabAddExpense.animate().translationY(130F)
-        fabAddBudget.animate().translationY(260F)
-        clicked = true
+        closeFabMenu()
       }
-
-      /*val intent = Intent(activity, AddNewExpense::class.java)
-      intent.putExtra(flag, newExpenseActivityRequestCode)
-      recyclerAdapter.closeMenu()
-      startForResult.launch(intent)*/
     }
     fabAddExpense.setOnClickListener{
       val intent = Intent(activity, AddNewExpense::class.java)
       intent.putExtra(flag, newExpenseActivityRequestCode)
       recyclerAdapter.closeMenu()
-      startForResult.launch(intent)
+      startAddNewExpenseForResult.launch(intent)
     }
+
+    fabAddBudget.setOnClickListener{
+      val intent = Intent(activity, AddBudget::class.java)
+      intent.putExtra(flag, newBudgetActivityRequestCode)
+      recyclerAdapter.closeMenu()
+      startActivity(intent)
+    }
+
     return root
   }
 
@@ -145,6 +152,12 @@ class ExpensesListFragment : Fragment(),
     arrayAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item)
     currentMonth?.adapter = arrayAdapter
     currentMonth?.onItemSelectedListener = this
+
+    fabMenu = view?.findViewById(R.id.fabMenu)!!
+    fabLayoutAddExpense = view.findViewById(R.id.fabLayoutAddExpense)
+    fabAddExpense = view.findViewById(R.id.fabAddExpense)
+    fabLayoutAddIncome = view.findViewById(R.id.fabLayoutAddIncome)
+    fabAddBudget = view.findViewById(R.id.fabAddBudget)
 
     totalOfMonth = view?.findViewById(R.id.tvTotalMonth)!!
     //When user clicks on total of month a fragment is displayed to show the expenses by half month
@@ -179,12 +192,35 @@ class ExpensesListFragment : Fragment(),
     })
   }
 
+  private fun showFabMenu(){
+    fabLayoutAddExpense.visibility = View.VISIBLE
+    fabLayoutAddIncome.visibility = View.VISIBLE
+    fabMenu.animate().rotationBy(45F)
+    fabLayoutAddExpense.animate().translationY(120F)
+    fabLayoutAddIncome.animate().translationY(240F)
+  }
+
+  private fun closeFabMenu(){
+    fabMenu.animate().rotationBy(-45F)
+    fabLayoutAddIncome.animate().translationY(0F)
+    fabLayoutAddExpense.animate().translationY(0F)
+            .setListener(object : Animator.AnimatorListener{
+              override fun onAnimationStart(animation: Animator?) {}
+              override fun onAnimationEnd(animation: Animator?) {
+                fabLayoutAddIncome.visibility = View.GONE
+                fabLayoutAddExpense.visibility = View.GONE
+              }
+              override fun onAnimationCancel(animation: Animator?) {}
+              override fun onAnimationRepeat(animation: Animator?) {}
+            })
+  }
+
   //Interface from ExpenseListAdapter to start edit activity with data to edit
   override fun sendExpenseToEdit(expense: Expenses) {
     val intent = Intent(activity, AddNewExpense::class.java)
     intent.putExtra(flag, editExpenseActivityRequestCode)
     intent.putExtra(AddNewExpense.EXTRA_EXPENSE, expense)
-    startForResult.launch(intent)
+    startAddNewExpenseForResult.launch(intent)
   }
 
   //Interface from ExpenseListAdapter to delete an expense

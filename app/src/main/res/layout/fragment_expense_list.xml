@@ -129,7 +129,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:overScrollMode="never"
-                android:paddingTop="@dimen/lil_padding"
+                android:paddingTop="@dimen/big_padding"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -139,27 +139,62 @@
             </androidx.recyclerview.widget.RecyclerView>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fabAddBudget"
+        <LinearLayout
+            android:id="@+id/fabLayoutAddExpense"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:contentDescription="@string/add_expense"
-            android:src="@drawable/ic_baseline_attach_money_24"
-            android:layout_margin="@dimen/big_padding"
             app:layout_anchor="@id/cardTotals"
             app:layout_anchorGravity="bottom|end"
-            />
+            android:clipToPadding="false"
+            android:gravity="center"
+            android:visibility="gone"
+            >
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/add_expense"
+                android:textColor="@color/black"
+                />
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fabAddExpense"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/add_expense"
+                android:src="@drawable/mdi_edit"
+                android:layout_margin="@dimen/big_padding"
+                app:fabSize="mini"
+                app:layout_anchor="@id/cardTotals"
+                app:layout_anchorGravity="bottom|end"
+                />
+        </LinearLayout>
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fabAddExpense"
+        <LinearLayout
+            android:id="@+id/fabLayoutAddIncome"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:contentDescription="@string/add_expense"
-            android:src="@drawable/mdi_edit"
-            android:layout_margin="@dimen/big_padding"
             app:layout_anchor="@id/cardTotals"
             app:layout_anchorGravity="bottom|end"
-            />
+            android:clipToPadding="false"
+            android:gravity="center"
+            android:visibility="gone"
+            >
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/add_income"
+                android:textColor="@color/black"
+                />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fabAddBudget"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/add_expense"
+                android:src="@drawable/ic_baseline_attach_money_24"
+                android:layout_margin="@dimen/big_padding"
+                app:fabSize="mini"
+                />
+        </LinearLayout>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fabMenu"
@@ -169,7 +204,9 @@
             android:contentDescription="@string/add_expense"
             android:src="@drawable/ic_baseline_add_24"
             app:layout_anchor="@id/cardTotals"
-            app:layout_anchorGravity="bottom|end" />
+            app:layout_anchorGravity="bottom|end"
+            app:rippleColor="@color/red"
+            />
                 <!--android:src="@drawable/ic_action_download"
                 app:rippleColor="@color/download_in_progress"-->
 

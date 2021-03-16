@@ -29,4 +29,5 @@
     <string name="emptyEditText">Dont leave Items and prices blank</string>
     <string name="all_field_must_be_filled">"All fields must be filled"</string>
     <string name="budget">Budget</string>
+    <string name="add_income">Add Income</string>
 </resources>

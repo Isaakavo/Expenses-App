@@ -14,6 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MonthlyExpenses"
         tools:ignore="AllowBackup">
+        <activity android:name=".expenses.AddBudget"></activity>
         <activity
             android:name=".expenses.AddNewExpense"
             android:parentActivityName=".expenses.ExpensesListFragment" />
@@ -22,6 +23,7 @@
             android:configChanges="orientation|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

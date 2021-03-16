@@ -2,7 +2,9 @@ package viewmodel
 
 import androidx.lifecycle.*
 import data.ExpensesRepository
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
+import model.Budget
 import model.Expenses
 import model.Items
 
@@ -36,6 +38,16 @@ class ExpenseViewModel(private val repository: ExpensesRepository): ViewModel() 
     viewModelScope.launch {
       repository.deleteItem(items)
     }
+  }
+
+  fun insertBudget(budget: Budget){
+    viewModelScope.launch {
+      repository.insertBudget(budget)
+    }
+  }
+
+  fun getBudgetByMonth(desiredMonth: String): LiveData<List<Budget>>{
+    return repository.getBudgetByMonth(desiredMonth).asLiveData()
   }
 }
 
