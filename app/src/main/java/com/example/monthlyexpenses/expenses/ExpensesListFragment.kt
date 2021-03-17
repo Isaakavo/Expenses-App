@@ -1,7 +1,6 @@
 package com.example.monthlyexpenses.expenses
 
 import adapter.ExpenseListAdapter
-import android.animation.Animator
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -55,6 +54,7 @@ class ExpensesListFragment : Fragment(),
   private lateinit var fabAddExpense: FloatingActionButton
   private lateinit var fabLayoutAddIncome: LinearLayout
   private lateinit var fabAddBudget: FloatingActionButton
+  lateinit var shadowView: View
 
   var clicked = true
 
@@ -118,9 +118,9 @@ class ExpensesListFragment : Fragment(),
     bindRecyclerView(root)
 
     fabMenu.setOnClickListener {
-      if (fabLayoutAddExpense.visibility == View.GONE){
+      if (clicked) {
         showFabMenu()
-      }else{
+      } else {
         closeFabMenu()
       }
     }
@@ -158,8 +158,9 @@ class ExpensesListFragment : Fragment(),
     fabAddExpense = view.findViewById(R.id.fabAddExpense)
     fabLayoutAddIncome = view.findViewById(R.id.fabLayoutAddIncome)
     fabAddBudget = view.findViewById(R.id.fabAddBudget)
+    shadowView = view.findViewById(R.id.shadowView)
 
-    totalOfMonth = view?.findViewById(R.id.tvTotalMonth)!!
+    totalOfMonth = view.findViewById(R.id.tvTotalMonth)!!
     //When user clicks on total of month a fragment is displayed to show the expenses by half month
     totalOfMonth.setOnClickListener {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -192,27 +193,24 @@ class ExpensesListFragment : Fragment(),
     })
   }
 
-  private fun showFabMenu(){
+  private fun showFabMenu() {
     fabLayoutAddExpense.visibility = View.VISIBLE
     fabLayoutAddIncome.visibility = View.VISIBLE
     fabMenu.animate().rotationBy(45F)
-    fabLayoutAddExpense.animate().translationY(120F)
-    fabLayoutAddIncome.animate().translationY(240F)
+    fabLayoutAddExpense.animate().translationY(180F)
+    fabLayoutAddIncome.animate().translationY(360F)
+    shadowView.visibility = View.VISIBLE
+    clicked = false
   }
 
-  private fun closeFabMenu(){
-    fabMenu.animate().rotationBy(-45F)
+  private fun closeFabMenu() {
+    fabMenu.animate().rotationBy(45F)
     fabLayoutAddIncome.animate().translationY(0F)
     fabLayoutAddExpense.animate().translationY(0F)
-            .setListener(object : Animator.AnimatorListener{
-              override fun onAnimationStart(animation: Animator?) {}
-              override fun onAnimationEnd(animation: Animator?) {
-                fabLayoutAddIncome.visibility = View.GONE
-                fabLayoutAddExpense.visibility = View.GONE
-              }
-              override fun onAnimationCancel(animation: Animator?) {}
-              override fun onAnimationRepeat(animation: Animator?) {}
-            })
+    fabLayoutAddExpense.visibility = View.GONE
+    fabLayoutAddIncome.visibility = View.GONE
+    shadowView.visibility = View.GONE
+    clicked = true
   }
 
   //Interface from ExpenseListAdapter to start edit activity with data to edit

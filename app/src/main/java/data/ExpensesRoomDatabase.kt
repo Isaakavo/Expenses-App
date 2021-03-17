@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import model.Budget
@@ -13,7 +12,6 @@ import model.Items
 
 
 @Database(entities = [Expenses::class, Items::class, Budget::class], version = 2, exportSchema = true)
-@TypeConverters(Converters::class)
 abstract class ExpensesRoomDatabase: RoomDatabase() {
 
     abstract fun expensesDao(): ExpensesDao
