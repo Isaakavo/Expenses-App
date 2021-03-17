@@ -2,7 +2,6 @@ package viewmodel
 
 import androidx.lifecycle.*
 import data.ExpensesRepository
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import model.Budget
 import model.Expenses
@@ -46,7 +45,7 @@ class ExpenseViewModel(private val repository: ExpensesRepository): ViewModel() 
     }
   }
 
-  fun getBudgetByMonth(desiredMonth: String): LiveData<List<Budget>>{
+  fun getBudgetByMonth(desiredMonth: String): LiveData<Budget> {
     return repository.getBudgetByMonth(desiredMonth).asLiveData()
   }
 }

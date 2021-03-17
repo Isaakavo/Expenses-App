@@ -75,7 +75,7 @@ class ExpensesRepository(private val expensesDao: ExpensesDao, private val items
     }
 
     @WorkerThread
-    fun getBudgetByMonth(desiredMonth: String): Flow<List<Budget>>{
+    fun getBudgetByMonth(desiredMonth: String): Flow<Budget> {
         return budgetDao.getBudgetByMonth(desiredMonth)
     }
 

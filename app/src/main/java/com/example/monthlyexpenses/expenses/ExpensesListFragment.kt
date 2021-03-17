@@ -14,7 +14,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.Spinner
+import android.widget.TextView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
@@ -32,9 +35,10 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class ExpensesListFragment : Fragment(),
-  ExpenseListAdapter.OnEditSelectedListener,
-  ExpenseListAdapter.OnClickListener,
-  AdapterView.OnItemSelectedListener {
+    ExpenseListAdapter.OnEditSelectedListener,
+    ExpenseListAdapter.OnClickListener,
+    AdapterView.OnItemSelectedListener,
+    View.OnClickListener {
 
   private val expenseViewModel: ExpenseViewModel by viewModels {
     requireActivity().defaultViewModelProviderFactory
@@ -48,23 +52,23 @@ class ExpensesListFragment : Fragment(),
 
   private lateinit var recyclerAdapter: ExpenseListAdapter
   private lateinit var totalOfMonth: TextView
+  private lateinit var budgetForMonth: TextView
+  private lateinit var remainingTotal: TextView
   private lateinit var desiredDate: String
+  private lateinit var selectedItemFormatter: Date
   private lateinit var fabMenu: FloatingActionButton
-  private lateinit var fabLayoutAddExpense: LinearLayout
-  private lateinit var fabAddExpense: FloatingActionButton
-  private lateinit var fabLayoutAddIncome: LinearLayout
-  private lateinit var fabAddBudget: FloatingActionButton
-  lateinit var shadowView: View
-
-  var clicked = true
 
   private lateinit var vibrator: Vibrator
 
+  private var totalOfMonthExpense = 0F
   private var totalFirstHalf = 0F
   private var totalSecondHalf = 0F
+  private var budgetFirstHalf = 0F
+  private var budgetSecondHalf = 0F
 
   companion object {
     const val flag = "FLAG"
+    const val desiredDateFlag = "DESIRED_DATE_FLAG"
     const val returnFlag = "RETURN_FLAG"
     const val newExpenseActivityRequestCode = 1
     const val editExpenseActivityRequestCode = 2
@@ -100,11 +104,6 @@ class ExpensesListFragment : Fragment(),
           Snackbar.make(requireView(), "Something went wrong!", Snackbar.LENGTH_LONG).show()
         }
       }
-  private val startAddNewBudgetForResult =
-    registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ result ->
-      val flag = result.data?.getIntExtra(returnFlag, 0)
-
-    }
 
   override fun onCreateView(
     inflater: LayoutInflater,
@@ -117,59 +116,40 @@ class ExpensesListFragment : Fragment(),
     bindViews(root)
     bindRecyclerView(root)
 
-    fabMenu.setOnClickListener {
-      if (clicked) {
-        showFabMenu()
-      } else {
-        closeFabMenu()
-      }
-    }
-    fabAddExpense.setOnClickListener{
-      val intent = Intent(activity, AddNewExpense::class.java)
-      intent.putExtra(flag, newExpenseActivityRequestCode)
-      recyclerAdapter.closeMenu()
-      startAddNewExpenseForResult.launch(intent)
-    }
-
-    fabAddBudget.setOnClickListener{
-      val intent = Intent(activity, AddBudget::class.java)
-      intent.putExtra(flag, newBudgetActivityRequestCode)
-      recyclerAdapter.closeMenu()
-      startActivity(intent)
-    }
-
     return root
   }
-
   private fun bindViews(view: View?) {
     val currentMonth = view?.findViewById<Spinner>(R.id.monthSpinner)
     val arrayAdapter =
       ArrayAdapter(
-        activity?.applicationContext!!,
-        android.R.layout.simple_spinner_dropdown_item,
-        getSpinnerMonths()
+          activity?.applicationContext!!,
+          android.R.layout.simple_spinner_dropdown_item,
+          getSpinnerMonths()
       )
     arrayAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item)
     currentMonth?.adapter = arrayAdapter
     currentMonth?.onItemSelectedListener = this
 
     fabMenu = view?.findViewById(R.id.fabMenu)!!
-    fabLayoutAddExpense = view.findViewById(R.id.fabLayoutAddExpense)
-    fabAddExpense = view.findViewById(R.id.fabAddExpense)
-    fabLayoutAddIncome = view.findViewById(R.id.fabLayoutAddIncome)
-    fabAddBudget = view.findViewById(R.id.fabAddBudget)
-    shadowView = view.findViewById(R.id.shadowView)
-
+    budgetForMonth = view.findViewById(R.id.incomeTotal)
     totalOfMonth = view.findViewById(R.id.tvTotalMonth)!!
+    remainingTotal = view.findViewById(R.id.remainingTotal)
     //When user clicks on total of month a fragment is displayed to show the expenses by half month
-    totalOfMonth.setOnClickListener {
+    totalOfMonth.setOnClickListener(this)
+    budgetForMonth.setOnClickListener(this)
+    fabMenu.setOnClickListener(this)
+
+    fabMenu.setOnLongClickListener {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        vibrator.vibrate(VibrationEffect.createOneShot(150, 1))
+        vibrator.vibrate(VibrationEffect.createOneShot(200, VibrationEffect.EFFECT_DOUBLE_CLICK))
       }
-      val halfMonthTotals =
-        HalfMonthTotals.newInstance(totalFirstHalf.toString(), totalSecondHalf.toString())
-      halfMonthTotals.show(childFragmentManager, "Totals")
+      val intent = Intent(activity, AddBudget::class.java)
+      intent.putExtra(desiredDateFlag, desiredDate)
+      recyclerAdapter.closeMenu()
+      startActivity(intent)
+      false
     }
+
   }
 
   private fun bindRecyclerView(view: View?) {
@@ -191,26 +171,6 @@ class ExpensesListFragment : Fragment(),
         recyclerAdapter.closeMenu()
       }
     })
-  }
-
-  private fun showFabMenu() {
-    fabLayoutAddExpense.visibility = View.VISIBLE
-    fabLayoutAddIncome.visibility = View.VISIBLE
-    fabMenu.animate().rotationBy(45F)
-    fabLayoutAddExpense.animate().translationY(180F)
-    fabLayoutAddIncome.animate().translationY(360F)
-    shadowView.visibility = View.VISIBLE
-    clicked = false
-  }
-
-  private fun closeFabMenu() {
-    fabMenu.animate().rotationBy(45F)
-    fabLayoutAddIncome.animate().translationY(0F)
-    fabLayoutAddExpense.animate().translationY(0F)
-    fabLayoutAddExpense.visibility = View.GONE
-    fabLayoutAddIncome.visibility = View.GONE
-    shadowView.visibility = View.GONE
-    clicked = true
   }
 
   //Interface from ExpenseListAdapter to start edit activity with data to edit
@@ -323,10 +283,10 @@ class ExpensesListFragment : Fragment(),
       })
     } else {
       //We only display the expenses of the desired month
-      val selectedItemFormatter =
-          SimpleDateFormat("MMM yyyy", Locale.getDefault()).parse(selectedItem)
+      selectedItemFormatter =
+          SimpleDateFormat("MMM yyyy", Locale.getDefault()).parse(selectedItem)!!
       //We use a different format to make a db query
-      desiredDate = SimpleDateFormat("y-MM", Locale.getDefault()).format(selectedItemFormatter!!)
+      desiredDate = SimpleDateFormat("y-MM", Locale.getDefault()).format(selectedItemFormatter)
       //Formatter to only get the daysof the month
       val formatter = SimpleDateFormat("dd", Locale.getDefault())
 
@@ -343,11 +303,11 @@ class ExpensesListFragment : Fragment(),
       //Make the query by desired date
       expenseViewModel.getExpensesByDate(desiredDate).observe(this, { expenses ->
         expenses?.let {
-          var total = 0F
+          totalOfMonthExpense = 0F
           totalFirstHalf = 0F
           totalSecondHalf = 0F
           for (expense in it) {
-            total += expense.total
+            totalOfMonthExpense += expense.total
             val dateFormatted = formatter.format(expense.date)
             if (dateFormatted in firstMontHalfStartCompare..firstMonthCompare) {
               totalFirstHalf += expense.total
@@ -355,9 +315,28 @@ class ExpensesListFragment : Fragment(),
               totalSecondHalf += expense.total
             }
           }
-          totalOfMonth.text = getString(R.string.dollarsingVariable, total.toString())
-          Log.d("date", it.toString())
+          totalOfMonth.text = getString(R.string.dollarsingVariable, totalOfMonthExpense.toString())
           recyclerAdapter.submitList(it)
+        }
+      })
+      expenseViewModel.getBudgetByMonth(desiredDate).observe(this, {
+        if (it != null) {
+          budgetFirstHalf = it.budgetForFirstFortnight
+          budgetSecondHalf = it.budgetForSecondFortnight
+          val totalBudgetForMonth = budgetFirstHalf + budgetSecondHalf
+          budgetForMonth.text = getString(R.string.dollarsingVariable, totalBudgetForMonth.toString())
+
+          Log.d("budgets", "$totalBudgetForMonth, $totalOfMonthExpense")
+
+          remainingTotal.text = getString(R.string.dollarsingVariable, (totalBudgetForMonth - totalOfMonthExpense).toString())
+
+          if (remainingTotal.visibility == View.GONE) {
+            remainingTotal.visibility = View.VISIBLE
+          }
+
+        } else {
+          budgetForMonth.text = getString(R.string.error_budget)
+          remainingTotal.visibility = View.GONE
         }
       })
     }
@@ -376,4 +355,33 @@ class ExpensesListFragment : Fragment(),
     })
   }
 
+  override fun onClick(v: View?) {
+    when (v?.id) {
+      R.id.tvTotalMonth -> {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+          vibrator.vibrate(VibrationEffect.createOneShot(150, 1))
+        }
+        val halfMonthTotals =
+            HalfMonthTotals.newInstance(totalFirstHalf.toString(), totalSecondHalf.toString(), getString(R.string.total_of_the_month))
+        halfMonthTotals.show(childFragmentManager, "Totals")
+      }
+      R.id.incomeTotal -> {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+          vibrator.vibrate(VibrationEffect.createOneShot(150, 1))
+        }
+        val halfMonthTotals =
+            HalfMonthTotals.newInstance(budgetFirstHalf.toString(), budgetSecondHalf.toString(), getString(R.string.budgets_of_the_month))
+        halfMonthTotals.show(childFragmentManager, "Budgets")
+      }
+      R.id.fabMenu -> {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+          vibrator.vibrate(VibrationEffect.createOneShot(150, 1))
+        }
+        val intent = Intent(activity, AddNewExpense::class.java)
+        intent.putExtra(flag, newExpenseActivityRequestCode)
+        recyclerAdapter.closeMenu()
+        startAddNewExpenseForResult.launch(intent)
+      }
+    }
+  }
 }

@@ -27,4 +27,10 @@
     <string name="emptyEditText">No deje articulos vacíos</string>
     <string name="all_field_must_be_filled">Todos los campos se deben llenar</string>
     <string name="budget">Presupuesto</string>
+    <string name="add_income">Agregar presupuesto</string>
+    <string name="total_of_the_month">Total del mes</string>
+    <string name="budgets_of_the_month">Presupuesto del mes</string>
+    <string name="remaining">Restante</string>
+    <string name="error_budget">No tienes presupuestos para este mes, agrega uno por favor.</string>
+    <string name="error_budget2">No has añadido presupuestos para este mes</string>
 </resources>

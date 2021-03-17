@@ -30,4 +30,9 @@
     <string name="all_field_must_be_filled">"All fields must be filled"</string>
     <string name="budget">Budget</string>
     <string name="add_income">Add Income</string>
+    <string name="total_of_the_month">Totals of the month</string>
+    <string name="budgets_of_the_month">Budgets of the month</string>
+    <string name="remaining">Remaining</string>
+    <string name="error_budget">You dont have a budget for this month, please add one.</string>
+    <string name="error_budget2">You have not added a budget for this month</string>
 </resources>
