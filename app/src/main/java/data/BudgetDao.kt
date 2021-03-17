@@ -12,7 +12,8 @@ interface BudgetDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(budget: Budget)
-    @Query("SELECT * FROM budget_table WHERE (strftime('%Y-%m',date(month/1000, 'unixepoch'))) = :desiredMonth")
-    fun getBudgetByMonth(desiredMonth: String): Flow<List<Budget>>
+
+    @Query("SELECT * FROM budget_table WHERE (strftime('%Y-%m',date(month/1000, 'unixepoch'))) = :desiredMonth LIMIT 1")
+    fun getBudgetByMonth(desiredMonth: String): Flow<Budget>
 
 }
