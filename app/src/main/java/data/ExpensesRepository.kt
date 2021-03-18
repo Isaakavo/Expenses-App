@@ -1,6 +1,5 @@
 package data
 
-import android.util.Log
 import androidx.annotation.WorkerThread
 import androidx.lifecycle.LiveData
 import kotlinx.coroutines.flow.Flow
@@ -40,8 +39,6 @@ class ExpensesRepository(private val expensesDao: ExpensesDao, private val items
         val id = expensesDao.insert(expense)
         for (item: Items in items) {
             item.expenseId = id
-            Log.d("repository", "The id to insert ${item.id}")
-            Log.d("repository", "The item to insert $item")
             itemsDao.insert(item)
         }
 
@@ -65,7 +62,7 @@ class ExpensesRepository(private val expensesDao: ExpensesDao, private val items
     }
 
     @WorkerThread
-    fun getExpensesByDate(desiredDate: String): LiveData<List<Expenses>> {
+    fun getExpensesByDate(desiredDate: String?): LiveData<List<Expenses>> {
         return expensesDao.getExpensesByDate(desiredDate)
     }
 

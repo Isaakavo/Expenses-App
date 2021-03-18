@@ -7,10 +7,30 @@ import model.Budget
 import model.Expenses
 import model.Items
 
-class ExpenseViewModel(private val repository: ExpensesRepository): ViewModel() {
-  val allExpenses: LiveData<List<Expenses>> = repository.allExpenses.asLiveData()
 
-  fun getExpensesByDate(desiredDate: String): LiveData<List<Expenses>> {
+class ExpenseViewModel(private val repository: ExpensesRepository): ViewModel() {
+
+  val monthTotal = MutableLiveData<Float>()
+  val budgetTotal = MutableLiveData<Float>()
+  val desiredDate = MutableLiveData<String>()
+  val getExpenses: LiveData<List<Expenses>> = Transformations.switchMap(desiredDate) {
+    when (it) {
+      "All Expenses" -> allExpenses
+      else -> getExpensesByDate(it)
+    }
+  }
+  val getBudgets: LiveData<Budget> = Transformations.switchMap(desiredDate) {
+    getBudgetByMonth(it)
+  }
+
+  val remainingTotal = Transformations.switchMap(budgetTotal) { budget ->
+    Transformations.map(monthTotal) { month ->
+      budget - month
+    }
+  }
+  private val allExpenses: LiveData<List<Expenses>> = repository.allExpenses.asLiveData()
+
+  private fun getExpensesByDate(desiredDate: String?): LiveData<List<Expenses>> {
     return repository.getExpensesByDate(desiredDate)
   }
 

@@ -1,20 +1,19 @@
 package com.example.monthlyexpenses.expenses
 
+import UI.MonthSpinner
+import UI.SwipeExpense
 import adapter.ExpenseListAdapter
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.graphics.Canvas
-import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.Vibrator
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Spinner
 import android.widget.TextView
@@ -22,12 +21,14 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.monthlyexpenses.R
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
+import model.Budget
 import model.Expenses
 import model.Items
 import viewmodel.ExpenseViewModel
@@ -37,7 +38,6 @@ import java.util.*
 class ExpensesListFragment : Fragment(),
     ExpenseListAdapter.OnEditSelectedListener,
     ExpenseListAdapter.OnClickListener,
-    AdapterView.OnItemSelectedListener,
     View.OnClickListener {
 
   private val expenseViewModel: ExpenseViewModel by viewModels {
@@ -54,8 +54,6 @@ class ExpensesListFragment : Fragment(),
   private lateinit var totalOfMonth: TextView
   private lateinit var budgetForMonth: TextView
   private lateinit var remainingTotal: TextView
-  private lateinit var desiredDate: String
-  private lateinit var selectedItemFormatter: Date
   private lateinit var fabMenu: FloatingActionButton
 
   private lateinit var vibrator: Vibrator
@@ -68,11 +66,9 @@ class ExpensesListFragment : Fragment(),
 
   companion object {
     const val flag = "FLAG"
-    const val desiredDateFlag = "DESIRED_DATE_FLAG"
     const val returnFlag = "RETURN_FLAG"
     const val newExpenseActivityRequestCode = 1
     const val editExpenseActivityRequestCode = 2
-    const val newBudgetActivityRequestCode = 3
   }
 
   //From here we can decide what to do. If we want to add new expense to DB or edit one existing expense
@@ -115,20 +111,26 @@ class ExpensesListFragment : Fragment(),
 
     bindViews(root)
     bindRecyclerView(root)
-
+    expenseViewModel.getExpenses.observe(viewLifecycleOwner, getExpensesObserver)
+    expenseViewModel.getBudgets.observe(viewLifecycleOwner, budgetObserver)
+    expenseViewModel.remainingTotal.observe(viewLifecycleOwner, {
+      remainingTotal.text = getString(R.string.dollarsingVariable, it.toString())
+    })
     return root
   }
+
+  @SuppressLint("InlinedApi")
   private fun bindViews(view: View?) {
     val currentMonth = view?.findViewById<Spinner>(R.id.monthSpinner)
     val arrayAdapter =
-      ArrayAdapter(
-          activity?.applicationContext!!,
-          android.R.layout.simple_spinner_dropdown_item,
-          getSpinnerMonths()
-      )
+        ArrayAdapter(
+            requireContext(),
+            android.R.layout.simple_spinner_dropdown_item,
+            getSpinnerMonths()
+        )
     arrayAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item)
     currentMonth?.adapter = arrayAdapter
-    currentMonth?.onItemSelectedListener = this
+    currentMonth?.onItemSelectedListener = MonthSpinner(expenseViewModel)
 
     fabMenu = view?.findViewById(R.id.fabMenu)!!
     budgetForMonth = view.findViewById(R.id.incomeTotal)
@@ -144,7 +146,7 @@ class ExpensesListFragment : Fragment(),
         vibrator.vibrate(VibrationEffect.createOneShot(200, VibrationEffect.EFFECT_DOUBLE_CLICK))
       }
       val intent = Intent(activity, AddBudget::class.java)
-      intent.putExtra(desiredDateFlag, desiredDate)
+      //intent.putExtra(desiredDateFlag, desiredDate)
       recyclerAdapter.closeMenu()
       startActivity(intent)
       false
@@ -162,7 +164,7 @@ class ExpensesListFragment : Fragment(),
       setHasFixedSize(true)
     }
     //Set the adapter to swipe function
-    val itemTouchHelper = ItemTouchHelper(touchHelperCallback(recyclerAdapter))
+    val itemTouchHelper = ItemTouchHelper(SwipeExpense(context, recyclerAdapter))
     itemTouchHelper.attachToRecyclerView(recyclerView)
 
     recyclerView?.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -173,188 +175,58 @@ class ExpensesListFragment : Fragment(),
     })
   }
 
-  //Interface from ExpenseListAdapter to start edit activity with data to edit
-  override fun sendExpenseToEdit(expense: Expenses) {
-    val intent = Intent(activity, AddNewExpense::class.java)
-    intent.putExtra(flag, editExpenseActivityRequestCode)
-    intent.putExtra(AddNewExpense.EXTRA_EXPENSE, expense)
-    startAddNewExpenseForResult.launch(intent)
-  }
-
-  //Interface from ExpenseListAdapter to delete an expense
-  override fun sendExpenseToDelete(expense: Expenses) {
-    expenseViewModel.deleteExpense(expense)
-  }
-
-  //Interface from ExpenseListAdapter to open the expense dialog details
-  override fun onExpenseItemClicked(expense: Expenses) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      vibrator.vibrate(VibrationEffect.createOneShot(150, 1))
-    }
-    if (recyclerAdapter.isMenuShown()) {
-      recyclerAdapter.closeMenu()
-    }
-    val detailsFragment =
-        ExpensesDetails.newInstance(expense)
-    detailsFragment.show(parentFragmentManager, "Details")
-  }
-  private fun touchHelperCallback(adapter: ExpenseListAdapter): ItemTouchHelper.SimpleCallback {
-    return object :
-        ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
-
-      private val background = ColorDrawable(activity!!.getColor(R.color.background))
-      override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder,
-                          target: RecyclerView.ViewHolder): Boolean {
-        return false
-      }
-
-      //Show the menu when user ends swipe
-      override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-        adapter.showMenu(viewHolder.adapterPosition)
-      }
-
-      //Draw color while user is swiping the item
-      override fun onChildDraw(c: Canvas, recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, dX: Float, dY: Float, actionState: Int, isCurrentlyActive: Boolean) {
-        super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
-        val itemView = viewHolder.itemView
-        when {
-          dX > 0 -> {
-            background.setBounds(
-                itemView.left,
-                itemView.top,
-                itemView.left + dX.toInt(),
-                itemView.bottom
-            )
-          }
-          dX < 0 -> {
-            background.setBounds(
-                itemView.right + dX.toInt(),
-                itemView.top,
-                itemView.right,
-                itemView.bottom
-            )
-          }
-          else -> {
-            background.setBounds(0, 0, 0, 0)
-          }
-        }
-        background.draw(c)
-      }
-    }
-  }
-
-  //Get the past month of the year
-  private fun getSpinnerMonths(): ArrayList<String> {
-    val formatter = SimpleDateFormat("MMMM yyyy", Locale.getDefault())
-    val list = arrayListOf<String>()
-    Calendar.getInstance().let { calendar ->
-      val monthBefore = Calendar.getInstance()
-      val currentYear = calendar.get(Calendar.YEAR)
-      //We loop to know which month has already pass
-      for (i in 1 until 12) {
-        //We only want the month of current year
-        val pastYear = monthBefore.get(Calendar.YEAR)
-        if (pastYear == currentYear) {
-          //Format the month and add to array
-          list.add(formatter.format(calendar.timeInMillis))
-          //Go backwards to know which month has passed
-          calendar.add(Calendar.MONTH, -1)
-          monthBefore.add(Calendar.MONTH, -1)
-        }
-      }
-    }
-    list.add("All Expenses")
-    return list
-  }
-  //Spinner item selected
-  override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-    val selectedItem = parent?.getItemAtPosition(position) as String
-    //If the user wants to see all the expenses
-    if (selectedItem == "All Expenses") {
-      expenseViewModel.allExpenses.observe(this, { expenses ->
-        expenses?.let {
-          recyclerAdapter.submitList(it)
-          var total = 0F
-          for (expense in it) {
-            total += expense.total
-          }
-          totalOfMonth.text = getString(R.string.dollarsingVariable, total.toString())
-        }
-      })
+  private val budgetObserver = Observer<Budget> { it ->
+    if (it != null) {
+      budgetFirstHalf = it.budgetForFirstFortnight
+      budgetSecondHalf = it.budgetForSecondFortnight
+      val totalBudgetForMonth = budgetFirstHalf + budgetSecondHalf
+      budgetForMonth.text = getString(R.string.dollarsingVariable, totalBudgetForMonth.toString())
+      expenseViewModel.budgetTotal.value = totalBudgetForMonth
     } else {
-      //We only display the expenses of the desired month
-      selectedItemFormatter =
-          SimpleDateFormat("MMM yyyy", Locale.getDefault()).parse(selectedItem)!!
-      //We use a different format to make a db query
-      desiredDate = SimpleDateFormat("y-MM", Locale.getDefault()).format(selectedItemFormatter)
-      //Formatter to only get the daysof the month
-      val formatter = SimpleDateFormat("dd", Locale.getDefault())
-
-      //Format dates to make the sum of total from 1st until 15th
-      val firstMonthHalfStart = formatter.parse(firstMonthHalfStringStart)!!
-      val firstMontHalfStartCompare = formatter.format(firstMonthHalfStart)
-      val firstMonthDate = formatter.parse(firstMonthHalfString)!!
-      val firstMonthCompare = formatter.format(firstMonthDate)
-      //Format dates to make the sum of total from 16th until 31th
-      val secondMonthHalfStart = formatter.parse(secondMonthHalfStringStart)!!
-      val secondMonthHalfStartCompare = formatter.format(secondMonthHalfStart)
-      val secondMonthHalf = formatter.parse(secondMonthHalfString)!!
-      val secondMonthHalfCompare = formatter.format(secondMonthHalf)
-      //Make the query by desired date
-      expenseViewModel.getExpensesByDate(desiredDate).observe(this, { expenses ->
-        expenses?.let {
-          totalOfMonthExpense = 0F
-          totalFirstHalf = 0F
-          totalSecondHalf = 0F
-          for (expense in it) {
-            totalOfMonthExpense += expense.total
-            val dateFormatted = formatter.format(expense.date)
-            if (dateFormatted in firstMontHalfStartCompare..firstMonthCompare) {
-              totalFirstHalf += expense.total
-            } else if (dateFormatted in secondMonthHalfStartCompare..secondMonthHalfCompare) {
-              totalSecondHalf += expense.total
-            }
-          }
-          totalOfMonth.text = getString(R.string.dollarsingVariable, totalOfMonthExpense.toString())
-          recyclerAdapter.submitList(it)
-        }
-      })
-      expenseViewModel.getBudgetByMonth(desiredDate).observe(this, {
-        if (it != null) {
-          budgetFirstHalf = it.budgetForFirstFortnight
-          budgetSecondHalf = it.budgetForSecondFortnight
-          val totalBudgetForMonth = budgetFirstHalf + budgetSecondHalf
-          budgetForMonth.text = getString(R.string.dollarsingVariable, totalBudgetForMonth.toString())
-
-          Log.d("budgets", "$totalBudgetForMonth, $totalOfMonthExpense")
-
-          remainingTotal.text = getString(R.string.dollarsingVariable, (totalBudgetForMonth - totalOfMonthExpense).toString())
-
-          if (remainingTotal.visibility == View.GONE) {
-            remainingTotal.visibility = View.VISIBLE
-          }
-
-        } else {
-          budgetForMonth.text = getString(R.string.error_budget)
-          remainingTotal.visibility = View.GONE
-        }
-      })
+      budgetForMonth.text = getString(R.string.error_budget)
+      remainingTotal.text = getString(R.string.dollarsingVariable, "0")
     }
   }
-
-  override fun onNothingSelected(parent: AdapterView<*>?) {
-    return
+  private val getExpensesObserver = Observer<List<Expenses>> { expenses ->
+    //Formatter to only get the days of the month
+    val formatter = SimpleDateFormat("dd", Locale.getDefault())
+    //Format dates to make the sum of total from 1st until 15th
+    val firstMonthHalfStart = formatter.parse(firstMonthHalfStringStart)!!
+    val firstMontHalfStartCompare = formatter.format(firstMonthHalfStart)
+    val firstMonthDate = formatter.parse(firstMonthHalfString)!!
+    val firstMonthCompare = formatter.format(firstMonthDate)
+    //Format dates to make the sum of total from 16th until 31th
+    val secondMonthHalfStart = formatter.parse(secondMonthHalfStringStart)!!
+    val secondMonthHalfStartCompare = formatter.format(secondMonthHalfStart)
+    val secondMonthHalf = formatter.parse(secondMonthHalfString)!!
+    val secondMonthHalfCompare = formatter.format(secondMonthHalf)
+    expenses?.let {
+      totalOfMonthExpense = 0F
+      totalFirstHalf = 0F
+      totalSecondHalf = 0F
+      for (expense in it) {
+        totalOfMonthExpense += expense.total
+        val dateFormatted = formatter.format(expense.date)
+        if (dateFormatted in firstMontHalfStartCompare..firstMonthCompare) {
+          totalFirstHalf += expense.total
+        } else if (dateFormatted in secondMonthHalfStartCompare..secondMonthHalfCompare) {
+          totalSecondHalf += expense.total
+        }
+      }
+      totalOfMonth.text = getString(R.string.dollarsingVariable, totalOfMonthExpense.toString())
+      expenseViewModel.monthTotal.value = totalOfMonthExpense
+      recyclerAdapter.submitList(it)
+    }
   }
 
   //Update the list by the last selected date. Variable desiredDate is global
   private fun updateListByDesiredDate() {
-    expenseViewModel.getExpensesByDate(desiredDate).observe(this, {
+    expenseViewModel.getExpenses.observe(this, {
       it?.let {
         recyclerAdapter.submitList(it)
       }
     })
   }
-
   override fun onClick(v: View?) {
     when (v?.id) {
       R.id.tvTotalMonth -> {
@@ -383,5 +255,55 @@ class ExpensesListFragment : Fragment(),
         startAddNewExpenseForResult.launch(intent)
       }
     }
+  }
+
+  //Interface from ExpenseListAdapter to start edit activity with data to edit
+  override fun sendExpenseToEdit(expense: Expenses) {
+    val intent = Intent(activity, AddNewExpense::class.java)
+    intent.putExtra(flag, editExpenseActivityRequestCode)
+    intent.putExtra(AddNewExpense.EXTRA_EXPENSE, expense)
+    startAddNewExpenseForResult.launch(intent)
+  }
+
+  //Interface from ExpenseListAdapter to delete an expense
+  override fun sendExpenseToDelete(expense: Expenses) {
+    expenseViewModel.deleteExpense(expense)
+  }
+
+  //Interface from ExpenseListAdapter to open the expense dialog details
+  override fun onExpenseItemClicked(expense: Expenses) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      vibrator.vibrate(VibrationEffect.createOneShot(150, 1))
+    }
+    if (recyclerAdapter.isMenuShown()) {
+      recyclerAdapter.closeMenu()
+    }
+    val detailsFragment =
+        ExpensesDetails.newInstance(expense)
+    detailsFragment.show(parentFragmentManager, "Details")
+  }
+
+  //Get the past month of the year
+  private fun getSpinnerMonths(): ArrayList<String> {
+    val formatter = SimpleDateFormat("MMMM yyyy", Locale.getDefault())
+    val list = arrayListOf<String>()
+    Calendar.getInstance().let { calendar ->
+      val monthBefore = Calendar.getInstance()
+      val currentYear = calendar.get(Calendar.YEAR)
+      //We loop to know which month has already pass
+      for (i in 1 until 12) {
+        //We only want the month of current year
+        val pastYear = monthBefore.get(Calendar.YEAR)
+        if (pastYear == currentYear) {
+          //Format the month and add to array
+          list.add(formatter.format(calendar.timeInMillis))
+          //Go backwards to know which month has passed
+          calendar.add(Calendar.MONTH, -1)
+          monthBefore.add(Calendar.MONTH, -1)
+        }
+      }
+    }
+    list.add("All Expenses")
+    return list
   }
 }
