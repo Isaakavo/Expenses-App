@@ -112,7 +112,7 @@ class ExpensesListFragment : Fragment(),
     expenseViewModel.getExpenses.observe(viewLifecycleOwner, getExpensesObserver)
     expenseViewModel.getBudgets.observe(viewLifecycleOwner, budgetObserver)
     expenseViewModel.remainingTotal.observe(viewLifecycleOwner, {
-      remainingTotal.text = getString(R.string.dollarsingVariable, it.toString())
+      remainingTotal.text = getString(R.string.dollarsingVariable, String.format("%.2f", it))
     })
     return root
   }
@@ -152,23 +152,16 @@ class ExpensesListFragment : Fragment(),
 
   private fun bindRecyclerView(view: View?) {
     val recyclerView = view?.findViewById<RecyclerView>(R.id.recyclerview)
+
     recyclerAdapter = ExpenseListAdapter(this, this)
     recyclerView?.apply {
       adapter = recyclerAdapter
       layoutManager = LinearLayoutManager(activity?.applicationContext)
-      setItemViewCacheSize(15)
-      setHasFixedSize(true)
+      isNestedScrollingEnabled = false
     }
     //Set the adapter to swipe function
     val itemTouchHelper = ItemTouchHelper(SwipeExpense(context, recyclerAdapter))
     itemTouchHelper.attachToRecyclerView(recyclerView)
-
-    recyclerView?.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-      override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-        super.onScrollStateChanged(recyclerView, newState)
-        recyclerAdapter.closeMenu()
-      }
-    })
   }
 
   private val budgetObserver = Observer<Budget> { it ->
@@ -209,7 +202,7 @@ class ExpensesListFragment : Fragment(),
           totalSecondHalf += expense.total
         }
       }
-      totalOfMonth.text = getString(R.string.dollarsingVariable, totalOfMonthExpense.toString())
+      totalOfMonth.text = getString(R.string.dollarsingVariable, String.format("%.2f", totalOfMonthExpense))
       expenseViewModel.monthTotal.value = totalOfMonthExpense
       recyclerAdapter.submitList(it)
     }
