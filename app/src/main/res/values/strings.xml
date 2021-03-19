@@ -35,4 +35,8 @@
     <string name="remaining">Remaining</string>
     <string name="error_budget">You dont have a budget for this month, please add one.</string>
     <string name="error_budget2">You have not added a budget for this month</string>
+    <string name="add_or_edit_budget_for_this_month">Add or Edit the Budget for the month of %1$s</string>
+    <string name="budget_for_month">Budget for month:</string>
+    <string name="budget_for_second_fortnight">Second fortnight</string>
+    <string name="budget_for_first_fortnight">First fortnight</string>
 </resources>
