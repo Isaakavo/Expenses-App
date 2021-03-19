@@ -50,7 +50,7 @@ class ExpenseListAdapter(private val onEditSelected: OnEditSelectedListener,
         }else{
             val view: View = LayoutInflater.from(parent.context)
                 .inflate(R.layout.recyclerview_item, parent, false)
-            return ExpenseViewHolder(view)
+            ExpenseViewHolder(view)
         }
     }
 
@@ -60,14 +60,14 @@ class ExpenseListAdapter(private val onEditSelected: OnEditSelectedListener,
             //When two or more expenses has the same date, the date text view is hide to only show one
             //date text view
             when {
-                position != 0 -> {
+                position > 0 -> {
                     val previousExpense: Expenses = getItem(position - 1)
                     val currentExpenseDate = holder.setDateFormat(expense.date)
                     val previousExpenseDate = holder.setDateFormat(previousExpense.date)
                     holder.bind(expense)
                     holder.setSectionDate(currentExpenseDate, previousExpenseDate)
                 }
-                position == 0 -> {
+                else -> {
                     holder.bindPositionZero(expense)
                 }
             }
@@ -101,6 +101,8 @@ class ExpenseListAdapter(private val onEditSelected: OnEditSelectedListener,
             tvTotal.text = "$" + expense.total.toString()
             expenses = expense
         }
+
+        @SuppressLint("SetTextI18n")
         fun bindPositionZero(expense: Expenses){
             tvExpense.text = expense.concept
             tvTotal.text = "$" + expense.total.toString()

@@ -34,8 +34,6 @@ class HalfMonthTotals : DialogFragment() {
         val secondHalf = view.findViewById<TextView>(R.id.secondHalf)
         val title = view.findViewById<TextView>(R.id.halfTitle)
 
-        dialog?.window?.setTitle("Pito")
-
         firstHalf.text = getString(R.string.dollarsingVariable, firstHalfValue)
         secondHalf.text = getString(R.string.dollarsingVariable, secondHalfValue)
         title.text = titleString

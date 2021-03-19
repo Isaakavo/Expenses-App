@@ -51,6 +51,9 @@ class AddBudgetDialogFragment : DialogFragment() {
     })
 
     addBudget.setOnClickListener {
+      if (firstFortnight.text.isEmpty()) firstFortnight.setText("0.0")
+      if (secondFortnight.text.isEmpty()) secondFortnight.setText("0.0")
+
       val budgetToAdd = Budget(firstFortnight.text.toString().toFloat(), secondFortnight.text.toString().toFloat(), currentDateInMillis)
       budgetToAdd.id = idBudget
       expenseViewModel.insertBudget(budgetToAdd)
@@ -73,5 +76,8 @@ class AddBudgetDialogFragment : DialogFragment() {
     secondFortnight = view.findViewById(R.id.second_fortnight)
     budgetTitle = view.findViewById(R.id.addBudgetTitle)
     addBudget = view.findViewById(R.id.addBudget)
+
+    firstFortnight.setText("0.0")
+    secondFortnight.setText("0.0")
   }
 }
