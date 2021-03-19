@@ -20,7 +20,7 @@ import android.widget.TextView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -40,9 +40,7 @@ class ExpensesListFragment : Fragment(),
     ExpenseListAdapter.OnClickListener,
     View.OnClickListener {
 
-  private val expenseViewModel: ExpenseViewModel by viewModels {
-    requireActivity().defaultViewModelProviderFactory
-  }
+  private val expenseViewModel: ExpenseViewModel by activityViewModels()
 
   //Variables to calculate half months
   private val firstMonthHalfString = "15/01/2021"
@@ -145,11 +143,9 @@ class ExpensesListFragment : Fragment(),
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         vibrator.vibrate(VibrationEffect.createOneShot(200, VibrationEffect.EFFECT_DOUBLE_CLICK))
       }
-      val intent = Intent(activity, AddBudget::class.java)
-      //intent.putExtra(desiredDateFlag, desiredDate)
-      recyclerAdapter.closeMenu()
-      startActivity(intent)
-      false
+      val addBudgetFragment = AddBudgetDialogFragment()
+      addBudgetFragment.show(childFragmentManager, "AddBudget")
+      true
     }
 
   }
