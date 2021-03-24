@@ -3,7 +3,11 @@ plugins {
     id 'kotlin-android'
 }
 apply plugin: 'kotlin-kapt'
+
 apply plugin: 'kotlin-parcelize'
+
+apply plugin: 'androidx.navigation.safeargs'
+
 android {
     compileSdkVersion 30
     buildToolsVersion "30.0.3"
@@ -14,8 +18,13 @@ android {
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
-
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments += ["room.schemaLocation": "$projectDir/schemas".toString()]
+            }
+        }
     }
 
     buildTypes {
@@ -24,7 +33,9 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-    android.buildFeatures.dataBinding = true
+    buildFeatures {
+        dataBinding true
+    }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8

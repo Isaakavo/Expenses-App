@@ -2,35 +2,51 @@ package com.example.monthlyexpenses
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupActionBarWithNavController
-import androidx.navigation.ui.setupWithNavController
+import androidx.navigation.ui.NavigationUI
+import com.example.monthlyexpenses.databinding.ActivityMainBinding
+import com.example.monthlyexpenses.expenses.AddNewExpense
 import com.example.monthlyexpenses.expenses.ExpensesApplication
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import viewmodel.ExpenseViewModelFactory
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), AddNewExpense.OnAddNewExpenseOpen {
+
+    private lateinit var binding: ActivityMainBinding
+    private lateinit var appBarConfiguration: AppBarConfiguration
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        val navView: BottomNavigationView = findViewById(R.id.nav_view)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
         val navController = findNavController(R.id.nav_host_fragment)
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
-        val appBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.navigation_home, R.id.navigation_bank
-            )
-        )
-        setupActionBarWithNavController(navController, appBarConfiguration)
-        navView.setupWithNavController(navController)
+        appBarConfiguration =
+            AppBarConfiguration.Builder(R.id.navigation_home, R.id.navigation_bank).build()
+        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration)
+        NavigationUI.setupWithNavController(binding.navView, navController)
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        val navController = this.findNavController(R.id.nav_host_fragment)
+        return NavigationUI.navigateUp(
+            navController,
+            appBarConfiguration
+        ) || super.onSupportNavigateUp()
     }
 
     override fun getDefaultViewModelProviderFactory(): ViewModelProvider.Factory {
         return ExpenseViewModelFactory((application as ExpensesApplication).repository)
+    }
+
+    override fun onOpen() {
+        binding.navView.clearAnimation()
+        binding.navView.animate().translationY(0F).duration = 300
+    }
+
+    override fun onClose() {
+        binding.navView.clearAnimation()
+        binding.navView.animate().translationY(binding.navView.height.toFloat()).duration = 300
     }
 }

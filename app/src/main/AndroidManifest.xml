@@ -15,9 +15,6 @@
         android:theme="@style/Theme.MonthlyExpenses"
         tools:ignore="AllowBackup">
         <activity
-            android:name=".expenses.AddNewExpense"
-            android:parentActivityName=".expenses.ExpensesListFragment" />
-        <activity
             android:name=".MainActivity"
             android:configChanges="orientation|screenSize">
             <intent-filter>
