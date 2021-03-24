@@ -43,19 +43,6 @@ class ExpensesRepository(private val expensesDao: ExpensesDao, private val items
         }
 
     }
-
-    //First update the expense then the items
-    suspend fun updateExpenseAndItems(expense: Expenses, items: List<Items>) {
-        expensesDao.updateExpense(expense)
-        for (item in items) {
-            if (item.id != 0L) itemsDao.updateItems(item)
-            else {
-                item.expenseId = expense.id
-                itemsDao.insert(item)
-            }
-        }
-    }
-
     @WorkerThread
     fun getItemById(id: Long): Flow<List<Items>> {
         return itemsDao.getItemByID(id)

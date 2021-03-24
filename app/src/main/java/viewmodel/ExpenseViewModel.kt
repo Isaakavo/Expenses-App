@@ -10,12 +10,6 @@ import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
 
-//Variables to calculate half months
-private const val firstMonthHalfString = "15/01/2021"
-private const val firstMonthHalfStringStart = "01/01/2021"
-private const val secondMonthHalfStringStart = "16/01/2021"
-private const val secondMonthHalfString = "31/01/2021"
-
 class ExpenseViewModel(private val repository: ExpensesRepository) : ViewModel() {
 
   private val monthTotal = MutableLiveData<Float>()
@@ -37,7 +31,6 @@ class ExpenseViewModel(private val repository: ExpensesRepository) : ViewModel()
   val budgetDate: LiveData<String>
     get() = _budgetDate
   private val budgetTimestamp = MutableLiveData<Long>()
-  private val budgetId = MutableLiveData<Long>()
 
   private val _budget = MutableLiveData<Budget>()
   val budget: LiveData<Budget>
@@ -65,18 +58,15 @@ class ExpenseViewModel(private val repository: ExpensesRepository) : ViewModel()
   }
 
   val getMonthTotals: LiveData<String> = Transformations.map(getExpenses) { expenses ->
-    //Formatter to only get the days of the month
+//Formatter to only get the days of the month
     val formatter = SimpleDateFormat("dd", Locale.getDefault())
-    //Format dates to make the sum of total from 1st until 15th
-    val firstMonthHalfStart = formatter.parse(firstMonthHalfStringStart)!!
-    val firstMontHalfStartCompare = formatter.format(firstMonthHalfStart)
-    val firstMonthDate = formatter.parse(firstMonthHalfString)!!
-    val firstMonthCompare = formatter.format(firstMonthDate)
-    //Format dates to make the sum of total from 16th until 31th
-    val secondMonthHalfStart = formatter.parse(secondMonthHalfStringStart)!!
-    val secondMonthHalfStartCompare = formatter.format(secondMonthHalfStart)
-    val secondMonthHalf = formatter.parse(secondMonthHalfString)!!
-    val secondMonthHalfCompare = formatter.format(secondMonthHalf)
+    val calendar = Calendar.getInstance()
+    calendar.add(Calendar.MONTH, 0)
+    calendar.set(Calendar.DATE, calendar.getActualMinimum(Calendar.DAY_OF_MONTH))
+    val monthFirstDay = formatter.format(calendar.time)
+    calendar.set(Calendar.DATE, calendar.getActualMaximum(Calendar.DAY_OF_MONTH))
+    val monthLastDay = formatter.format(calendar.time)
+    val monthMiddle = (monthLastDay.toInt() / 2).toString()
     expenses?.let {
       var totalOfMonthExpense = 0F
       var totalFirstHalf = 0F
@@ -84,9 +74,9 @@ class ExpenseViewModel(private val repository: ExpensesRepository) : ViewModel()
       for (expense in it) {
         totalOfMonthExpense += expense.total
         val dateFormatted = formatter.format(expense.date)
-        if (dateFormatted in firstMontHalfStartCompare..firstMonthCompare) {
+        if (dateFormatted in monthFirstDay..monthMiddle) {
           totalFirstHalf += expense.total
-        } else if (dateFormatted in secondMonthHalfStartCompare..secondMonthHalfCompare) {
+        } else if (dateFormatted in monthMiddle..monthLastDay) {
           totalSecondHalf += expense.total
         }
       }
@@ -105,18 +95,24 @@ class ExpenseViewModel(private val repository: ExpensesRepository) : ViewModel()
     val selectedItemFormatter =
         SimpleDateFormat("y-MM", Locale.getDefault()).parse(desiredDate.value!!)
     val formattedDate = formatter.format(selectedItemFormatter!!)
-    Timber.d(formattedDate)
     Transformations.map(getBudgetByMonth(it)) { budget ->
-      budget?.let {
-        budgetFirstHalf.value = String.format("%.2f", budget.budgetForFirstFortnight)
-        budgetSecondHalf.value = String.format("%.2f", budget.budgetForSecondFortnight)
-        _budgetDate.value = formattedDate
+      if (budget == null) {
+        budgetFirstHalf.value = "0.0"
+        budgetSecondHalf.value = "0.0"
         budgetTimestamp.value = selectedItemFormatter.time
-        totalBudgetForMonth = budget.budgetForFirstFortnight + budget.budgetForSecondFortnight
+        totalBudgetForMonth = 0F
         _budgetTotal.value = totalBudgetForMonth
-        budgetId.value = budget.id
-        String.format("%.2f", totalBudgetForMonth)
+      } else {
+        budget.let {
+          budgetFirstHalf.value = String.format("%.2f", budget.budgetForFirstFortnight)
+          budgetSecondHalf.value = String.format("%.2f", budget.budgetForSecondFortnight)
+          _budgetDate.value = formattedDate
+          budgetTimestamp.value = selectedItemFormatter.time
+          totalBudgetForMonth = budget.budgetForFirstFortnight + budget.budgetForSecondFortnight
+          _budgetTotal.value = totalBudgetForMonth
+        }
       }
+      String.format("%.2f", totalBudgetForMonth)
     }
   }
 
@@ -153,10 +149,6 @@ class ExpenseViewModel(private val repository: ExpensesRepository) : ViewModel()
     return repository.getItemById(id).asLiveData()
   }
 
-  fun updateExpenseAndItems(expense: Expenses, item: List<Items>) = viewModelScope.launch {
-    repository.updateExpenseAndItems(expense, item)
-  }
-
   fun deleteExpense(expense: Expenses) {
     viewModelScope.launch {
       repository.deleteExpense(expense)
@@ -173,11 +165,12 @@ class ExpenseViewModel(private val repository: ExpensesRepository) : ViewModel()
     if (budgetFirstHalf.value?.isEmpty() == true) budgetFirstHalf.value = "0.0"
     if (budgetSecondHalf.value?.isEmpty() == true) budgetSecondHalf.value = "0.0"
 
-    val budget = Budget(budgetFirstHalf.value.toString().toFloat(), budgetSecondHalf.value.toString().toFloat(),
-        budgetTimestamp.value!!
+    val budget = Budget(
+      budgetFirstHalf.value.toString().toFloat(),
+      budgetSecondHalf.value.toString().toFloat(),
+      budgetTimestamp.value!!
     )
-    budget.id = budgetId.value!!
-    Timber.d(budget.toString())
+    Timber.d("Timestamp ${budget}")
     viewModelScope.launch {
       repository.insertBudget(budget)
     }
