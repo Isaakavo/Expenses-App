@@ -13,7 +13,6 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.monthlyexpenses.R
 import com.example.monthlyexpenses.databinding.ActivityAddNewExpenseBinding
 import com.google.android.material.snackbar.Snackbar
@@ -26,14 +25,6 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 class AddNewExpense : AppCompatActivity(), View.OnClickListener {
-  //UI components
-  private lateinit var editTextConcept: EditText
-  private lateinit var editTextDate: EditText
-  private lateinit var buttonAdd: Button
-  private lateinit var addNewComment: ImageView
-  private lateinit var removeNewComent: ImageView
-  private lateinit var recyclerView: RecyclerView
-
   private var flag = 0
   private var timestamp: Long = 0
 
@@ -66,8 +57,8 @@ class AddNewExpense : AppCompatActivity(), View.OnClickListener {
       val expenseToEdit = intent.getSerializableExtra(EXTRA_EXPENSE) as Expenses
       timestamp = expenseToEdit.date
       idExpense = expenseToEdit.id
-      editTextConcept.setText(expenseToEdit.concept)
-      editTextDate.setText(DateFormat.getDateInstance().format(expenseToEdit.date))
+      binding.etConcept.setText(expenseToEdit.concept)
+      binding.etDate.setText(DateFormat.getDateInstance().format(expenseToEdit.date))
       expenseViewModel.getItemById(expenseToEdit.id).observe(this, { items ->
         items?.let {
           for (item in it) {
@@ -76,11 +67,11 @@ class AddNewExpense : AppCompatActivity(), View.OnClickListener {
           }
         }
       })
-      buttonAdd.text = getString(R.string.update_button)
+      binding.okbutton.text = getString(R.string.update_button)
     } else if (flag == ExpensesListFragment.newExpenseActivityRequestCode) {
       itemList.add(Items())
       editTextAdapter.notifyItemInserted(itemList.size - 1)
-      editTextDate.setText(setFormattedDate())
+      binding.etDate.setText(setFormattedDate())
     }
   }
   private fun bindViews() {
@@ -89,29 +80,24 @@ class AddNewExpense : AppCompatActivity(), View.OnClickListener {
       setDisplayHomeAsUpEnabled(true)
       setDisplayShowHomeEnabled(true)
     }
-
-    editTextConcept = binding.etConcept
-    editTextDate = binding.etDate
-    buttonAdd = binding.okbutton
-    addNewComment = binding.addNewComment
-    removeNewComent = binding.removeNewComment
   }
 
   //Set the adapter for data binding recycler view
   private fun setAdapter() {
     editTextAdapter = EditTextAdapter(itemList)
-    recyclerView = binding.recyclerviewAddExpense.apply {
+    binding.recyclerviewAddExpense.apply {
       layoutManager = LinearLayoutManager(this@AddNewExpense)
       adapter = editTextAdapter
+      isNestedScrollingEnabled = false
     }
   }
 
   //set the listener for click functions
   private fun setListener() {
-    addNewComment.setOnClickListener(this)
-    removeNewComent.setOnClickListener(this)
-    buttonAdd.setOnClickListener(this)
-    editTextDate.setOnClickListener(this)
+    binding.addNewComment.setOnClickListener(this)
+    binding.removeNewComment.setOnClickListener(this)
+    binding.okbutton.setOnClickListener(this)
+    binding.etDate.setOnClickListener(this)
   }
 
   //Send the data to be added to data base in main viewmodel
@@ -119,7 +105,7 @@ class AddNewExpense : AppCompatActivity(), View.OnClickListener {
     val replyIntent = Intent()
     if (editTextIsNotEmpty()) {
       //val editTextConcept = binding.etConcept.text.toString()
-      val expense = Expenses(editTextConcept.text.toString(), timestamp, "expense", getTotals())
+      val expense = Expenses(binding.etConcept.text.toString(), timestamp, "expense", getTotals())
       expense.id = idExpense
       replyIntent.putExtra(EXTRA_EXPENSE, expense)
       replyIntent.putParcelableArrayListExtra(EXTRA_ITEMS, ArrayList(itemList))
@@ -141,14 +127,14 @@ class AddNewExpense : AppCompatActivity(), View.OnClickListener {
   }
 
   private fun editTextIsNotEmpty(): Boolean {
-    return if (editTextConcept.text.isNotEmpty() && editTextDate.text.isNotEmpty()) {
+    return if (binding.etConcept.text.isNotEmpty() && binding.etConcept.text.isNotEmpty()) {
       true
     } else {
       closeKeyboard()
-      if (editTextConcept.text.isEmpty()) editTextConcept.backgroundTintList =
-        context.getColorStateList(R.color.red)
-      if (editTextDate.text.isEmpty()) editTextDate.backgroundTintList =
-        context.getColorStateList(R.color.red)
+      if (binding.etConcept.text.isEmpty()) binding.etConcept.backgroundTintList =
+          context.getColorStateList(R.color.red)
+      if (binding.etDate.text.isEmpty()) binding.etDate.backgroundTintList =
+          context.getColorStateList(R.color.red)
       itemList.forEach {
         if (it.item.isEmpty() or it.price.isEmpty()) Snackbar.make(
             window.decorView.rootView,
@@ -187,7 +173,7 @@ class AddNewExpense : AppCompatActivity(), View.OnClickListener {
     val timestamp = combinedCal.timeInMillis
     this.timestamp = timestamp
     val selectedDate = DateFormat.getDateInstance().format(timestamp)
-    editTextDate.setText(selectedDate.toString())
+    binding.etDate.setText(selectedDate.toString())
   }
 
   private fun closeKeyboard() {
@@ -204,21 +190,21 @@ class AddNewExpense : AppCompatActivity(), View.OnClickListener {
 
   override fun onClick(v: View?) {
     when (v?.id) {
-      addNewComment.id -> {
+      binding.addNewComment.id -> {
         itemList.add(Items())
         editTextAdapter.notifyItemInserted(itemList.size - 1)
       }
-      removeNewComent.id -> {
+      binding.removeNewComment.id -> {
         if (itemList.size > 1) {
           itemListToDelete.add(itemList.last())
           itemList.removeLast()
           editTextAdapter.notifyItemRemoved(itemList.size)
         }
       }
-      buttonAdd.id -> {
+      binding.okbutton.id -> {
         sendExpenseToAdd()
       }
-      editTextDate.id -> {
+      binding.etDate.id -> {
         showDatePickerDialog()
       }
     }

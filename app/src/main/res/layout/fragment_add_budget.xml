@@ -1,129 +1,142 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:gravity="center"
-    android:orientation="vertical"
-    tools:context=".expenses.AddBudgetDialogFragment">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <TextView
-        android:id="@+id/addBudgetTitle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="15dp"
-        android:gravity="center"
-        android:padding="25dp"
-        android:text="@string/add_or_edit_budget_for_this_month"
-        android:textSize="24sp" />
+    <data>
+
+        <variable
+            name="budgets"
+            type="viewmodel.ExpenseViewModel" />
+
+    </data>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:orientation="horizontal">
+        android:orientation="vertical"
+        tools:context=".expenses.AddBudgetDialogFragment">
 
         <TextView
-            android:layout_width="0dp"
+            android:id="@+id/addBudgetTitle"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="15dp"
-            android:layout_weight="1"
-            android:text="@string/budget_for_first_fortnight"
-            android:textSize="18sp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="15dp"
-            android:text="@string/dollarsign"
-            android:textSize="18sp" />
-
-        <EditText
-            android:id="@+id/first_fortnight"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="15dp"
-            android:layout_weight="1"
-            android:autofillHints="false"
-            android:ems="10"
-            android:hint="@string/first_half_of_the_month"
-            android:inputType="number" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="15dp"
-            android:layout_weight="1"
-            android:text="@string/budget_for_second_fortnight"
-            android:textSize="18sp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="15dp"
-            android:text="@string/dollarsign"
-            android:textSize="18sp" />
-
-        <EditText
-            android:id="@+id/second_fortnight"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="15dp"
-            android:layout_weight="1"
-            android:autofillHints="false"
-            android:ems="10"
-            android:hint="@string/second_half_of_the_month"
-            android:inputType="number" />
-
-    </LinearLayout>
-
-    <!--<LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:layout_marginTop="10dp"
-        >
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/budget_for_month"
-            android:textSize="18sp"
+            android:layout_marginBottom="15dp"
             android:gravity="center"
-            android:layout_marginStart="15dp"
-            />
+            android:padding="25dp"
+            android:text="@{@string/add_or_edit_budget_for_this_month(budgets.budgetDate)}"
+            android:textSize="24sp" />
 
-        <TextView
-            android:id="@+id/month"
-            android:layout_width="0dp"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="15dp"
-            android:layout_marginEnd="15dp"
-            android:layout_weight="1"
-            android:autofillHints="false"
-            android:ems="10"
-            android:hint="@string/month"
-            android:textSize="18sp"
-            android:inputType="none"
-            android:textIsSelectable="false" />
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:layout_weight="1"
+                android:text="@string/budget_for_first_fortnight"
+                android:textSize="18sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:text="@string/dollarsign"
+                android:textSize="18sp" />
+
+            <EditText
+                android:id="@+id/first_fortnight"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="15dp"
+                android:layout_weight="1"
+                android:autofillHints="false"
+                android:ems="10"
+                android:hint="@string/first_half_of_the_month"
+                android:inputType="number"
+                android:text="@={budgets.budgetFirstHalf}" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:layout_weight="1"
+                android:text="@string/budget_for_second_fortnight"
+                android:textSize="18sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:text="@string/dollarsign"
+                android:textSize="18sp" />
+
+            <EditText
+                android:id="@+id/second_fortnight"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="15dp"
+                android:layout_weight="1"
+                android:autofillHints="false"
+                android:ems="10"
+                android:hint="@string/second_half_of_the_month"
+                android:inputType="number"
+                android:text="@={budgets.budgetSecondHalf}" />
+
+        </LinearLayout>
+
+        <!--<LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp"
+            >
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/budget_for_month"
+                android:textSize="18sp"
+                android:gravity="center"
+                android:layout_marginStart="15dp"
+                />
+
+            <TextView
+                android:id="@+id/month"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:layout_marginEnd="15dp"
+                android:layout_weight="1"
+                android:autofillHints="false"
+                android:ems="10"
+                android:hint="@string/month"
+                android:textSize="18sp"
+                android:inputType="none"
+                android:textIsSelectable="false" />
+
+        </LinearLayout>
+    -->
+
+        <Button
+            android:id="@+id/addBudget"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:text="@string/update_button" />
 
     </LinearLayout>
--->
-
-    <Button
-        android:id="@+id/addBudget"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
-        android:text="@string/update_button" />
-
-</LinearLayout>
+</layout>

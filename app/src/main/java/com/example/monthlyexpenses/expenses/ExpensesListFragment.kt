@@ -15,20 +15,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import android.widget.Spinner
-import android.widget.TextView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.monthlyexpenses.R
-import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.example.monthlyexpenses.databinding.FragmentExpenseListBinding
 import com.google.android.material.snackbar.Snackbar
-import model.Budget
 import model.Expenses
 import model.Items
 import viewmodel.ExpenseViewModel
@@ -42,21 +39,12 @@ class ExpensesListFragment : Fragment(),
 
   private val expenseViewModel: ExpenseViewModel by activityViewModels()
 
-  //Variables to calculate half months
-  private val firstMonthHalfString = "15/01/2021"
-  private val firstMonthHalfStringStart = "01/01/2021"
-  private val secondMonthHalfStringStart = "16/01/2021"
-  private val secondMonthHalfString = "31/01/2021"
+  private lateinit var binding: FragmentExpenseListBinding
 
   private lateinit var recyclerAdapter: ExpenseListAdapter
-  private lateinit var totalOfMonth: TextView
-  private lateinit var budgetForMonth: TextView
-  private lateinit var remainingTotal: TextView
-  private lateinit var fabMenu: FloatingActionButton
 
   private lateinit var vibrator: Vibrator
 
-  private var totalOfMonthExpense = 0F
   private var totalFirstHalf = 0F
   private var totalSecondHalf = 0F
   private var budgetFirstHalf = 0F
@@ -81,7 +69,6 @@ class ExpensesListFragment : Fragment(),
               result.data!!.extras?.getParcelableArrayList<Items>(AddNewExpense.EXTRA_ITEMS)
           //Insert data to data base
           expenseViewModel.insert(intentExpenses, itemList as List<Items>)
-          updateListByDesiredDate()
         } else if (result.resultCode == Activity.RESULT_OK && flag == editExpenseActivityRequestCode) {
           val intentExpenses =
               result.data?.extras?.getSerializable(AddNewExpense.EXTRA_EXPENSE) as Expenses
@@ -92,7 +79,6 @@ class ExpensesListFragment : Fragment(),
           val itemsToDelete =
               result.data!!.extras?.getParcelableArrayList<Items>(AddNewExpense.EXTRA_ITEMS_DELETE)
           expenseViewModel.updateExpenseAndItems(intentExpenses, itemList as List<Items>)
-          updateListByDesiredDate()
           expenseViewModel.deleteItems(itemsToDelete as ArrayList)
         } else if (result.resultCode != Activity.RESULT_CANCELED) {
           Snackbar.make(requireView(), "Something went wrong!", Snackbar.LENGTH_LONG).show()
@@ -100,26 +86,38 @@ class ExpensesListFragment : Fragment(),
       }
 
   override fun onCreateView(
-    inflater: LayoutInflater,
-    container: ViewGroup?,
-    savedInstanceState: Bundle?
-  ): View? {
-    val root = inflater.inflate(R.layout.fragment_expense_list, container, false)
+      inflater: LayoutInflater,
+      container: ViewGroup?,
+      savedInstanceState: Bundle?
+  ): View {
+
     vibrator = activity?.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
 
-    bindViews(root)
-    bindRecyclerView(root)
+    binding = DataBindingUtil.inflate(
+        inflater,
+        R.layout.fragment_expense_list,
+        container, false)
+    binding.expenseViewModel = expenseViewModel
+    binding.lifecycleOwner = viewLifecycleOwner
+    bindViews()
+    bindRecyclerView()
     expenseViewModel.getExpenses.observe(viewLifecycleOwner, getExpensesObserver)
-    expenseViewModel.getBudgets.observe(viewLifecycleOwner, budgetObserver)
-    expenseViewModel.remainingTotal.observe(viewLifecycleOwner, {
-      remainingTotal.text = getString(R.string.dollarsingVariable, String.format("%.2f", it))
+    //expenseViewModel.getBudgets.observe(viewLifecycleOwner, budgetObserver)
+    expenseViewModel.eventOpTvMonthTotal.observe(viewLifecycleOwner, { isOpen ->
+      if (isOpen) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+          vibrator.vibrate(VibrationEffect.createOneShot(150, 1))
+        }
+        val halfMonthTotals = HalfMonthTotals()
+        halfMonthTotals.show(childFragmentManager, "Totals")
+        expenseViewModel.onOpenMonthTotalFragmentComplete()
+      }
     })
-    return root
+    return binding.root
   }
 
   @SuppressLint("InlinedApi")
-  private fun bindViews(view: View?) {
-    val currentMonth = view?.findViewById<Spinner>(R.id.monthSpinner)
+  private fun bindViews() {
     val arrayAdapter =
         ArrayAdapter(
             requireContext(),
@@ -127,19 +125,12 @@ class ExpensesListFragment : Fragment(),
             getSpinnerMonths()
         )
     arrayAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item)
-    currentMonth?.adapter = arrayAdapter
-    currentMonth?.onItemSelectedListener = MonthSpinner(expenseViewModel)
-
-    fabMenu = view?.findViewById(R.id.fabMenu)!!
-    budgetForMonth = view.findViewById(R.id.incomeTotal)
-    totalOfMonth = view.findViewById(R.id.tvTotalMonth)!!
-    remainingTotal = view.findViewById(R.id.remainingTotal)
+    binding.monthSpinner.adapter = arrayAdapter
+    binding.monthSpinner.onItemSelectedListener = MonthSpinner(expenseViewModel)
     //When user clicks on total of month a fragment is displayed to show the expenses by half month
-    totalOfMonth.setOnClickListener(this)
-    budgetForMonth.setOnClickListener(this)
-    fabMenu.setOnClickListener(this)
-
-    fabMenu.setOnLongClickListener {
+    binding.TVIncome.setOnClickListener(this)
+    binding.fabMenu.setOnClickListener(this)
+    binding.fabMenu.setOnLongClickListener {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         vibrator.vibrate(VibrationEffect.createOneShot(200, VibrationEffect.EFFECT_DOUBLE_CLICK))
       }
@@ -150,91 +141,33 @@ class ExpensesListFragment : Fragment(),
 
   }
 
-  private fun bindRecyclerView(view: View?) {
-    val recyclerView = view?.findViewById<RecyclerView>(R.id.recyclerview)
-
+  private fun bindRecyclerView() {
     recyclerAdapter = ExpenseListAdapter(this, this)
-    recyclerView?.apply {
+    binding.recyclerview.apply {
       adapter = recyclerAdapter
       layoutManager = LinearLayoutManager(activity?.applicationContext)
       isNestedScrollingEnabled = false
     }
     //Set the adapter to swipe function
     val itemTouchHelper = ItemTouchHelper(SwipeExpense(context, recyclerAdapter))
-    itemTouchHelper.attachToRecyclerView(recyclerView)
-  }
-
-  private val budgetObserver = Observer<Budget> { it ->
-    if (it != null) {
-      budgetFirstHalf = it.budgetForFirstFortnight
-      budgetSecondHalf = it.budgetForSecondFortnight
-      val totalBudgetForMonth = budgetFirstHalf + budgetSecondHalf
-      budgetForMonth.text = getString(R.string.dollarsingVariable, totalBudgetForMonth.toString())
-      expenseViewModel.budgetTotal.value = totalBudgetForMonth
-    } else {
-      budgetForMonth.text = getString(R.string.error_budget)
-      remainingTotal.text = getString(R.string.dollarsingVariable, "0")
-    }
+    itemTouchHelper.attachToRecyclerView(binding.recyclerview)
   }
   private val getExpensesObserver = Observer<List<Expenses>> { expenses ->
-    //Formatter to only get the days of the month
-    val formatter = SimpleDateFormat("dd", Locale.getDefault())
-    //Format dates to make the sum of total from 1st until 15th
-    val firstMonthHalfStart = formatter.parse(firstMonthHalfStringStart)!!
-    val firstMontHalfStartCompare = formatter.format(firstMonthHalfStart)
-    val firstMonthDate = formatter.parse(firstMonthHalfString)!!
-    val firstMonthCompare = formatter.format(firstMonthDate)
-    //Format dates to make the sum of total from 16th until 31th
-    val secondMonthHalfStart = formatter.parse(secondMonthHalfStringStart)!!
-    val secondMonthHalfStartCompare = formatter.format(secondMonthHalfStart)
-    val secondMonthHalf = formatter.parse(secondMonthHalfString)!!
-    val secondMonthHalfCompare = formatter.format(secondMonthHalf)
     expenses?.let {
-      totalOfMonthExpense = 0F
-      totalFirstHalf = 0F
-      totalSecondHalf = 0F
-      for (expense in it) {
-        totalOfMonthExpense += expense.total
-        val dateFormatted = formatter.format(expense.date)
-        if (dateFormatted in firstMontHalfStartCompare..firstMonthCompare) {
-          totalFirstHalf += expense.total
-        } else if (dateFormatted in secondMonthHalfStartCompare..secondMonthHalfCompare) {
-          totalSecondHalf += expense.total
-        }
-      }
-      totalOfMonth.text = getString(R.string.dollarsingVariable, String.format("%.2f", totalOfMonthExpense))
-      expenseViewModel.monthTotal.value = totalOfMonthExpense
       recyclerAdapter.submitList(it)
     }
   }
-
-  //Update the list by the last selected date. Variable desiredDate is global
-  private fun updateListByDesiredDate() {
-    expenseViewModel.getExpenses.observe(this, {
-      it?.let {
-        recyclerAdapter.submitList(it)
-      }
-    })
-  }
   override fun onClick(v: View?) {
     when (v?.id) {
-      R.id.tvTotalMonth -> {
+      binding.budgetForMonth.id -> {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
           vibrator.vibrate(VibrationEffect.createOneShot(150, 1))
         }
-        val halfMonthTotals =
-            HalfMonthTotals.newInstance(totalFirstHalf.toString(), totalSecondHalf.toString(), getString(R.string.total_of_the_month))
-        halfMonthTotals.show(childFragmentManager, "Totals")
+//        val halfMonthTotals =
+//            HalfMonthTotals.newInstance(budgetFirstHalf.toString(), budgetSecondHalf.toString(), getString(R.string.budgets_of_the_month))
+//        halfMonthTotals.show(childFragmentManager, "Budgets")
       }
-      R.id.incomeTotal -> {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-          vibrator.vibrate(VibrationEffect.createOneShot(150, 1))
-        }
-        val halfMonthTotals =
-            HalfMonthTotals.newInstance(budgetFirstHalf.toString(), budgetSecondHalf.toString(), getString(R.string.budgets_of_the_month))
-        halfMonthTotals.show(childFragmentManager, "Budgets")
-      }
-      R.id.fabMenu -> {
+      binding.fabMenu.id -> {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
           vibrator.vibrate(VibrationEffect.createOneShot(150, 1))
         }

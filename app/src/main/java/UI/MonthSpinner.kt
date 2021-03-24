@@ -12,14 +12,14 @@ class MonthSpinner(private val expenseViewModel: ExpenseViewModel) : AdapterView
     val selectedItem = parent?.getItemAtPosition(position) as String
     //If the user wants to see all the expenses
     if (selectedItem == "All Expenses") {
-      expenseViewModel.desiredDate.value = "All Expenses"
+      expenseViewModel.setDesiredDate("All Expenses")
     } else {
       //We only display the expenses of the desired month
       val selectedItemFormatter =
           SimpleDateFormat("MMM yyyy", Locale.getDefault()).parse(selectedItem)!!
       //We use a different format to make a db query
       val desiredDate = SimpleDateFormat("y-MM", Locale.getDefault()).format(selectedItemFormatter)
-      expenseViewModel.desiredDate.value = desiredDate
+      expenseViewModel.setDesiredDate(desiredDate)
     }
   }
 
