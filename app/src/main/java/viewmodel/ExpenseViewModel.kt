@@ -15,7 +15,7 @@ class ExpenseViewModel(private val repository: ExpensesRepository) : ViewModel()
   private val monthTotal = MutableLiveData<Float>()
   private val _budgetTotal = MutableLiveData<Float>()
   private val _desiredDate = MutableLiveData<String>()
-  private val desiredDate: LiveData<String>
+  val desiredDate: LiveData<String>
     get() = _desiredDate
 
   private val _totalFirstHalf = MutableLiveData<String>()
@@ -43,7 +43,11 @@ class ExpenseViewModel(private val repository: ExpensesRepository) : ViewModel()
     budgetFirstHalf.value = "0.0"
     budgetSecondHalf.value = "0.0"
     _budgetTotal.value = 0F
+    setDesiredDate("2021-03")
+  }
 
+  fun setDesiredDate(desiredDate: String) {
+    _desiredDate.value = desiredDate
   }
 
   val getExpenses: LiveData<List<Expenses>> = Transformations.switchMap(desiredDate) {
@@ -51,10 +55,6 @@ class ExpenseViewModel(private val repository: ExpensesRepository) : ViewModel()
       "All Expenses" -> allExpenses
       else -> getExpensesByDate(it)
     }
-  }
-
-  fun setDesiredDate(desiredDate: String) {
-    _desiredDate.value = desiredDate
   }
 
   val getMonthTotals: LiveData<String> = Transformations.map(getExpenses) { expenses ->
@@ -81,39 +81,40 @@ class ExpenseViewModel(private val repository: ExpensesRepository) : ViewModel()
         }
       }
       monthTotal.value = totalOfMonthExpense
-      Timber.d(totalFirstHalf.toString())
-      Timber.d(totalSecondHalf.toString())
       _totalFirstHalf.value = String.format("%.2f", totalFirstHalf)
       _totalSecondHalf.value = String.format("%.2f", totalSecondHalf)
       String.format("%.2f", totalOfMonthExpense)
     }
   }
 
-  val getBudgets = Transformations.switchMap(desiredDate) {
+  private val getBudgetByMonth: LiveData<Budget> = Transformations.switchMap(desiredDate) { date ->
+    repository.getBudgetByMonth(date).asLiveData()
+  }
+
+  val getBudgets: LiveData<String> = Transformations.map(getBudgetByMonth) { budget ->
     var totalBudgetForMonth: Float
     val formatter = SimpleDateFormat("MMMM yyyy", Locale.getDefault())
     val selectedItemFormatter =
         SimpleDateFormat("y-MM", Locale.getDefault()).parse(desiredDate.value!!)
     val formattedDate = formatter.format(selectedItemFormatter!!)
-    Transformations.map(getBudgetByMonth(it)) { budget ->
-      if (budget == null) {
-        budgetFirstHalf.value = "0.0"
-        budgetSecondHalf.value = "0.0"
+    Timber.d(formattedDate)
+    if (budget == null) {
+      budgetFirstHalf.value = "0.0"
+      budgetSecondHalf.value = "0.0"
+      budgetTimestamp.value = selectedItemFormatter.time
+      totalBudgetForMonth = 0F
+      _budgetTotal.value = totalBudgetForMonth
+    } else {
+      budget.let {
+        budgetFirstHalf.value = String.format("%.2f", budget.budgetForFirstFortnight)
+        budgetSecondHalf.value = String.format("%.2f", budget.budgetForSecondFortnight)
+        _budgetDate.value = formattedDate
         budgetTimestamp.value = selectedItemFormatter.time
-        totalBudgetForMonth = 0F
+        totalBudgetForMonth = budget.budgetForFirstFortnight + budget.budgetForSecondFortnight
         _budgetTotal.value = totalBudgetForMonth
-      } else {
-        budget.let {
-          budgetFirstHalf.value = String.format("%.2f", budget.budgetForFirstFortnight)
-          budgetSecondHalf.value = String.format("%.2f", budget.budgetForSecondFortnight)
-          _budgetDate.value = formattedDate
-          budgetTimestamp.value = selectedItemFormatter.time
-          totalBudgetForMonth = budget.budgetForFirstFortnight + budget.budgetForSecondFortnight
-          _budgetTotal.value = totalBudgetForMonth
-        }
       }
-      String.format("%.2f", totalBudgetForMonth)
     }
+    String.format("%.2f", totalBudgetForMonth)
   }
 
   val remainingTotal = Transformations.switchMap(_budgetTotal) { budget ->
@@ -162,22 +163,18 @@ class ExpenseViewModel(private val repository: ExpensesRepository) : ViewModel()
   }
 
   fun insertBudget() {
-    if (budgetFirstHalf.value?.isEmpty() == true) budgetFirstHalf.value = "0.0"
-    if (budgetSecondHalf.value?.isEmpty() == true) budgetSecondHalf.value = "0.0"
-
-    val budget = Budget(
-      budgetFirstHalf.value.toString().toFloat(),
-      budgetSecondHalf.value.toString().toFloat(),
-      budgetTimestamp.value!!
-    )
-    Timber.d("Timestamp ${budget}")
     viewModelScope.launch {
+      if (budgetFirstHalf.value?.isEmpty() == true) budgetFirstHalf.value = "0.0"
+      if (budgetSecondHalf.value?.isEmpty() == true) budgetSecondHalf.value = "0.0"
+
+      val budget = Budget(
+          budgetFirstHalf.value.toString().toFloat(),
+          budgetSecondHalf.value.toString().toFloat(),
+          budgetTimestamp.value!!
+      )
+      Timber.d("Timestamp ${budget}")
       repository.insertBudget(budget)
     }
-  }
-
-  private fun getBudgetByMonth(desiredMonth: String): LiveData<Budget> {
-    return repository.getBudgetByMonth(desiredMonth).asLiveData()
   }
 
   override fun onCleared() {
