@@ -1,0 +1,44 @@
+package com.example.monthlyexpenses.expensesdetails
+
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import com.example.monthlyexpenses.data.Expenses
+import com.example.monthlyexpenses.data.ExpensesRepository
+import com.example.monthlyexpenses.data.Items
+import timber.log.Timber
+
+class ExpenseDetailsViewModel(repository: ExpensesRepository, val expenseId: Long) : ViewModel() {
+
+    val expenses: LiveData<Expenses>?
+
+    init {
+        Timber.d("ExpenseDetailsViewModel Created")
+        Timber.d("ID expense $expenseId")
+        expenses = repository.getExpenseById(expenseId)
+        Timber.d("Expenses ${expenses?.value}")
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        Timber.d("ExpenseDetailsViewModel Cleared")
+    }
+
+    val getItems: LiveData<List<Items>> =
+        repository.getItemById(expenseId)
+}
+
+
+class ExpenseDetailViewModelFactory(
+    private val repository: ExpensesRepository,
+    private val expenseId: Long
+) : ViewModelProvider.Factory {
+    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(ExpenseDetailsViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return ExpenseDetailsViewModel(repository, expenseId) as T
+        }
+        throw IllegalArgumentException("Unknown view model class")
+    }
+
+}
