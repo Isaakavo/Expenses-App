@@ -128,7 +128,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:clickable="true"
-
+                                android:onClick="@{() -> expenseViewModel.onOpenMonthTotals()}"
                                 android:text="@{@string/dollarsingVariable(expenseViewModel.getMonthTotal)}"
                                 android:textColor="@color/black"
                                 android:textSize="15sp"

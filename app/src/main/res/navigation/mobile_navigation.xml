@@ -16,6 +16,15 @@
         <action
             android:id="@+id/action_navigation_home_to_expensesDetails"
             app:destination="@id/expensesDetails" />
+        <action
+            android:id="@+id/action_navigation_home_to_addBudgetDialogFragment"
+            app:destination="@id/addBudgetDialogFragment" />
+        <action
+            android:id="@+id/action_navigation_home_to_addBudgetDialogFragment2"
+            app:destination="@id/addBudgetDialogFragment" />
+        <action
+            android:id="@+id/action_navigation_home_to_halfMonthTotals"
+            app:destination="@id/halfMonthTotals" />
     </fragment>
     <fragment
         android:id="@+id/navigation_bank"
@@ -47,5 +56,23 @@
         <argument
             android:name="expenseId"
             app:argType="long" />
+    </dialog>
+    <dialog
+        android:id="@+id/addBudgetDialogFragment"
+        android:name="com.example.monthlyexpenses.addbudget.AddBudgetDialogFragment"
+        android:label="AddBudgetDialogFragment"
+        tools:layout="@layout/fragment_add_budget">
+        <argument
+            android:name="desiredDate"
+            app:argType="string" />
+    </dialog>
+    <dialog
+        android:id="@+id/halfMonthTotals"
+        android:name="com.example.monthlyexpenses.monthtotals.HalfMonthTotals"
+        android:label="HalfMonthTotals"
+        tools:layout="@layout/fragment_half_month_totals">
+        <argument
+            android:name="desiredDate"
+            app:argType="string" />
     </dialog>
 </navigation>
