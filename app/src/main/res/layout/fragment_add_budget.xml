@@ -7,7 +7,7 @@
 
         <variable
             name="budgets"
-            type="com.example.monthlyexpenses.viewmodel.ExpenseViewModel" />
+            type="com.example.monthlyexpenses.addbudget.AddBudgetViewModel" />
 
     </data>
 
@@ -16,7 +16,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:orientation="vertical"
-        tools:context=".expenses.AddBudgetDialogFragment">
+        tools:context=".addbudget.AddBudgetDialogFragment">
 
         <TextView
             android:id="@+id/addBudgetTitle"
@@ -25,8 +25,9 @@
             android:layout_marginBottom="15dp"
             android:gravity="center"
             android:padding="25dp"
-            android:text="@{@string/add_or_edit_budget_for_this_month(budgets.budgetDate)}"
-            android:textSize="24sp" />
+            android:text="@{@string/add_or_edit_budget_for_this_month(budgets.formattedDate)}"
+            android:textSize="24sp"
+            tools:text="@string/add_or_edit_budget_for_this_month" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -59,7 +60,7 @@
                 android:ems="10"
                 android:hint="@string/first_half_of_the_month"
                 android:inputType="number"
-                android:text="@={budgets.budgetFirstHalf}" />
+                android:text="@={budgets.firstHalfBudget}" />
         </LinearLayout>
 
         <LinearLayout
@@ -93,7 +94,7 @@
                 android:ems="10"
                 android:hint="@string/second_half_of_the_month"
                 android:inputType="number"
-                android:text="@={budgets.budgetSecondHalf}" />
+                android:text="@={budgets.secondHalfBudget}" />
 
         </LinearLayout>
 
@@ -136,6 +137,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
+            android:onClick="@{() -> budgets.onSubmitClick()}"
             android:text="@string/update_button" />
 
     </LinearLayout>

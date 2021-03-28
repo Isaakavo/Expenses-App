@@ -6,7 +6,7 @@
 
         <variable
             name="monthTotals"
-            type="com.example.monthlyexpenses.viewmodel.ExpenseViewModel" />
+            type="com.example.monthlyexpenses.monthtotals.HalfMonthTotalsViewModel" />
     </data>
 
     <LinearLayout
@@ -48,7 +48,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@{@string/dollarsingVariable(monthTotals.totalFirstHalf)}"
+                android:text="@{@string/dollarsingVariable(monthTotals.firstHalf)}"
                 android:textColor="@color/red"
                 android:textSize="@dimen/totalsFragmentSize"
                 tools:text="$0.0" />
@@ -78,7 +78,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@{@string/dollarsingVariable(monthTotals.totalSecondHalf)}"
+                android:text="@{@string/dollarsingVariable(monthTotals.secondHalf)}"
                 android:textColor="@color/red"
                 android:textSize="@dimen/totalsFragmentSize"
                 tools:text="$0.0" />
