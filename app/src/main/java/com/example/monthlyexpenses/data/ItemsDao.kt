@@ -1,8 +1,8 @@
-package data
+package com.example.monthlyexpenses.data
 
+import androidx.lifecycle.LiveData
 import androidx.room.*
 import kotlinx.coroutines.flow.Flow
-import model.Items
 
 @Dao
 interface ItemsDao {
@@ -11,7 +11,7 @@ interface ItemsDao {
     suspend fun insert(item: Items)
 
     @Query("SELECT * FROM items_table WHERE expenseId = :id")
-    fun getItemByID(id: Long): Flow<List<Items>>
+    fun getItemByID(id: Long?): LiveData<List<Items>>
 
     @Query("SELECT * FROM items_table")
     fun getAllItems(): Flow<List<Items>>

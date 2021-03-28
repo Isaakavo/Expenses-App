@@ -1,11 +1,11 @@
-package viewmodel
+package com.example.monthlyexpenses.viewmodel
 
 import androidx.lifecycle.*
-import data.ExpensesRepository
+import com.example.monthlyexpenses.data.Budget
+import com.example.monthlyexpenses.data.Expenses
+import com.example.monthlyexpenses.data.ExpensesRepository
+import com.example.monthlyexpenses.data.Items
 import kotlinx.coroutines.launch
-import model.Budget
-import model.Expenses
-import model.Items
 import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
@@ -137,7 +137,7 @@ class ExpenseViewModel(private val repository: ExpensesRepository) : ViewModel()
 
   private val allExpenses: LiveData<List<Expenses>> = repository.allExpenses.asLiveData()
 
-  private fun getExpensesByDate(desiredDate: String?): LiveData<List<Expenses>> {
+  private fun getExpensesByDate(desiredDate: String): LiveData<List<Expenses>> {
     return repository.getExpensesByDate(desiredDate)
   }
 
@@ -146,9 +146,9 @@ class ExpenseViewModel(private val repository: ExpensesRepository) : ViewModel()
     repository.insertExpenseAndItem(expense, item)
   }
 
-  fun getItemById(id: Long): LiveData<List<Items>> {
-    return repository.getItemById(id).asLiveData()
-  }
+//  fun getItemById(id: Long): LiveData<List<Items>> {
+//    return repository.getItemById(id).asLiveData()
+//  }
 
   fun deleteExpense(expense: Expenses) {
     viewModelScope.launch {

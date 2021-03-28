@@ -1,12 +1,13 @@
-package UI
+package com.example.monthlyexpenses.ui
 
 import android.view.View
 import android.widget.AdapterView
-import viewmodel.ExpenseViewModel
+import com.example.monthlyexpenses.expenseslist.ExpensesListViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
-class MonthSpinner(private val expenseViewModel: ExpenseViewModel) : AdapterView.OnItemSelectedListener {
+class MonthSpinner(private val expenseViewModel: ExpensesListViewModel) :
+  AdapterView.OnItemSelectedListener {
 
   override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
     val selectedItem = parent?.getItemAtPosition(position) as String
@@ -45,7 +46,7 @@ class MonthSpinner(private val expenseViewModel: ExpenseViewModel) : AdapterView
           }
         }
       }
-      //list.add("All Expenses")
+      list.add("All Expenses")
       return list
     }
   }

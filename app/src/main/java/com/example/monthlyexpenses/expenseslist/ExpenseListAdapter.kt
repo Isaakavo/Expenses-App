@@ -1,21 +1,27 @@
-package adapter
+package com.example.monthlyexpenses.adapter
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.monthlyexpenses.databinding.RecyclerMenuBinding
-import com.example.monthlyexpenses.databinding.RecyclerviewItemBinding
-import model.Expenses
+import com.example.monthlyexpenses.data.Expenses
+import com.example.monthlyexpenses.databinding.ListItemExpenseListBinding
+import com.example.monthlyexpenses.databinding.ListItemMenuBinding
 import java.text.DateFormat
+
+
+private const val SHOW_MENU = 1
+private const val HIDE_MENU = 2
 
 //Recycler view adapter to show the list of expenses or display a menu on a selected expense to
 //Delete or edit
-class ExpenseListAdapter(private val onEditSelected: OnEditSelectedListener,
-                         private val onClickListener: OnClickListener) :
+class ExpenseListAdapter(
+    private val editClickListener: EditListItemListener,
+    private val deleteClickListener: DeleteListItemListener,
+    private val clicklistener: ExpenseListListener
+) :
     ListAdapter<Expenses, RecyclerView.ViewHolder>(ExpenseComparator()) {
 
     //Interfaces to know which expense has been selected for edit or delete
@@ -23,14 +29,6 @@ class ExpenseListAdapter(private val onEditSelected: OnEditSelectedListener,
         fun sendExpenseToEdit(expense: Expenses)
         fun sendExpenseToDelete(expense: Expenses)
     }
-
-    //Interface to display the items of the desired expense
-    interface OnClickListener {
-        fun onExpenseItemClicked(expense: Expenses)
-    }
-
-    private val SHOW_MENU = 1
-    private val HIDE_MENU = 2
 
     override fun getItemViewType(position: Int): Int {
         val expenseItem = getItem(position)
@@ -57,38 +55,30 @@ class ExpenseListAdapter(private val onEditSelected: OnEditSelectedListener,
             when {
                 position > 0 -> {
                     val previousExpense = getItem(position - 1)
-                    holder.bind(expense, previousExpense)
+                    holder.bind(expense, previousExpense, clicklistener)
                 }
                 else -> {
-                    holder.bindFirstItem(expense)
+                    holder.bindFirstItem(expense, clicklistener)
                 }
             }
         }else if (holder is MenuViewHolder){
-            holder.buttonEdit.setOnClickListener {
-                holder.editItem(getItem(position), onEditSelected)
-            }
-            holder.deleteButton.setOnClickListener {
-                holder.deleteItem(getItem(position), onEditSelected)
-            }
+            holder.bind(expense, editClickListener, deleteClickListener)
         }
     }
 
-    class ExpenseViewHolder(val binding: RecyclerviewItemBinding) : RecyclerView.ViewHolder(binding.root) {
-        //Init the interface to display data of expense
-//        init {
-//            binding.itemLayout.setOnClickListener {
-//                onClickListener.onExpenseItemClicked(expenses)
-//            }
-//        }
+    class ExpenseViewHolder(val binding: ListItemExpenseListBinding) :
+        RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(expense: Expenses, previousExpense: Expenses) {
+        fun bind(expense: Expenses, previousExpense: Expenses, clicklistener: ExpenseListListener) {
             binding.expense = expense
             binding.executePendingBindings()
+            binding.clicklistener = clicklistener
             setSectionDate(expense.date, previousExpense.date)
         }
 
-        fun bindFirstItem(expense: Expenses) {
+        fun bindFirstItem(expense: Expenses, clicklistener: ExpenseListListener) {
             binding.expense = expense
+            binding.clicklistener = clicklistener
             binding.executePendingBindings()
         }
 
@@ -110,30 +100,28 @@ class ExpenseListAdapter(private val onEditSelected: OnEditSelectedListener,
         companion object {
             fun from(parent: ViewGroup): ExpenseViewHolder {
                 val layoutInflater = LayoutInflater.from(parent.context)
-                val binding = RecyclerviewItemBinding.inflate(layoutInflater, parent, false)
+                val binding = ListItemExpenseListBinding.inflate(layoutInflater, parent, false)
                 return ExpenseViewHolder(binding)
             }
         }
     }
 
     //Menu view holder
-    class MenuViewHolder(binding: RecyclerMenuBinding) : RecyclerView.ViewHolder(binding.root) {
-        val buttonEdit: LinearLayout = binding.editButton
-        val deleteButton: LinearLayout = binding.deleteButton
-
-        fun editItem(expense: Expenses, listener: OnEditSelectedListener) {
-            listener.sendExpenseToEdit(expense)
+    class MenuViewHolder(val binding: ListItemMenuBinding) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(
+            expense: Expenses,
+            editClickListener: EditListItemListener,
+            deleteClickListener: DeleteListItemListener
+        ) {
+            binding.expense = expense
+            binding.editClickListener = editClickListener
+            binding.deleteClickListener = deleteClickListener
         }
-
-        fun deleteItem(expense: Expenses, listener: OnEditSelectedListener) {
-            listener.sendExpenseToDelete(expense)
-        }
-
 
         companion object {
             fun from(parent: ViewGroup): MenuViewHolder {
                 val layoutInflater = LayoutInflater.from(parent.context)
-                val binding = RecyclerMenuBinding.inflate(layoutInflater, parent, false)
+                val binding = ListItemMenuBinding.inflate(layoutInflater, parent, false)
                 return MenuViewHolder(binding)
             }
         }
@@ -175,4 +163,16 @@ class ExpenseComparator : DiffUtil.ItemCallback<Expenses>() {
     override fun areContentsTheSame(oldItem: Expenses, newItem: Expenses): Boolean {
         return oldItem == newItem
     }
+}
+
+class ExpenseListListener(val clicklistener: (expenseId: Long) -> Unit) {
+    fun onClick(expense: Expenses) = clicklistener(expense.id)
+}
+
+class EditListItemListener(val clicklistener: (expenseId: Long) -> Unit) {
+    fun onEditClick(expense: Expenses) = clicklistener(expense.id)
+}
+
+class DeleteListItemListener(val clicklistener: (expense: Expenses) -> Unit) {
+    fun onDeleteClick(expense: Expenses) = clicklistener(expense)
 }

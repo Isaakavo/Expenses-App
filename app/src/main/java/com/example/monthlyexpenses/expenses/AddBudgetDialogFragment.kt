@@ -7,7 +7,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.example.monthlyexpenses.R
 import com.example.monthlyexpenses.databinding.FragmentAddBudgetBinding
-import viewmodel.ExpenseViewModel
+import com.example.monthlyexpenses.viewmodel.ExpenseViewModel
 
 
 class AddBudgetDialogFragment : DialogFragment() {

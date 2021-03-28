@@ -7,12 +7,15 @@
 
     <fragment
         android:id="@+id/navigation_home"
-        android:name="com.example.monthlyexpenses.expenses.ExpensesListFragment"
+        android:name="com.example.monthlyexpenses.expenseslist.ExpensesListFragment"
         android:label="@string/app_title"
         tools:layout="@layout/fragment_expense_list">
         <action
             android:id="@+id/action_navigation_home_to_addNewExpense"
             app:destination="@id/addNewExpense" />
+        <action
+            android:id="@+id/action_navigation_home_to_expensesDetails"
+            app:destination="@id/expensesDetails" />
     </fragment>
     <fragment
         android:id="@+id/navigation_bank"
@@ -21,19 +24,28 @@
         tools:layout="@layout/fragment_bank" />
     <fragment
         android:id="@+id/addNewExpense"
-        android:name="com.example.monthlyexpenses.expenses.AddNewExpense"
+        android:name="com.example.monthlyexpenses.expensesadd.AddNewExpense"
         android:label="@string/add_expense"
         tools:layout="@layout/activity_add_new_expense">
         <argument
             android:name="flag"
             app:argType="integer" />
-        <argument
-            android:name="expenseObject"
-            app:argType="model.Expenses" />
         <action
             android:id="@+id/action_addNewExpense_to_navigation_home"
             app:destination="@id/navigation_home"
             app:popUpTo="@id/navigation_home"
             app:popUpToInclusive="true" />
+        <argument
+            android:name="expenseId"
+            app:argType="long" />
     </fragment>
+    <dialog
+        android:id="@+id/expensesDetails"
+        android:name="com.example.monthlyexpenses.expensesdetails.ExpensesDetails"
+        android:label="ExpensesDetails"
+        tools:layout="@layout/fragment_expenses_details">
+        <argument
+            android:name="expenseId"
+            app:argType="long" />
+    </dialog>
 </navigation>

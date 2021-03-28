@@ -6,13 +6,18 @@
 
         <variable
             name="expense"
-            type="model.Expenses" />
+            type="com.example.monthlyexpenses.data.Expenses" />
+
+        <variable
+            name="clicklistener"
+            type="com.example.monthlyexpenses.adapter.ExpenseListListener" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/item_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:onClick="@{() -> clicklistener.onClick(expense)}">
 
         <View
             android:id="@+id/itemDivider"

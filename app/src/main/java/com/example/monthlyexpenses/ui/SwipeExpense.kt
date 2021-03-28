@@ -1,6 +1,5 @@
-package UI
+package com.example.monthlyexpenses.ui
 
-import adapter.ExpenseListAdapter
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.drawable.ColorDrawable
@@ -8,6 +7,7 @@ import androidx.core.content.ContextCompat.getColor
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.monthlyexpenses.R
+import com.example.monthlyexpenses.adapter.ExpenseListAdapter
 
 class SwipeExpense(context: Context?, val adapter: ExpenseListAdapter) : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
 

@@ -10,7 +10,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.example.monthlyexpenses.R
 import com.example.monthlyexpenses.databinding.FragmentHalfMonthTotalsBinding
-import viewmodel.ExpenseViewModel
+import com.example.monthlyexpenses.viewmodel.ExpenseViewModel
 
 //Fragment to show the expenses of the month every fifteen days
 class HalfMonthTotals : DialogFragment() {

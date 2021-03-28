@@ -1,4 +1,4 @@
-package model
+package com.example.monthlyexpenses.data
 
 import android.os.Parcelable
 import androidx.room.ColumnInfo

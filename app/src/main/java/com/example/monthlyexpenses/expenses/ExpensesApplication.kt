@@ -2,8 +2,8 @@ package com.example.monthlyexpenses.expenses
 
 import android.app.Application
 import com.example.monthlyexpenses.BuildConfig
-import data.ExpensesRepository
-import data.ExpensesRoomDatabase
+import com.example.monthlyexpenses.data.ExpensesRepository
+import com.example.monthlyexpenses.data.ExpensesRoomDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import timber.log.Timber

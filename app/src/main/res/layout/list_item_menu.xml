@@ -3,6 +3,17 @@
 
     <data>
 
+        <variable
+            name="expense"
+            type="com.example.monthlyexpenses.data.Expenses" />
+
+        <variable
+            name="editClickListener"
+            type="com.example.monthlyexpenses.adapter.EditListItemListener" />
+
+        <variable
+            name="deleteClickListener"
+            type="com.example.monthlyexpenses.adapter.DeleteListItemListener" />
     </data>
 
     <LinearLayout
@@ -18,6 +29,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:onClick="@{() -> editClickListener.onEditClick(expense)}"
             android:background="@color/editBackground"
             android:clickable="true"
             android:gravity="center"
@@ -48,6 +60,7 @@
             android:background="@color/deleteBackground"
             android:clickable="true"
             android:gravity="center"
+            android:onClick="@{() -> deleteClickListener.onDeleteClick(expense)}"
             android:orientation="vertical">
 
             <ImageView

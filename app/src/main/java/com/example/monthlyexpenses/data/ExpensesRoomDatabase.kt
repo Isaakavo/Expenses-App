@@ -1,4 +1,4 @@
-package data
+package com.example.monthlyexpenses.data
 
 import android.content.Context
 import androidx.room.Database
@@ -6,9 +6,6 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
-import model.Budget
-import model.Expenses
-import model.Items
 
 
 @Database(
@@ -47,7 +44,7 @@ abstract class ExpensesRoomDatabase: RoomDatabase() {
         fun getDatabase(context: Context): ExpensesRoomDatabase {
             // if the INSTANCE is not null, then return it,
             // if it is, then create the database
-            return INSTANCE?: synchronized(this){
+            return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     ExpensesRoomDatabase::class.java,

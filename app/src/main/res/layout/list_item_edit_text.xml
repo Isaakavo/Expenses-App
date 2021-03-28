@@ -5,7 +5,11 @@
 
         <variable
             name="item"
-            type="model.Items" />
+            type="com.example.monthlyexpenses.data.Items" />
+
+        <variable
+            name="viewmodel"
+            type="com.example.monthlyexpenses.expensesadd.ExpensesAddViewModel" />
 
     </data>
 
@@ -15,6 +19,7 @@
         android:orientation="horizontal">
 
         <EditText
+            android:id="@+id/item_concept"
             style="@style/Widget.AppCompat.Light.AutoCompleteTextView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -35,6 +40,7 @@
             android:textSize="18sp" />
 
         <EditText
+            android:id="@+id/item_price"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"

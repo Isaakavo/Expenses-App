@@ -5,6 +5,13 @@
 
     <data>
 
+        <variable
+            name="expenses"
+            type="com.example.monthlyexpenses.data.Expenses" />
+
+        <variable
+            name="viewmodel"
+            type="com.example.monthlyexpenses.expensesadd.ExpensesAddViewModel" />
     </data>
 
     <androidx.core.widget.NestedScrollView
@@ -12,11 +19,12 @@
         android:layout_height="match_parent"
         android:fillViewport="true"
         >
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            tools:context=".expenses.AddNewExpense">
+            tools:context=".expensesadd.AddNewExpense">
 
             <EditText
                 android:id="@+id/etConcept"
@@ -26,6 +34,7 @@
                 android:layout_marginTop="20dp"
                 android:autofillHints="false"
                 android:cursorVisible="true"
+                android:text="@={viewmodel.concept}"
                 android:defaultFocusHighlightEnabled="true"
                 android:elegantTextHeight="true"
                 android:ems="10"
@@ -34,7 +43,7 @@
                 android:inputType="textAutoCorrect|text|textCapSentences|textAutoComplete" />
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerviewAddExpense"
+                android:id="@+id/item_list_recyclerView"
                 android:layout_width="320dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -42,7 +51,7 @@
                 android:isScrollContainer="true"
                 android:overScrollMode="never"
                 android:clipToPadding="false"
-                tools:listitem="@layout/edit_text_item">
+                tools:listitem="@layout/list_item_edit_text">
 
             </androidx.recyclerview.widget.RecyclerView>
 
@@ -60,6 +69,7 @@
                     android:layout_marginEnd="10dp"
                     android:background="?android:selectableItemBackground"
                     android:clickable="true"
+                    android:onClick="@{()-> viewmodel.addEditText()}"
                     android:contentDescription="@string/description_button_add_new_comment"
                     android:src="@drawable/ic_baseline_add_circle_outline_24" />
 
@@ -71,14 +81,15 @@
                     android:layout_marginEnd="50dp"
                     android:background="?android:selectableItemBackground"
                     android:clickable="true"
+                    android:onClick="@{()-> viewmodel.removeEditText()}"
                     android:contentDescription="@string/description_button_add_new_comment"
                     android:src="@drawable/ic_baseline_remove_circle_outline_24" />
             </LinearLayout>
 
             <EditText
                 android:id="@+id/etDate"
-                android:layout_width="170dp"
-                android:layout_height="wrap_content"
+                android:layout_width="173dp"
+                android:layout_height="42dp"
                 android:layout_gravity="end"
                 android:layout_marginTop="10dp"
                 android:layout_marginEnd="50dp"
@@ -89,7 +100,9 @@
                 android:hint="@string/date"
                 android:importantForAutofill="no"
                 android:inputType="date"
-                android:maxLines="1" />
+                android:maxLines="1"
+                android:onClick="@{() -> viewmodel.displayDatePicker()}"
+                android:text="@={viewmodel.editTextDate}" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -101,6 +114,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:text="@string/add"
+                    android:onClick="@{()-> viewmodel.onSendToDatabase()}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.5"
