@@ -11,10 +11,10 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.monthlyexpenses.ExpensesApplication
 import com.example.monthlyexpenses.R
 import com.example.monthlyexpenses.adapter.EditTextAdapter
 import com.example.monthlyexpenses.databinding.ActivityAddNewExpenseBinding
-import com.example.monthlyexpenses.expenses.ExpensesApplication
 import com.example.monthlyexpenses.expenseslist.ExpensesListFragment
 import com.example.monthlyexpenses.setDateFormat
 import com.example.monthlyexpenses.ui.DatePickerFragment
@@ -28,8 +28,6 @@ class AddNewExpense : Fragment() {
 
   private lateinit var listener: OnAddNewExpenseOpen
 
-  //  private val expenseViewModel: ExpenseViewModel by activityViewModels()
-  //private lateinit var expenseAddViewModel: ExpensesAddViewModel
   /*
   * interface to communicate with main activity
   * to show and hide the bottom navvigation menu

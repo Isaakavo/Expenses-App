@@ -14,9 +14,7 @@ class ExpenseDetailsViewModel(repository: ExpensesRepository, val expenseId: Lon
 
     init {
         Timber.d("ExpenseDetailsViewModel Created")
-        Timber.d("ID expense $expenseId")
         expenses = repository.getExpenseById(expenseId)
-        Timber.d("Expenses ${expenses?.value}")
     }
 
     override fun onCleared() {

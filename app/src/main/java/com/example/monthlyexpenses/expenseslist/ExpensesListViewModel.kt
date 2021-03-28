@@ -1,7 +1,6 @@
 package com.example.monthlyexpenses.expenseslist
 
 import androidx.lifecycle.*
-import com.example.monthlyexpenses.data.Budget
 import com.example.monthlyexpenses.data.Expenses
 import com.example.monthlyexpenses.data.ExpensesRepository
 import kotlinx.coroutines.launch
@@ -10,15 +9,13 @@ import timber.log.Timber
 class ExpensesListViewModel(private val repository: ExpensesRepository) : ViewModel() {
 
     private val _desiredDate = MutableLiveData<String>()
-    private val desiredDate: LiveData<String>
+    val desiredDate: LiveData<String>
         get() = _desiredDate
     private val _budgetTotal = MutableLiveData<Float>()
     private val _monthTotal = MutableLiveData<Float>()
 
     init {
         Timber.d("ExpensesListViewModel Created")
-        _budgetTotal.value = 0F
-        _monthTotal.value = 0F
     }
 
     override fun onCleared() {
@@ -30,17 +27,16 @@ class ExpensesListViewModel(private val repository: ExpensesRepository) : ViewMo
         _desiredDate.value = desiredDate
     }
 
-    private val getBudgetByMonth: LiveData<Budget> =
-        Transformations.switchMap(desiredDate) { date ->
-            repository.getBudgetByMonth(date).asLiveData()
-        }
+    private val getBudgetByMonth = Transformations.switchMap(desiredDate) { date ->
+        repository.getBudgetByMonth(date).asLiveData()
+    }
 
     val getTotalBudgetMonth: LiveData<String> = Transformations.map(getBudgetByMonth) { budget ->
         var totalBudgetForMonth = 0F
         budget?.let {
             totalBudgetForMonth = budget.budgetForFirstFortnight + budget.budgetForSecondFortnight
-            _budgetTotal.value = totalBudgetForMonth
         }
+        _budgetTotal.value = totalBudgetForMonth
         String.format("%.2f", totalBudgetForMonth)
     }
     val getExpenses: LiveData<List<Expenses>> = Transformations.switchMap(desiredDate) { date ->
@@ -64,7 +60,8 @@ class ExpensesListViewModel(private val repository: ExpensesRepository) : ViewMo
 
     val remainingTotal = Transformations.switchMap(_budgetTotal) { budget ->
         Transformations.map(_monthTotal) { month ->
-            val remainingTotal: Float = (budget - month)
+            var remainingTotal = 0F
+            if (budget != 0F) remainingTotal = (budget - month)
             String.format("%.2f", remainingTotal)
         }
     }
@@ -72,7 +69,6 @@ class ExpensesListViewModel(private val repository: ExpensesRepository) : ViewMo
 
     private val allExpenses: LiveData<List<Expenses>> = repository.allExpenses.asLiveData()
     private fun getExpensesByDate(desiredDate: String): LiveData<List<Expenses>> {
-        Timber.d("Fecha deseada $desiredDate")
         return repository.getExpensesByDate(desiredDate)
     }
 
@@ -100,7 +96,7 @@ class ExpensesListViewModel(private val repository: ExpensesRepository) : ViewMo
         _navigateToEditExpense.value = null
     }
 
-    private val _showDeleteSnackBar = MutableLiveData<Expenses>()
+    private val _showDeleteSnackBar = MutableLiveData<Expenses?>()
     val showDeleteSnackBar
         get() = _showDeleteSnackBar
 
@@ -109,6 +105,10 @@ class ExpensesListViewModel(private val repository: ExpensesRepository) : ViewMo
             repository.deleteExpense(expenses)
             _showDeleteSnackBar.value = expenses
         }
+    }
+
+    fun onDeleted() {
+        _showDeleteSnackBar.value = null
     }
 
     private val _navigateToAddExpense = MutableLiveData<Boolean>()
@@ -122,6 +122,15 @@ class ExpensesListViewModel(private val repository: ExpensesRepository) : ViewMo
     fun onAddExpenseNavigated() {
         _navigateToAddExpense.value = false
     }
+
+    private val _openMonthTotals = MutableLiveData<Boolean?>()
+    val openMonthTotals
+        get() = _openMonthTotals
+
+    fun onOpenMonthTotals() {
+        _openMonthTotals.value = true
+    }
+
 }
 
 class ExpenseListViewModelFactory(private val repository: ExpensesRepository) :

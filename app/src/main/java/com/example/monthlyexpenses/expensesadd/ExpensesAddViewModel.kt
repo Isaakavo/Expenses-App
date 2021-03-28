@@ -16,10 +16,6 @@ class ExpensesAddViewModel(val repository: ExpensesRepository, val expenseId: Lo
     private var itemList: MutableList<Items> = arrayListOf()
     private val itemListToDelete: ArrayList<Items> = arrayListOf()
 
-    private val _expenseId = MutableLiveData<Long?>()
-//  val expenseId
-//      get() = _expenseId
-
     var isConceptFill = false
     val concept = MutableLiveData<String>()
     val editTextDate = MutableLiveData<String>()
@@ -28,17 +24,12 @@ class ExpensesAddViewModel(val repository: ExpensesRepository, val expenseId: Lo
 
     val items = repository.getItemById(expenseId)
 
-//  fun setExpenseId(expenseId: Long){
-//    expenseId = expenseId
-//  }
-
     private val _itemListLiveData = MutableLiveData<List<Items>>()
     val itemListLiveData
         get() = _itemListLiveData
 
     fun addEditText() {
         itemList.add(Items())
-        Timber.d("$itemList")
         _itemListLiveData.value = itemList
     }
 
@@ -100,7 +91,6 @@ class ExpensesAddViewModel(val repository: ExpensesRepository, val expenseId: Lo
     init {
         Timber.d("ExpenseDetailsViewModel Created")
         addEditText()
-        Timber.d("Concept value ${concept.value}")
         editTextDate.value = setCurrentDayFormat()
         _timestamp.value = getCurrentTimestamp
     }

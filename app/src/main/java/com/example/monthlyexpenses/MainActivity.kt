@@ -8,7 +8,6 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import com.example.monthlyexpenses.databinding.ActivityMainBinding
-import com.example.monthlyexpenses.expenses.ExpensesApplication
 import com.example.monthlyexpenses.expensesadd.AddNewExpense
 import com.example.monthlyexpenses.viewmodel.ExpenseViewModelFactory
 

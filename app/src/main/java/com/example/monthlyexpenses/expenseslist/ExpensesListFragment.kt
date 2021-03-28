@@ -18,6 +18,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.monthlyexpenses.ExpensesApplication
 import com.example.monthlyexpenses.R
 import com.example.monthlyexpenses.adapter.DeleteListItemListener
 import com.example.monthlyexpenses.adapter.EditListItemListener
@@ -25,12 +26,9 @@ import com.example.monthlyexpenses.adapter.ExpenseListAdapter
 import com.example.monthlyexpenses.adapter.ExpenseListListener
 import com.example.monthlyexpenses.data.Expenses
 import com.example.monthlyexpenses.databinding.FragmentExpenseListBinding
-import com.example.monthlyexpenses.expenses.AddBudgetDialogFragment
-import com.example.monthlyexpenses.expenses.ExpensesApplication
 import com.example.monthlyexpenses.ui.MonthSpinner
 import com.example.monthlyexpenses.ui.SwipeExpense
 import com.google.android.material.snackbar.Snackbar
-import timber.log.Timber
 
 class ExpensesListFragment : Fragment() {
 
@@ -102,7 +100,6 @@ class ExpensesListFragment : Fragment() {
       }
     })
     expenseListViewModel.showDeleteSnackBar.observe(viewLifecycleOwner, { expenseToDelete ->
-      Timber.d("$expenseToDelete")
       expenseToDelete?.let {
         Snackbar.make(
           requireView(),
@@ -110,18 +107,18 @@ class ExpensesListFragment : Fragment() {
           Snackbar.LENGTH_LONG
         )
           .setBackgroundTint(requireContext().getColor(R.color.red)).show()
+        expenseListViewModel.onDeleted()
       }
     })
-//    expenseViewModel.eventOpTvMonthTotal.observe(viewLifecycleOwner, { isOpen ->
-//      if (isOpen) {
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//          vibrator.vibrate(VibrationEffect.createOneShot(150, 1))
-//        }
-//        val halfMonthTotals = HalfMonthTotals()
-//        halfMonthTotals.show(childFragmentManager, "Totals")
-//        expenseViewModel.onOpenMonthTotalFragmentComplete()
-//      }
-//    })
+    expenseListViewModel.openMonthTotals.observe(viewLifecycleOwner, { open ->
+      open?.let {
+        val desiredDate = expenseListViewModel.desiredDate.value
+        view?.findNavController()?.navigate(
+          ExpensesListFragmentDirections
+            .actionNavigationHomeToHalfMonthTotals(desiredDate!!)
+        )
+      }
+    })
     return binding.root
   }
 
@@ -136,15 +133,24 @@ class ExpensesListFragment : Fragment() {
     arrayAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item)
     binding.monthSpinner.adapter = arrayAdapter
     binding.monthSpinner.onItemSelectedListener = MonthSpinner(expenseListViewModel)
-//    //When user clicks on total of month a fragment is displayed to show the expenses by half month
-//    binding.TVIncome.setOnClickListener(this)
-//    binding.fabMenu.setOnClickListener(this)
     binding.fabMenu.setOnLongClickListener {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         vibrator.vibrate(VibrationEffect.createOneShot(200, VibrationEffect.EFFECT_DOUBLE_CLICK))
       }
-      val addBudgetFragment = AddBudgetDialogFragment()
-      addBudgetFragment.show(childFragmentManager, "AddBudget")
+      val desiredDate = expenseListViewModel.desiredDate.value
+      if (desiredDate != "All Expenses") {
+        view?.findNavController()?.navigate(
+          ExpensesListFragmentDirections
+            .actionNavigationHomeToAddBudgetDialogFragment(desiredDate!!)
+        )
+      } else {
+        Snackbar.make(
+          requireView(),
+          "You can't add a budget when seeing all expenses",
+          Snackbar.LENGTH_LONG
+        )
+          .show()
+      }
       true
     }
 
@@ -165,9 +171,7 @@ class ExpensesListFragment : Fragment() {
     itemTouchHelper.attachToRecyclerView(binding.recyclerview)
   }
   private val getExpensesObserver = Observer<List<Expenses>> { expenses ->
-    Timber.d(expenses.toString())
     expenses?.let {
-
       recyclerAdapter.submitList(it)
     }
   }
