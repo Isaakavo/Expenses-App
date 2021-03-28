@@ -1,7 +1,6 @@
-package com.example.monthlyexpenses.expenses
+package com.example.monthlyexpenses
 
 import android.app.Application
-import com.example.monthlyexpenses.BuildConfig
 import com.example.monthlyexpenses.data.ExpensesRepository
 import com.example.monthlyexpenses.data.ExpensesRoomDatabase
 import kotlinx.coroutines.CoroutineScope
