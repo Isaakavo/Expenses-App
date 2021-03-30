@@ -1,21 +1,23 @@
 package com.example.monthlyexpenses.ui
 
+import android.content.Context
 import android.view.View
 import android.widget.AdapterView
+import com.example.monthlyexpenses.R
 import com.example.monthlyexpenses.expenseslist.ExpensesListViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
-class MonthSpinner(private val expenseViewModel: ExpensesListViewModel) :
-  AdapterView.OnItemSelectedListener {
+class MonthSpinner(private val expenseViewModel: ExpensesListViewModel, val context: Context?) :
+    AdapterView.OnItemSelectedListener {
 
   override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
     val selectedItem = parent?.getItemAtPosition(position) as String
-    if (selectedItem == "All Expenses") {
-      expenseViewModel.setDesiredDate("All Expenses")
+    if (selectedItem == context?.getString(R.string.All_Expenses)) {
+      expenseViewModel.setDesiredDate(context.getString(R.string.All_Expenses))
     } else {
       val selectedItemFormatter =
-        SimpleDateFormat("MMM yyyy", Locale.getDefault()).parse(selectedItem)!!
+          SimpleDateFormat("MMM yyyy", Locale.getDefault()).parse(selectedItem)!!
       val desiredDate = SimpleDateFormat("y-MM", Locale.getDefault()).format(selectedItemFormatter)
       expenseViewModel.setDesiredDate(desiredDate)
     }
@@ -27,7 +29,7 @@ class MonthSpinner(private val expenseViewModel: ExpensesListViewModel) :
 
   companion object {
     //Get the past month of the year
-    fun getSpinnerMonths(): ArrayList<String> {
+    fun getSpinnerMonths(context: Context?): ArrayList<String> {
       val formatter = SimpleDateFormat("MMMM yyyy", Locale.getDefault())
       val list = arrayListOf<String>()
       Calendar.getInstance().let { calendar ->
@@ -46,7 +48,9 @@ class MonthSpinner(private val expenseViewModel: ExpensesListViewModel) :
           }
         }
       }
-      list.add("All Expenses")
+      context?.let {
+        list.add(context.getString(R.string.All_Expenses))
+      }
       return list
     }
   }

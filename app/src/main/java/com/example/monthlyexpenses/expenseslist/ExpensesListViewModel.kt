@@ -42,6 +42,7 @@ class ExpensesListViewModel(private val repository: ExpensesRepository) : ViewMo
     val getExpenses: LiveData<List<Expenses>> = Transformations.switchMap(desiredDate) { date ->
         when (date) {
             "All Expenses" -> allExpenses
+            "Todos Los Gastos" -> allExpenses
             else -> getExpensesByDate(date)
         }
     }
