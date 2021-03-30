@@ -71,6 +71,7 @@ class AddNewExpense : Fragment() {
         expense?.let {
           expenseAddViewModel.concept.value = expense.concept
           expenseAddViewModel.editTextDate.value = setDateFormat(expense.date)
+          expenseAddViewModel.setTimeStamp(expense.date)
           expenseAddViewModel.isConceptFill = true
         }
       })
