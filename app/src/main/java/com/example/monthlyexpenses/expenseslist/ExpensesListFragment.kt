@@ -102,11 +102,11 @@ class ExpensesListFragment : Fragment() {
     expenseListViewModel.showDeleteSnackBar.observe(viewLifecycleOwner, { expenseToDelete ->
       expenseToDelete?.let {
         Snackbar.make(
-          requireView(),
-          "You have deleted ${expenseToDelete.concept}",
-          Snackbar.LENGTH_LONG
+            requireView(),
+            getString(R.string.You_have_deleted, expenseToDelete.concept),
+            Snackbar.LENGTH_LONG
         )
-          .setBackgroundTint(requireContext().getColor(R.color.red)).show()
+            .setBackgroundTint(requireContext().getColor(R.color.red)).show()
         expenseListViewModel.onDeleted()
       }
     })
@@ -126,28 +126,28 @@ class ExpensesListFragment : Fragment() {
   private fun bindViews() {
     val arrayAdapter =
       ArrayAdapter(
-        requireContext(),
-        android.R.layout.simple_spinner_dropdown_item,
-        MonthSpinner.getSpinnerMonths()
+          requireContext(),
+          android.R.layout.simple_spinner_dropdown_item,
+          MonthSpinner.getSpinnerMonths(this.context)
       )
     arrayAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item)
     binding.monthSpinner.adapter = arrayAdapter
-    binding.monthSpinner.onItemSelectedListener = MonthSpinner(expenseListViewModel)
+    binding.monthSpinner.onItemSelectedListener = MonthSpinner(expenseListViewModel, this.context)
     binding.fabMenu.setOnLongClickListener {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         vibrator.vibrate(VibrationEffect.createOneShot(200, VibrationEffect.EFFECT_DOUBLE_CLICK))
       }
       val desiredDate = expenseListViewModel.desiredDate.value
-      if (desiredDate != "All Expenses") {
+      if (desiredDate != getString(R.string.All_Expenses)) {
         view?.findNavController()?.navigate(
-          ExpensesListFragmentDirections
-            .actionNavigationHomeToAddBudgetDialogFragment(desiredDate!!)
+            ExpensesListFragmentDirections
+                .actionNavigationHomeToAddBudgetDialogFragment(desiredDate!!)
         )
       } else {
         Snackbar.make(
-          requireView(),
-          "You can't add a budget when seeing all expenses",
-          Snackbar.LENGTH_LONG
+            requireView(),
+            getString(R.string.You_cant_add_a_budget_when_seeing_all_expenses),
+            Snackbar.LENGTH_LONG
         )
           .show()
       }
