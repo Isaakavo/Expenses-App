@@ -11,82 +11,75 @@
 
     </data>
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/linearLayout2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         tools:context=".ExpensesDetails">
 
-        <LinearLayout
-            android:layout_width="match_parent"
+
+        <TextView
+            android:id="@+id/details_concept"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingStart="15dp"
-            android:paddingTop="18dp"
-            android:paddingEnd="20dp"
-            android:paddingBottom="5dp">
+            android:layout_marginTop="15dp"
+            android:padding="25dp"
+            android:text="@string/concept_title"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:conceptText="@{expenses.expenses}"
+            app:layout_constraintBottom_toTopOf="@id/items_recyclerview"
+            app:layout_constraintEnd_toStartOf="@id/details_date"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/details_concept"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:layout_weight="1"
-                android:gravity="start"
-                android:paddingStart="5dp"
-                android:paddingEnd="5dp"
-                android:text="@string/concept_title"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                app:conceptText="@{expenses.expenses}" />
-
-            <TextView
-                android:id="@+id/details_date"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="15dp"
-                android:layout_weight="1"
-                android:gravity="start"
-                android:text="@string/date"
-                android:textSize="18sp"
-                android:textStyle="italic"
-                app:formattedDate="@{expenses.expenses}" />
-        </LinearLayout>
+        <TextView
+            android:id="@+id/details_date"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:padding="25dp"
+            android:text="@string/date"
+            android:textSize="18sp"
+            android:textStyle="italic"
+            app:formattedDateAndDays="@{expenses.expenses}"
+            app:layout_constraintBottom_toTopOf="@id/items_recyclerview"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/details_concept"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1.0" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/items_recyclerview"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="15dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="25dp"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintBottom_toTopOf="@id/totalDetails"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/details_concept"
+            tools:listitem="@layout/list_item_expense_details" />
 
-        <LinearLayout
+
+        <TextView
+            android:id="@+id/totalDetails"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <View
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1" />
-
-            <TextView
-                android:id="@+id/totalDetails"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
-                android:layout_weight="1"
-                android:gravity="start"
-                android:text="@string/total"
-                android:textColor="@color/red"
-                android:textSize="18sp"
-                app:totalText="@{expenses.expenses}" />
-        </LinearLayout>
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="15dp"
+            android:gravity="start"
+            android:text="@string/total"
+            android:textColor="@color/red"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.741"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/items_recyclerview"
+            app:layout_constraintVertical_bias="0.0"
+            app:totalText="@{expenses.expenses}" />
 
 
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
