@@ -3,13 +3,11 @@ package com.example.monthlyexpenses
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import com.example.monthlyexpenses.databinding.ActivityMainBinding
 import com.example.monthlyexpenses.expensesadd.AddNewExpense
-import com.example.monthlyexpenses.viewmodel.ExpenseViewModelFactory
 
 class MainActivity : AppCompatActivity(), AddNewExpense.OnAddNewExpenseOpen {
 
@@ -33,10 +31,6 @@ class MainActivity : AppCompatActivity(), AddNewExpense.OnAddNewExpenseOpen {
             navController,
             appBarConfiguration
         ) || super.onSupportNavigateUp()
-    }
-
-    override fun getDefaultViewModelProviderFactory(): ViewModelProvider.Factory {
-        return ExpenseViewModelFactory((application as ExpensesApplication).repository)
     }
 
     override fun onOpen() {
