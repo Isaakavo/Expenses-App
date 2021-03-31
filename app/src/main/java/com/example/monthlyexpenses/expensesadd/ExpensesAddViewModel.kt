@@ -91,6 +91,8 @@ class ExpensesAddViewModel(val repository: ExpensesRepository, val expenseId: Lo
     init {
         Timber.d("ExpenseDetailsViewModel Created")
         addEditText()
+        val c = Calendar.getInstance()
+        _timestamp.value = c.timeInMillis
         editTextDate.value = setCurrentDayFormat()
         _timestamp.value = getCurrentTimestamp
     }

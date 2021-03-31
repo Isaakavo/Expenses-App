@@ -20,12 +20,15 @@ import com.example.monthlyexpenses.setDateFormat
 import com.example.monthlyexpenses.ui.DatePickerFragment
 import com.google.android.material.snackbar.Snackbar
 import timber.log.Timber
+import java.text.DateFormat
+import java.util.*
 
 class AddNewExpense : Fragment() {
 
   private lateinit var editTextAdapter: EditTextAdapter
   private lateinit var binding: ActivityAddNewExpenseBinding
 
+  private lateinit var expenseAddViewModel: ExpensesAddViewModel
   private lateinit var listener: OnAddNewExpenseOpen
 
   /*
@@ -56,8 +59,8 @@ class AddNewExpense : Fragment() {
     val application = requireNotNull(this.activity).application
     val viewModelFactory =
       ExpensesAddViewModelFactory((application as ExpensesApplication).repository, args.expenseId)
-    val expenseAddViewModel =
-      ViewModelProvider(this, viewModelFactory).get(ExpensesAddViewModel::class.java)
+    expenseAddViewModel =
+        ViewModelProvider(this, viewModelFactory).get(ExpensesAddViewModel::class.java)
 
     binding = DataBindingUtil.inflate(inflater, R.layout.activity_add_new_expense, container, false)
     binding.lifecycleOwner = viewLifecycleOwner
@@ -103,7 +106,7 @@ class AddNewExpense : Fragment() {
 
     expenseAddViewModel.showDatePicker.observe(viewLifecycleOwner, {
       if (it) {
-        showDatePickerDialog(expenseAddViewModel)
+        showDatePickerDialog()
         expenseAddViewModel.hideDatePicker()
       }
     })
@@ -139,9 +142,18 @@ class AddNewExpense : Fragment() {
     }
   }
 
-  private fun showDatePickerDialog(expensesAddViewModel: ExpensesAddViewModel) {
-    val datePicker = DatePickerFragment(expensesAddViewModel)
+  private fun showDatePickerDialog() {
+
+    val datePicker = DatePickerFragment { day, month, year -> onDateSelected(day, month, year) }
     datePicker.show(childFragmentManager, "datePicker")
+  }
+
+  private fun onDateSelected(day: Int, month: Int, year: Int) {
+    val combinedCal = GregorianCalendar(TimeZone.getTimeZone("GMT-06:00"))
+    combinedCal.set(year, month, day)
+    val selectedDate = DateFormat.getDateInstance().format(combinedCal.timeInMillis)
+    expenseAddViewModel.editTextDate.value = selectedDate
+    expenseAddViewModel.setTimeStamp(combinedCal.timeInMillis)
   }
 
   private fun closeKeyboard() {
