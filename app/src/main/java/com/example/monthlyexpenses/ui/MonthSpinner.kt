@@ -35,6 +35,12 @@ class MonthSpinner(private val expenseViewModel: ExpensesListViewModel, val cont
       Calendar.getInstance().let { calendar ->
         val monthBefore = Calendar.getInstance()
         val currentYear = calendar.get(Calendar.YEAR)
+        val payday = calendar.get(Calendar.DAY_OF_MONTH)
+        val addNewMonthFlag = calendar.getMaximum(Calendar.DAY_OF_MONTH) - 2
+        if (payday > addNewMonthFlag) {
+          calendar.add(Calendar.MONTH, +1)
+          monthBefore.add(Calendar.MONTH, +1)
+        }
         //We loop to know which month has already pass
         for (i in 1 until 12) {
           //We only want the month of current year
@@ -45,7 +51,7 @@ class MonthSpinner(private val expenseViewModel: ExpensesListViewModel, val cont
             //Go backwards to know which month has passed
             calendar.add(Calendar.MONTH, -1)
             monthBefore.add(Calendar.MONTH, -1)
-          }
+          } else break
         }
       }
       context?.let {

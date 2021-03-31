@@ -18,9 +18,9 @@ fun setDateFormat(timestamp: Long): String {
   return DateFormat.getDateInstance().format(timestamp)
 }
 
-fun setDateMonthFormatted(date: String): String {
+fun setDateMonthFormatted(date: String?): String {
   val selectedItemFormatter =
-      SimpleDateFormat("y-MM", Locale.getDefault()).parse(date)
+      SimpleDateFormat("y-MM", Locale.getDefault()).parse(date!!)
   val formatter = SimpleDateFormat("MMMM yyyy", Locale.getDefault())
   return formatter.format(selectedItemFormatter!!)
 }
