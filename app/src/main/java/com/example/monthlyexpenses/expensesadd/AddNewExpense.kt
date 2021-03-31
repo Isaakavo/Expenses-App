@@ -19,8 +19,8 @@ import com.example.monthlyexpenses.expenseslist.ExpensesListFragment
 import com.example.monthlyexpenses.setDateFormat
 import com.example.monthlyexpenses.ui.DatePickerFragment
 import com.google.android.material.snackbar.Snackbar
-import timber.log.Timber
 import java.text.DateFormat
+import java.text.SimpleDateFormat
 import java.util.*
 
 class AddNewExpense : Fragment() {
@@ -30,6 +30,8 @@ class AddNewExpense : Fragment() {
 
   private lateinit var expenseAddViewModel: ExpensesAddViewModel
   private lateinit var listener: OnAddNewExpenseOpen
+
+  private lateinit var calendarToSend: Calendar
 
   /*
   * interface to communicate with main activity
@@ -69,6 +71,8 @@ class AddNewExpense : Fragment() {
     //Get the flag to know if user want to add or update an expense.
     //If user want to edit we populate the edit text for expense data and create dynamically edit text for items
     if (args.flag == ExpensesListFragment.editExpenseActivityRequestCode) {
+      calendarToSend = Calendar.getInstance()
+
       binding.okbutton.text = getString(R.string.update_button)
       expenseAddViewModel.expense?.observe(viewLifecycleOwner, { expense ->
         expense?.let {
@@ -80,7 +84,6 @@ class AddNewExpense : Fragment() {
       })
       expenseAddViewModel.itemListLiveData.observe(viewLifecycleOwner, { items ->
         items?.let {
-          Timber.d("Item list live data $it")
           editTextAdapter.submitList(items.toList())
         }
 
@@ -89,15 +92,32 @@ class AddNewExpense : Fragment() {
         expenseAddViewModel.setItemList(it)
       })
     } else if (args.flag == ExpensesListFragment.newExpenseActivityRequestCode) {
+
+      calendarToSend = Calendar.getInstance()
+      val dateObject =
+          SimpleDateFormat("y-MM", Locale.getDefault()).parse(args.desiredDate!!)
+      val calendarFormat = Calendar.getInstance()
+      calendarFormat.time = dateObject!!
+      val calendarNextMonth = Calendar.getInstance()
+      calendarNextMonth.add(Calendar.MONTH, 1)
+
+      if (calendarToSend.get(Calendar.DAY_OF_MONTH) >= calendarNextMonth.getMaximum(Calendar.DAY_OF_MONTH)) {
+        calendarToSend.set(Calendar.DAY_OF_MONTH, calendarNextMonth.getMaximum(Calendar.DAY_OF_MONTH) - 1)
+      }
+
+      calendarToSend.set(Calendar.MONTH, calendarFormat.get(Calendar.MONTH))
+      calendarToSend.set(Calendar.YEAR, calendarFormat.get(Calendar.YEAR))
+
+      expenseAddViewModel.editTextDate.value = setDateFormat(calendarToSend.timeInMillis)
+      expenseAddViewModel.setTimeStamp(calendarToSend.timeInMillis)
       expenseAddViewModel.itemListLiveData.observe(viewLifecycleOwner, { items ->
         editTextAdapter.submitList(items.toList())
       })
       expenseAddViewModel.concept.observe(viewLifecycleOwner, { concept ->
-        Timber.d(concept)
         if (concept.isNullOrEmpty()) {
           binding.etConcept.backgroundTintList =
-            context?.getColorStateList(R.color.red)
-          Snackbar.make(requireView(), "You must set a concept!", Snackbar.LENGTH_SHORT).show()
+              context?.getColorStateList(R.color.red)
+          Snackbar.make(requireView(), getString(R.string.You_must_set_a_concept), Snackbar.LENGTH_SHORT).show()
         } else {
           expenseAddViewModel.isConceptFill = true
         }
@@ -143,8 +163,7 @@ class AddNewExpense : Fragment() {
   }
 
   private fun showDatePickerDialog() {
-
-    val datePicker = DatePickerFragment { day, month, year -> onDateSelected(day, month, year) }
+    val datePicker = DatePickerFragment(calendarToSend) { day, month, year -> onDateSelected(day, month, year) }
     datePicker.show(childFragmentManager, "datePicker")
   }
 

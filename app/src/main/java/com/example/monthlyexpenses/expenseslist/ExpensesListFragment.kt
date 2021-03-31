@@ -81,8 +81,8 @@ class ExpensesListFragment : Fragment() {
         vibrate()
         recyclerAdapter.closeMenu()
         view?.findNavController()?.navigate(
-          ExpensesListFragmentDirections
-            .actionNavigationHomeToAddNewExpense(editExpenseActivityRequestCode, expenseId)
+            ExpensesListFragmentDirections
+                .actionNavigationHomeToAddNewExpense(editExpenseActivityRequestCode, expenseId, null)
         )
         expenseListViewModel.onEditNavigated()
       }
@@ -91,10 +91,11 @@ class ExpensesListFragment : Fragment() {
     expenseListViewModel.navigateToAddExpense.observe(viewLifecycleOwner, { navigate ->
       if (navigate) {
         vibrate()
+        val desiredDate = expenseListViewModel.desiredDate.value
         view?.findNavController()?.navigate(
-          ExpensesListFragmentDirections.actionNavigationHomeToAddNewExpense(
-            newExpenseActivityRequestCode, 0
-          )
+            ExpensesListFragmentDirections.actionNavigationHomeToAddNewExpense(
+                newExpenseActivityRequestCode, 0, desiredDate
+            )
         )
         expenseListViewModel.onAddExpenseNavigated()
       }

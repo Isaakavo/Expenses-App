@@ -47,6 +47,10 @@
         <argument
             android:name="expenseId"
             app:argType="long" />
+        <argument
+            android:name="desiredDate"
+            app:argType="string"
+            app:nullable="true" />
     </fragment>
     <dialog
         android:id="@+id/expensesDetails"
