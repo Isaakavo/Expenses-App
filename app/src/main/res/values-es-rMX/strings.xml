@@ -40,4 +40,5 @@
     <string name="You_cant_add_a_budget_when_seeing_all_expenses">No puedes agregar un ingreso cuando ves todos los gastos.</string>
     <string name="You_have_deleted">Has borrado %1$s</string>
     <string name="All_Expenses">Todos Los Gastos</string>
+    <string name="You_must_set_a_concept">Debe poner un concepto!</string>
 </resources>

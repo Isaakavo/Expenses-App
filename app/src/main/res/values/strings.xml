@@ -42,4 +42,5 @@
     <string name="You_cant_add_a_budget_when_seeing_all_expenses">You can\'t add a budget when seeing all expenses.</string>
     <string name="You_have_deleted">You have deleted %1$s</string>
     <string name="All_Expenses">All Expenses</string>
+    <string name="You_must_set_a_concept">You must set a concept!</string>
 </resources>
