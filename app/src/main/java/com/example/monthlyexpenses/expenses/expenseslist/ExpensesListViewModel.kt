@@ -49,11 +49,7 @@ class ExpensesListViewModel(private val repository: ExpensesRepository) : ViewMo
 
     val getMonthTotal: LiveData<String> = Transformations.map(getExpenses) { expenses ->
         expenses?.let {
-            var totalOfMonthExpense = 0F
-            for (expense in it) {
-                totalOfMonthExpense += expense.total
-
-            }
+            val totalOfMonthExpense = expenses.map { it.total }.sum()
             _monthTotal.value = totalOfMonthExpense
             String.format("%.2f", totalOfMonthExpense)
         }
