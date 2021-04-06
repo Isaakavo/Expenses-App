@@ -1,5 +1,6 @@
 package com.example.monthlyexpenses.expenses.expensesadd
 
+import android.view.View
 import androidx.lifecycle.*
 import com.example.monthlyexpenses.data.Expenses
 import com.example.monthlyexpenses.data.ExpensesRepository
@@ -27,6 +28,18 @@ class ExpensesAddViewModel(val repository: ExpensesRepository, val expenseId: Lo
     private val _itemListLiveData = MutableLiveData<List<Items>>()
     val itemListLiveData
         get() = _itemListLiveData
+
+    val showTotal = MutableLiveData<Int>()
+
+    val itemsTotal: LiveData<String> = Transformations.map(_itemListLiveData) { itemList ->
+        var itemTotal = 0F
+        itemList?.let {
+            itemTotal = itemList.map { it.price.toFloat() }.sum()
+            if (itemTotal == 0.0F) showTotal.value = View.INVISIBLE
+            else showTotal.value = View.VISIBLE
+        }
+        String.format("%.2f", itemTotal)
+    }
 
     fun addEditText() {
         itemList.add(Items())

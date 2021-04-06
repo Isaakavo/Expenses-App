@@ -15,7 +15,7 @@ import java.io.Serializable
 @Parcelize
 data class Items(
     @ColumnInfo(name = "item") var item: String = "",
-    @ColumnInfo(name = "price") var price: String = "",
+    @ColumnInfo(name = "price") var price: String = "0.0",
     @ColumnInfo(name = "expenseId") var expenseId: Long = 0,
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id") var id: Long = 0
