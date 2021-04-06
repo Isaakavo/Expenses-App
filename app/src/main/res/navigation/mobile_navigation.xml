@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/navigation_home"
-        android:name="com.example.monthlyexpenses.expenseslist.ExpensesListFragment"
+        android:name="com.example.monthlyexpenses.expenses.expenseslist.ExpensesListFragment"
         android:label="@string/app_title"
         tools:layout="@layout/fragment_expense_list">
         <action
@@ -33,7 +33,7 @@
         tools:layout="@layout/fragment_bank" />
     <fragment
         android:id="@+id/addNewExpense"
-        android:name="com.example.monthlyexpenses.expensesadd.AddNewExpense"
+        android:name="com.example.monthlyexpenses.expenses.expensesadd.AddNewExpense"
         android:label="@string/add_expense"
         tools:layout="@layout/activity_add_new_expense">
         <argument
@@ -54,7 +54,7 @@
     </fragment>
     <dialog
         android:id="@+id/expensesDetails"
-        android:name="com.example.monthlyexpenses.expensesdetails.ExpensesDetails"
+        android:name="com.example.monthlyexpenses.expenses.expensesdetails.ExpensesDetails"
         android:label="ExpensesDetails"
         tools:layout="@layout/fragment_expenses_details">
         <argument
@@ -63,7 +63,7 @@
     </dialog>
     <dialog
         android:id="@+id/addBudgetDialogFragment"
-        android:name="com.example.monthlyexpenses.addbudget.AddBudgetDialogFragment"
+        android:name="com.example.monthlyexpenses.expenses.addbudget.AddBudgetDialogFragment"
         android:label="AddBudgetDialogFragment"
         tools:layout="@layout/fragment_add_budget">
         <argument
@@ -72,7 +72,7 @@
     </dialog>
     <dialog
         android:id="@+id/halfMonthTotals"
-        android:name="com.example.monthlyexpenses.monthtotals.HalfMonthTotals"
+        android:name="com.example.monthlyexpenses.expenses.monthtotals.HalfMonthTotals"
         android:label="HalfMonthTotals"
         tools:layout="@layout/fragment_half_month_totals">
         <argument

@@ -1,4 +1,4 @@
-package com.example.monthlyexpenses.addbudget
+package com.example.monthlyexpenses.expenses.addbudget
 
 import androidx.lifecycle.*
 import com.example.monthlyexpenses.data.Budget

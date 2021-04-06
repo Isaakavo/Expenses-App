@@ -1,4 +1,4 @@
-package com.example.monthlyexpenses.monthtotals
+package com.example.monthlyexpenses.expenses.monthtotals
 
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel

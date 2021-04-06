@@ -1,4 +1,4 @@
-package com.example.monthlyexpenses.expenseslist
+package com.example.monthlyexpenses.expenses.expenseslist
 
 import android.annotation.SuppressLint
 import android.content.Context

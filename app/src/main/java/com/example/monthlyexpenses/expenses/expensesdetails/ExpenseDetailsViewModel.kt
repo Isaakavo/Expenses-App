@@ -1,4 +1,4 @@
-package com.example.monthlyexpenses.expensesdetails
+package com.example.monthlyexpenses.expenses.expensesdetails
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel

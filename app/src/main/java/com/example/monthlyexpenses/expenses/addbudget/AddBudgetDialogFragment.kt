@@ -1,4 +1,4 @@
-package com.example.monthlyexpenses.addbudget
+package com.example.monthlyexpenses.expenses.addbudget
 
 import android.os.Bundle
 import android.view.*

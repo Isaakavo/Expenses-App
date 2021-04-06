@@ -1,4 +1,4 @@
-package com.example.monthlyexpenses.monthtotals
+package com.example.monthlyexpenses.expenses.monthtotals
 
 import android.os.Bundle
 import android.view.LayoutInflater

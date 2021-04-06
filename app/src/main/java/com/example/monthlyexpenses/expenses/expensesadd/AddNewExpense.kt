@@ -1,4 +1,4 @@
-package com.example.monthlyexpenses.expensesadd
+package com.example.monthlyexpenses.expenses.expensesadd
 
 import android.content.Context
 import android.os.Bundle
@@ -15,7 +15,7 @@ import com.example.monthlyexpenses.ExpensesApplication
 import com.example.monthlyexpenses.R
 import com.example.monthlyexpenses.adapter.EditTextAdapter
 import com.example.monthlyexpenses.databinding.ActivityAddNewExpenseBinding
-import com.example.monthlyexpenses.expenseslist.ExpensesListFragment
+import com.example.monthlyexpenses.expenses.expenseslist.ExpensesListFragment
 import com.example.monthlyexpenses.setDateFormat
 import com.example.monthlyexpenses.ui.DatePickerFragment
 import com.google.android.material.snackbar.Snackbar

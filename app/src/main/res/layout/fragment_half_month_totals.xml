@@ -6,7 +6,7 @@
 
         <variable
             name="monthTotals"
-            type="com.example.monthlyexpenses.monthtotals.HalfMonthTotalsViewModel" />
+            type="com.example.monthlyexpenses.expenses.monthtotals.HalfMonthTotalsViewModel" />
     </data>
 
     <LinearLayout

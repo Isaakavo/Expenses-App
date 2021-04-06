@@ -9,7 +9,7 @@
 
         <variable
             name="viewmodel"
-            type="com.example.monthlyexpenses.expensesadd.ExpensesAddViewModel" />
+            type="com.example.monthlyexpenses.expenses.expensesadd.ExpensesAddViewModel" />
 
     </data>
 

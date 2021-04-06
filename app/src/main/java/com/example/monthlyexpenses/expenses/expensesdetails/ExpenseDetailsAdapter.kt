@@ -1,4 +1,4 @@
-package com.example.monthlyexpenses.expensesdetails
+package com.example.monthlyexpenses.expenses.expensesdetails
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

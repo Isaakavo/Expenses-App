@@ -11,7 +11,7 @@
 
         <variable
             name="viewmodel"
-            type="com.example.monthlyexpenses.expensesadd.ExpensesAddViewModel" />
+            type="com.example.monthlyexpenses.expenses.expensesadd.ExpensesAddViewModel" />
     </data>
 
     <androidx.core.widget.NestedScrollView
@@ -24,7 +24,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            tools:context=".expensesadd.AddNewExpense">
+            tools:context=".expenses.expensesadd.AddNewExpense">
 
             <EditText
                 android:id="@+id/etConcept"

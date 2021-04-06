@@ -7,7 +7,7 @@
 
         <variable
             name="budgets"
-            type="com.example.monthlyexpenses.addbudget.AddBudgetViewModel" />
+            type="com.example.monthlyexpenses.expenses.addbudget.AddBudgetViewModel" />
 
     </data>
 
@@ -16,7 +16,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:orientation="vertical"
-        tools:context=".addbudget.AddBudgetDialogFragment">
+        tools:context=".expenses.addbudget.AddBudgetDialogFragment">
 
         <TextView
             android:id="@+id/addBudgetTitle"

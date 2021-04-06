@@ -4,7 +4,7 @@ import android.content.Context
 import android.view.View
 import android.widget.AdapterView
 import com.example.monthlyexpenses.R
-import com.example.monthlyexpenses.expenseslist.ExpensesListViewModel
+import com.example.monthlyexpenses.expenses.expenseslist.ExpensesListViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 

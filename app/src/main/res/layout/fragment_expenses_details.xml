@@ -7,7 +7,7 @@
 
         <variable
             name="expenses"
-            type="com.example.monthlyexpenses.expensesdetails.ExpenseDetailsViewModel" />
+            type="com.example.monthlyexpenses.expenses.expensesdetails.ExpenseDetailsViewModel" />
 
     </data>
 
