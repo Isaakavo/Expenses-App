@@ -112,12 +112,13 @@ class ExpensesListFragment : Fragment() {
       }
     })
     expenseListViewModel.openMonthTotals.observe(viewLifecycleOwner, { open ->
-      open?.let {
+      if (open == true) {
         val desiredDate = expenseListViewModel.desiredDate.value
         view?.findNavController()?.navigate(
-          ExpensesListFragmentDirections
-            .actionNavigationHomeToHalfMonthTotals(desiredDate!!)
+            ExpensesListFragmentDirections
+                .actionNavigationHomeToHalfMonthTotals(desiredDate!!)
         )
+        expenseListViewModel.onOpenedMonthTotals()
       }
     })
     return binding.root

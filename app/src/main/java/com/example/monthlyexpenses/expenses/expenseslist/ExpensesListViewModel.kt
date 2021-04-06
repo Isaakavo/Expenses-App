@@ -128,6 +128,10 @@ class ExpensesListViewModel(private val repository: ExpensesRepository) : ViewMo
         _openMonthTotals.value = true
     }
 
+    fun onOpenedMonthTotals() {
+        _openMonthTotals.value = false
+    }
+
 }
 
 class ExpenseListViewModelFactory(private val repository: ExpensesRepository) :
