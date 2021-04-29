@@ -33,7 +33,7 @@
     <string name="remaining">Restante</string>
     <string name="error_budget">No tienes presupuestos para este mes, agrega uno por favor.</string>
     <string name="error_budget2">No has añadido presupuestos para este mes</string>
-    <string name="add_or_edit_budget_for_this_month">Agregar o editar presupuesto para el mes de %1$s</string>
+    <string name="add_or_edit_budget_for_this_month">Agregar o editar presupuesto</string>
     <string name="budget_for_month">"Presupuesto para el mes: "</string>
     <string name="budget_for_second_fortnight">Segunda quincena</string>
     <string name="budget_for_first_fortnight">Primera quincena</string>
