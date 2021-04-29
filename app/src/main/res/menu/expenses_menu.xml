@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/add_budget"
+        android:icon="@drawable/ic_baseline_attach_money_24"
+        android:title="@string/add_or_edit_budget_for_this_month"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/setting"
+        android:title="@string/settings" />
+</menu>

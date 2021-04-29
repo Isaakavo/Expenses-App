@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".bank.addbankentity.AddBankEntityFragment">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/big_padding"
+        android:gravity="center"
+        android:text="Bank Entity"
+        android:textSize="22sp" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginStart="@dimen/big_padding"
+        android:layout_marginTop="@dimen/big_padding"
+        android:layout_marginEnd="@dimen/big_padding"
+        android:hint="Bank" />
+
+    <Spinner
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginStart="@dimen/big_padding"
+        android:layout_marginTop="@dimen/big_padding"
+        android:layout_marginEnd="@dimen/big_padding"
+        android:hint="e.g. payroll, credit card"
+        tools:listitem="@tools:sample/cities" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/big_padding"
+        android:orientation="horizontal">
+
+        <EditText
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/big_padding"
+            android:layout_marginEnd="@dimen/lil_padding"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:focusable="false"
+            android:hint="Cutoff Date"
+            android:inputType="date"
+            android:maxLines="1" />
+
+        <EditText
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/lil_padding"
+            android:layout_marginEnd="@dimen/big_padding"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:focusable="false"
+            android:hint="Payday Limit"
+            android:inputType="date"
+            android:maxLines="1" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/big_padding"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/big_padding"
+            android:layout_marginEnd="@dimen/lil_padding"
+            android:layout_weight="1"
+            android:text="@string/cancel" />
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/lil_padding"
+            android:layout_marginEnd="@dimen/big_padding"
+            android:layout_weight="1"
+            android:text="Ok" />
+    </LinearLayout>
+
+</LinearLayout>

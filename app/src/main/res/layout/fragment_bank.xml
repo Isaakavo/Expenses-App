@@ -1,17 +1,180 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/fragment_bank"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".bank.BankFragment">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.example.monthlyexpenses.bank.banklist.BankViewModel" />
+
+    </data>
+
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-    <!-- TODO: Update blank fragment layout -->
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
+            android:id="@+id/fragment_bank"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:context=".bank.banklist.BankFragment">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:id="@+id/card_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:orientation="vertical">
+
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/bank_totals"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        app:cardCornerRadius="6dp"
+                        app:cardElevation="6dp"
+                        app:cardUseCompatPadding="true">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:orientation="vertical"
+                                android:paddingTop="15dp"
+                                android:paddingBottom="15dp">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:text="My available Money"
+                                    android:textColor="@color/black"
+                                    android:textSize="18sp" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:layout_marginTop="15dp"
+                                    android:layout_marginBottom="15dp"
+                                    android:text="@string/total"
+                                    android:textColor="@color/black"
+                                    android:textSize="22sp" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="15dp"
+                                android:layout_marginTop="25dp"
+                                android:layout_marginEnd="15dp">
+
+                                <TextView
+                                    android:id="@+id/balance_text"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="Starting balance of the month"
+                                    android:textColor="@color/black"
+                                    android:textSize="14sp" />
+
+                                <TextView
+                                    android:id="@+id/total_month"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:gravity="center"
+                                    android:text="@string/total"
+                                    android:textColor="@color/black"
+                                    android:textSize="14sp" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="15dp"
+                                android:layout_marginTop="5dp"
+                                android:layout_marginEnd="15dp">
+
+                                <TextView
+                                    android:id="@+id/periodTV"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="@string/period"
+                                    android:textColor="@color/black"
+                                    android:textSize="14sp" />
+
+                                <Spinner
+                                    android:id="@+id/period_spinner"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:gravity="center"
+                                    tools:listitem="@tools:sample/cities" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="15dp"
+                                android:layout_marginTop="5dp"
+                                android:layout_marginEnd="15dp">
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="@string/monthlyExpenses"
+                                    android:textColor="@color/black"
+                                    android:textSize="14sp" />
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="@string/total"
+                                    android:textColor="@color/black"
+                                    android:textSize="14sp" />
+                            </LinearLayout>
+
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+                </LinearLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_below="@id/card_layout"
+                    android:layout_marginTop="15dp"
+                    tools:listitem="@layout/list_item_expense_list" />
+
+            </RelativeLayout>
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/big_padding"
+                android:contentDescription="@string/add_income"
+                android:onClick="@{() -> viewModel.onNavigateToAddTransaction()}"
+                android:src="@drawable/ic_baseline_add_24"
+                app:layout_anchor="@id/bank_totals"
+                app:layout_anchorGravity="end|bottom" />
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
+    </androidx.core.widget.NestedScrollView>
+</layout>
 
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>

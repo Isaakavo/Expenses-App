@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.example.monthlyexpenses.bank.addtransaction.AddTransactionViewModel" />
+
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context=".bank.addtransaction.AddTransaction">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="25dp"
+            android:layout_marginBottom="15dp"
+            android:text="Add or edit a transaction"
+            android:textSize="22sp" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/concept_transaction"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/big_padding"
+                android:layout_marginTop="15dp"
+                android:layout_marginEnd="@dimen/big_padding"
+                android:layout_marginBottom="15dp"
+                android:autofillHints="@string/concept"
+                android:hint="@string/concept"
+                android:inputType="text|textAutoComplete|textCapSentences"
+                android:text="@={viewModel.conceptEditText}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Spinner
+                android:id="@+id/type_transaction_spinner"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/big_padding"
+                android:layout_marginTop="25dp"
+                android:layout_marginEnd="@dimen/lil_padding"
+                app:layout_constraintEnd_toStartOf="@id/type_transaction_image"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/concept_transaction" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/type_transaction_image"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/lil_padding"
+                android:layout_marginTop="25dp"
+                android:layout_marginEnd="@dimen/big_padding"
+                android:src="@drawable/ic_baseline_arrow_upward_24"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/type_transaction_spinner"
+                app:layout_constraintTop_toBottomOf="@id/concept_transaction" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/lil_padding"
+                android:layout_marginTop="25dp"
+                android:layout_marginEnd="4dp"
+                android:text="@string/dollarsign"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toBottomOf="@+id/amount_transaction"
+                app:layout_constraintEnd_toStartOf="@+id/amount_transaction"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/type_transaction_spinner"
+                app:layout_constraintVertical_bias="0.576" />
+
+            <EditText
+                android:id="@+id/amount_transaction"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/big_padding"
+                android:layout_marginEnd="@dimen/lil_padding"
+                android:autofillHints="@string/amount"
+                android:hint="@string/amount"
+                android:inputType="number"
+                android:maxLines="1"
+                android:text="@={viewModel.amountEditText}"
+                app:layout_constraintBottom_toTopOf="@+id/button"
+                app:layout_constraintEnd_toStartOf="@+id/date_transaction"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/type_transaction_spinner" />
+
+            <EditText
+                android:id="@+id/date_transaction"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/lil_padding"
+                android:layout_marginTop="25dp"
+                android:layout_marginEnd="@dimen/big_padding"
+                android:autofillHints="@string/date"
+                android:clickable="true"
+                android:focusable="false"
+                android:hint="@string/date"
+                android:inputType="date"
+                android:maxLines="1"
+                android:onClick="@{() -> viewModel.displayDatePicker()}"
+                android:text="@={viewModel.editTextDate}"
+                app:layout_constraintBottom_toTopOf="@id/add_transaction"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@id/type_transaction_image"
+                app:layout_constraintTop_toBottomOf="@id/type_transaction_image" />
+
+            <Button
+                android:id="@+id/add_transaction"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="25dp"
+                android:layout_marginEnd="@dimen/big_padding"
+                android:onClick="@{() -> viewModel.onSendToDatabase()}"
+                android:text="@string/add"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@id/date_transaction"
+                app:layout_constraintTop_toBottomOf="@id/date_transaction" />
+
+            <Button
+                android:id="@+id/button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="25dp"
+                android:layout_marginEnd="@dimen/big_padding"
+                android:text="@string/cancel"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/add_transaction"
+                app:layout_constraintStart_toStartOf="@id/concept_transaction"
+                app:layout_constraintTop_toBottomOf="@id/date_transaction" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </LinearLayout>
+</layout>
