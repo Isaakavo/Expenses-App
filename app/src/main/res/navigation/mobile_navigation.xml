@@ -28,9 +28,16 @@
     </fragment>
     <fragment
         android:id="@+id/navigation_bank"
-        android:name="com.example.monthlyexpenses.bank.BankFragment"
+        android:name="com.example.monthlyexpenses.bank.banklist.BankFragment"
         android:label="@string/bank_account"
-        tools:layout="@layout/fragment_bank" />
+        tools:layout="@layout/fragment_bank">
+        <action
+            android:id="@+id/action_navigation_bank_to_addTransaction"
+            app:destination="@id/addTransaction" />
+        <action
+            android:id="@+id/action_navigation_bank_to_addBankEntityFragment"
+            app:destination="@id/addBankEntityFragment" />
+    </fragment>
     <fragment
         android:id="@+id/addNewExpense"
         android:name="com.example.monthlyexpenses.expenses.expensesadd.AddNewExpense"
@@ -79,4 +86,14 @@
             android:name="desiredDate"
             app:argType="string" />
     </dialog>
+    <dialog
+        android:id="@+id/addTransaction"
+        android:name="com.example.monthlyexpenses.bank.addtransaction.AddTransaction"
+        android:label="AddTransaction"
+        tools:layout="@layout/fragment_add_transaction" />
+    <fragment
+        android:id="@+id/addBankEntityFragment"
+        android:name="com.example.monthlyexpenses.bank.addbankentity.AddBankEntityFragment"
+        android:label="fragment_add_bank_entity"
+        tools:layout="@layout/fragment_add_bank_entity" />
 </navigation>
