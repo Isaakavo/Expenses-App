@@ -6,9 +6,8 @@ import android.os.Build
 import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.Vibrator
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -24,13 +23,15 @@ import com.example.monthlyexpenses.adapter.DeleteListItemListener
 import com.example.monthlyexpenses.adapter.EditListItemListener
 import com.example.monthlyexpenses.adapter.ExpenseListAdapter
 import com.example.monthlyexpenses.adapter.ExpenseListListener
-import com.example.monthlyexpenses.data.Expenses
+import com.example.monthlyexpenses.data.expenses.Expenses
 import com.example.monthlyexpenses.databinding.FragmentExpenseListBinding
-import com.example.monthlyexpenses.ui.MonthSpinner
+import com.example.monthlyexpenses.getSpinnerMonths
 import com.example.monthlyexpenses.ui.SwipeExpense
 import com.google.android.material.snackbar.Snackbar
+import java.text.SimpleDateFormat
+import java.util.*
 
-class ExpensesListFragment : Fragment() {
+class ExpensesListFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
   private lateinit var binding: FragmentExpenseListBinding
   private lateinit var recyclerAdapter: ExpenseListAdapter
@@ -42,10 +43,16 @@ class ExpensesListFragment : Fragment() {
     const val newExpenseActivityRequestCode = 1
     const val editExpenseActivityRequestCode = 2
   }
+
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    setHasOptionsMenu(true)
+  }
+
   override fun onCreateView(
-      inflater: LayoutInflater,
-      container: ViewGroup?,
-      savedInstanceState: Bundle?
+    inflater: LayoutInflater,
+    container: ViewGroup?,
+    savedInstanceState: Bundle?
   ): View {
 
     vibrator = activity?.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
@@ -53,7 +60,7 @@ class ExpensesListFragment : Fragment() {
     val application = requireNotNull(this.activity).application
 
     val viewModelFactory =
-      ExpenseListViewModelFactory((application as ExpensesApplication).repository)
+      ExpenseListViewModelFactory((application as ExpensesApplication).expensesRepository)
 
     expenseListViewModel =
       ViewModelProvider(this, viewModelFactory).get(ExpensesListViewModel::class.java)
@@ -128,34 +135,13 @@ class ExpensesListFragment : Fragment() {
   private fun bindViews() {
     val arrayAdapter =
       ArrayAdapter(
-          requireContext(),
-          android.R.layout.simple_spinner_dropdown_item,
-          MonthSpinner.getSpinnerMonths(this.context)
+        requireContext(),
+        android.R.layout.simple_spinner_dropdown_item,
+        getSpinnerMonths(this.context)
       )
     arrayAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item)
     binding.monthSpinner.adapter = arrayAdapter
-    binding.monthSpinner.onItemSelectedListener = MonthSpinner(expenseListViewModel, this.context)
-    binding.fabMenu.setOnLongClickListener {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        vibrator.vibrate(VibrationEffect.createOneShot(200, VibrationEffect.EFFECT_DOUBLE_CLICK))
-      }
-      val desiredDate = expenseListViewModel.desiredDate.value
-      if (desiredDate != getString(R.string.All_Expenses)) {
-        view?.findNavController()?.navigate(
-            ExpensesListFragmentDirections
-                .actionNavigationHomeToAddBudgetDialogFragment(desiredDate!!)
-        )
-      } else {
-        Snackbar.make(
-            requireView(),
-            getString(R.string.You_cant_add_a_budget_when_seeing_all_expenses),
-            Snackbar.LENGTH_LONG
-        )
-          .show()
-      }
-      true
-    }
-
+    binding.monthSpinner.onItemSelectedListener = this
   }
 
   private fun bindRecyclerView() {
@@ -190,4 +176,47 @@ class ExpensesListFragment : Fragment() {
   private fun editItemListener(expenseId: Long) = expenseListViewModel.onEditSelected(expenseId)
   private fun deleteItemListener(expense: Expenses) = expenseListViewModel.onDeleteSelected(expense)
 
+  override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+    val selectedItem = parent?.getItemAtPosition(position) as String
+    if (selectedItem == context?.getString(R.string.All_Expenses)) {
+      expenseListViewModel.setDesiredDate(requireContext().getString(R.string.All_Expenses))
+    } else {
+      val selectedItemFormatter =
+        SimpleDateFormat("MMM yyyy", Locale.getDefault()).parse(selectedItem)!!
+      val desiredDate = SimpleDateFormat("y-MM", Locale.getDefault()).format(selectedItemFormatter)
+      expenseListViewModel.setDesiredDate(desiredDate)
+    }
+  }
+
+  override fun onNothingSelected(parent: AdapterView<*>?) {
+    return
+  }
+
+  override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+    inflater.inflate(R.menu.expenses_menu, menu)
+  }
+
+  @SuppressLint("InlinedApi")
+  override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    when (item.itemId) {
+      R.id.add_budget -> {
+        vibrate()
+        val desiredDate = expenseListViewModel.desiredDate.value
+        if (desiredDate != getString(R.string.All_Expenses)) {
+          view?.findNavController()?.navigate(
+            ExpensesListFragmentDirections
+              .actionNavigationHomeToAddBudgetDialogFragment(desiredDate!!)
+          )
+        } else {
+          Snackbar.make(
+            requireView(),
+            getString(R.string.You_cant_add_a_budget_when_seeing_all_expenses),
+            Snackbar.LENGTH_LONG
+          )
+            .show()
+        }
+      }
+    }
+    return super.onOptionsItemSelected(item)
+  }
 }
