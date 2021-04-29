@@ -3,9 +3,9 @@ package com.example.monthlyexpenses.expenses.expensesdetails
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.monthlyexpenses.data.Expenses
-import com.example.monthlyexpenses.data.ExpensesRepository
-import com.example.monthlyexpenses.data.Items
+import com.example.monthlyexpenses.data.expenses.Expenses
+import com.example.monthlyexpenses.data.expenses.ExpensesRepository
+import com.example.monthlyexpenses.data.expenses.Items
 import timber.log.Timber
 
 class ExpenseDetailsViewModel(repository: ExpensesRepository, val expenseId: Long) : ViewModel() {

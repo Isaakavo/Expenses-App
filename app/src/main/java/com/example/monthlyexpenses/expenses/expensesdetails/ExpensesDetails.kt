@@ -31,7 +31,10 @@ class ExpensesDetails : DialogFragment() {
     val application = requireNotNull(this.activity).application
 
     val viewModelFactory =
-      ExpenseDetailViewModelFactory((application as ExpensesApplication).repository, args.expenseId)
+      ExpenseDetailViewModelFactory(
+        (application as ExpensesApplication).expensesRepository,
+        args.expenseId
+      )
 
     expenseDetailsViewModel =
       ViewModelProvider(this, viewModelFactory).get(ExpenseDetailsViewModel::class.java)

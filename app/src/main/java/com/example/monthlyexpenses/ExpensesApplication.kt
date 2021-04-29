@@ -1,8 +1,9 @@
 package com.example.monthlyexpenses
 
 import android.app.Application
-import com.example.monthlyexpenses.data.ExpensesRepository
 import com.example.monthlyexpenses.data.ExpensesRoomDatabase
+import com.example.monthlyexpenses.data.bank.BanksRepository
+import com.example.monthlyexpenses.data.expenses.ExpensesRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import timber.log.Timber
@@ -22,5 +23,18 @@ class ExpensesApplication: Application() {
     // Using by lazy so the database and the repository are only created when they're needed
     // rather than when the application starts
     val database by lazy { ExpensesRoomDatabase.getDatabase(this) }
-    val repository by lazy { ExpensesRepository(database.expensesDao(), database.itemsDao(), database.budgetDao()) }
+    val expensesRepository by lazy {
+        ExpensesRepository(
+            database.expensesDao(),
+            database.itemsDao(),
+            database.budgetDao()
+        )
+    }
+    val banksRepository by lazy {
+        BanksRepository(
+            database.banksDao(),
+            database.transactionsDao(),
+            database.monthBalance()
+        )
+    }
 }

@@ -1,4 +1,4 @@
-package com.example.monthlyexpenses.data
+package com.example.monthlyexpenses.data.expenses
 
 import androidx.lifecycle.LiveData
 import androidx.room.*

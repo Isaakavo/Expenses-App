@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.monthlyexpenses.data.Items
+import com.example.monthlyexpenses.data.expenses.Items
 import com.example.monthlyexpenses.databinding.ListItemExpenseDetailsBinding
 
 class ExpenseDetailsAdapter : ListAdapter<Items, RecyclerView.ViewHolder>(ItemsComparator()) {

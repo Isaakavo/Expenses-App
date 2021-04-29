@@ -1,11 +1,12 @@
-package com.example.monthlyexpenses.data
+package com.example.monthlyexpenses.data.expenses
 
 import androidx.annotation.WorkerThread
 import androidx.lifecycle.LiveData
 import kotlinx.coroutines.flow.Flow
 
 class ExpensesRepository(
-    private val expensesDao: ExpensesDao, private val itemsDao: ItemsDao,
+    private val expensesDao: ExpensesDao,
+    private val itemsDao: ItemsDao,
     private val budgetDao: BudgetDao
 ) {
     // Room executes all queries on a separate thread.

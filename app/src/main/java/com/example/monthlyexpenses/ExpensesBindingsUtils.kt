@@ -2,13 +2,13 @@ package com.example.monthlyexpenses
 
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
-import com.example.monthlyexpenses.data.Expenses
-import com.example.monthlyexpenses.data.Items
+import com.example.monthlyexpenses.data.expenses.Expenses
+import com.example.monthlyexpenses.data.expenses.Items
 
 @BindingAdapter("formattedDate")
-fun TextView.setFormattedDate(expenses: Expenses?) {
-  expenses?.let {
-    text = setDateFormat(expenses.date)
+fun TextView.setFormattedDate(date: Long?) {
+  date?.let {
+    text = setDateFormat(date)
   }
 }
 
@@ -20,28 +20,21 @@ fun TextView.setFormattedDateAndDays(expenses: Expenses?) {
 }
 
 @BindingAdapter("conceptText")
-fun TextView.setConceptText(expenses: Expenses?) {
-  if (expenses?.concept.isNullOrEmpty()) {
+fun TextView.setConceptText(expenses: String?) {
+  if (expenses.isNullOrEmpty()) {
     backgroundTintList =
-        context?.getColorStateList(R.color.red)
+      context?.getColorStateList(R.color.red)
   } else {
-    expenses?.let {
-      text = expenses.concept
+    expenses.let {
+      text = expenses
     }
   }
 }
 
-@BindingAdapter("totalText")
-fun TextView.setTotalText(expenses: Expenses?) {
-  expenses?.let {
-    text = concatenateString(expenses, context.resources, R.string.dollasingTotal)
-  }
-}
-
 @BindingAdapter("total")
-fun TextView.setTotal(expenses: Expenses?) {
-  expenses?.let {
-    text = concatenateString(expenses, context.resources, R.string.dollarsingVariable)
+fun TextView.setTotal(total: Float?) {
+  total?.let {
+    text = concatenateString(total.toString(), context.resources, R.string.dollarsingVariable)
   }
 }
 

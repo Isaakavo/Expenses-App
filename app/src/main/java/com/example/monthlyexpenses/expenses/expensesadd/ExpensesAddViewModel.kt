@@ -2,9 +2,9 @@ package com.example.monthlyexpenses.expenses.expensesadd
 
 import android.view.View
 import androidx.lifecycle.*
-import com.example.monthlyexpenses.data.Expenses
-import com.example.monthlyexpenses.data.ExpensesRepository
-import com.example.monthlyexpenses.data.Items
+import com.example.monthlyexpenses.data.expenses.Expenses
+import com.example.monthlyexpenses.data.expenses.ExpensesRepository
+import com.example.monthlyexpenses.data.expenses.Items
 import com.example.monthlyexpenses.getCurrentTimestamp
 import com.example.monthlyexpenses.getTotals
 import com.example.monthlyexpenses.setCurrentDayFormat
@@ -12,7 +12,8 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.*
 
-class ExpensesAddViewModel(val repository: ExpensesRepository, val expenseId: Long) : ViewModel() {
+class ExpensesAddViewModel(private val repository: ExpensesRepository, val expenseId: Long) :
+    ViewModel() {
 
     private var itemList: MutableList<Items> = arrayListOf()
     private val itemListToDelete: ArrayList<Items> = arrayListOf()
@@ -104,8 +105,6 @@ class ExpensesAddViewModel(val repository: ExpensesRepository, val expenseId: Lo
     init {
         Timber.d("ExpenseDetailsViewModel Created")
         addEditText()
-        val c = Calendar.getInstance()
-        _timestamp.value = c.timeInMillis
         editTextDate.value = setCurrentDayFormat()
         _timestamp.value = getCurrentTimestamp
     }

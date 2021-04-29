@@ -1,8 +1,8 @@
 package com.example.monthlyexpenses.expenses.addbudget
 
 import androidx.lifecycle.*
-import com.example.monthlyexpenses.data.Budget
-import com.example.monthlyexpenses.data.ExpensesRepository
+import com.example.monthlyexpenses.data.expenses.Budget
+import com.example.monthlyexpenses.data.expenses.ExpensesRepository
 import com.example.monthlyexpenses.timestampForBudget
 import kotlinx.coroutines.launch
 import timber.log.Timber

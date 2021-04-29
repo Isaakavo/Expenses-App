@@ -22,7 +22,7 @@ class AddBudgetDialogFragment : DialogFragment() {
     val application = requireNotNull(this.activity).application
 
     val viewModelFactory =
-      AddBudgetViewModelFactory((application as ExpensesApplication).repository)
+      AddBudgetViewModelFactory((application as ExpensesApplication).expensesRepository)
 
     expenseViewModel = ViewModelProvider(this, viewModelFactory).get(AddBudgetViewModel::class.java)
 

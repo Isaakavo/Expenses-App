@@ -60,7 +60,10 @@ class AddNewExpense : Fragment() {
 
     val application = requireNotNull(this.activity).application
     val viewModelFactory =
-      ExpensesAddViewModelFactory((application as ExpensesApplication).repository, args.expenseId)
+      ExpensesAddViewModelFactory(
+        (application as ExpensesApplication).expensesRepository,
+        args.expenseId
+      )
     expenseAddViewModel =
         ViewModelProvider(this, viewModelFactory).get(ExpensesAddViewModel::class.java)
 

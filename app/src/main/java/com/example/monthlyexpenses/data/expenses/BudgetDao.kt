@@ -1,4 +1,4 @@
-package com.example.monthlyexpenses.data
+package com.example.monthlyexpenses.data.expenses
 
 import androidx.room.Dao
 import androidx.room.Insert

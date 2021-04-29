@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.monthlyexpenses.data.Expenses
+import com.example.monthlyexpenses.data.expenses.Expenses
 import com.example.monthlyexpenses.databinding.ListItemExpenseListBinding
 import com.example.monthlyexpenses.databinding.ListItemMenuBinding
 import java.text.DateFormat
@@ -70,14 +70,20 @@ class ExpenseListAdapter(
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(expense: Expenses, previousExpense: Expenses, clicklistener: ExpenseListListener) {
-            binding.expense = expense
+            binding.id = expense.id
+            binding.concept = expense.concept
+            binding.date = expense.date
+            binding.total = expense.total
             binding.executePendingBindings()
             binding.clicklistener = clicklistener
             setSectionDate(expense.date, previousExpense.date)
         }
 
         fun bindFirstItem(expense: Expenses, clicklistener: ExpenseListListener) {
-            binding.expense = expense
+            binding.id = expense.id
+            binding.concept = expense.concept
+            binding.date = expense.date
+            binding.total = expense.total
             binding.clicklistener = clicklistener
             binding.executePendingBindings()
         }
@@ -165,8 +171,8 @@ class ExpenseComparator : DiffUtil.ItemCallback<Expenses>() {
     }
 }
 
-class ExpenseListListener(val clicklistener: (expenseId: Long) -> Unit) {
-    fun onClick(expense: Expenses) = clicklistener(expense.id)
+class ExpenseListListener(val clicklistener: (id: Long) -> Unit) {
+    fun onClick(id: Long) = clicklistener(id)
 }
 
 class EditListItemListener(val clicklistener: (expenseId: Long) -> Unit) {
