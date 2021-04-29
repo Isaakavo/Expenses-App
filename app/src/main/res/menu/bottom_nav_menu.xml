@@ -8,7 +8,7 @@
 
     <item
         android:id="@+id/navigation_bank"
-        android:icon="@drawable/ic_baseline_account_balance_24"
+        android:icon="@drawable/ic_baseline_account_balance_wallet_24"
         android:title="@string/bank_account" />
 
     <!--<item

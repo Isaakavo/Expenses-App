@@ -3,7 +3,7 @@ package com.example.monthlyexpenses.expenses.monthtotals
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.monthlyexpenses.data.ExpensesRepository
+import com.example.monthlyexpenses.data.expenses.ExpensesRepository
 import java.text.SimpleDateFormat
 import java.util.*
 

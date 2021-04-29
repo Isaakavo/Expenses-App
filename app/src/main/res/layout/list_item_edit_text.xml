@@ -5,7 +5,7 @@
 
         <variable
             name="item"
-            type="com.example.monthlyexpenses.data.Items" />
+            type="com.example.monthlyexpenses.data.expenses.Items" />
 
         <variable
             name="viewmodel"

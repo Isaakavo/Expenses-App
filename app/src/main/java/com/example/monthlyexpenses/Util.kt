@@ -1,8 +1,8 @@
 package com.example.monthlyexpenses
 
+import android.content.Context
 import android.content.res.Resources
-import com.example.monthlyexpenses.data.Expenses
-import com.example.monthlyexpenses.data.Items
+import com.example.monthlyexpenses.data.expenses.Items
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
@@ -43,10 +43,52 @@ fun getTotals(itemList: List<Items>): Float {
   return total
 }
 
-fun concatenateString(expenses: Expenses, res: Resources, R: Int): String {
-  return res.getString(R, expenses.total.toString())
+fun concatenateString(string: String, res: Resources, R: Int): String {
+  return res.getString(R, string)
 }
 
 fun concatenateItemPrice(item: Items, res: Resources, R: Int): String {
   return res.getString(R, item.price)
+}
+
+//Get the past month of the year
+fun getSpinnerMonths(context: Context?): ArrayList<String> {
+  val formatter = SimpleDateFormat("MMMM yyyy", Locale.getDefault())
+  val list = arrayListOf<String>()
+  Calendar.getInstance().let { calendar ->
+    val monthBefore = Calendar.getInstance()
+    val currentYear = calendar.get(Calendar.YEAR)
+    val payday = calendar.get(Calendar.DAY_OF_MONTH)
+    val addNewMonthFlag = calendar.getMaximum(Calendar.DAY_OF_MONTH) - 2
+    if (payday > addNewMonthFlag) {
+      calendar.add(Calendar.MONTH, +1)
+      monthBefore.add(Calendar.MONTH, +1)
+    }
+    //We loop to know which month has already pass
+    for (i in 1 until 12) {
+      //We only want the month of current year
+      val pastYear = monthBefore.get(Calendar.YEAR)
+      if (pastYear == currentYear) {
+        //Format the month and add to array
+        list.add(formatter.format(calendar.timeInMillis))
+        //Go backwards to know which month has passed
+        calendar.add(Calendar.MONTH, -1)
+        monthBefore.add(Calendar.MONTH, -1)
+      } else break
+    }
+  }
+  context?.let {
+    list.add(context.getString(R.string.All_Expenses))
+  }
+  return list
+}
+
+const val ENTRY = "Income"
+const val EXIT = "Exit"
+fun getTransactionsTaypes(): ArrayList<String> {
+
+  val list = arrayListOf<String>()
+  list.add(ENTRY)
+  list.add(EXIT)
+  return list
 }

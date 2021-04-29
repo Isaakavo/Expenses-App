@@ -7,7 +7,7 @@
 
         <variable
             name="item"
-            type="com.example.monthlyexpenses.data.Items" />
+            type="com.example.monthlyexpenses.data.expenses.Items" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

@@ -29,7 +29,7 @@ class HalfMonthTotals : DialogFragment() {
 
         val viewModelFactory =
             HalfMonthTotalsFactory(
-                (application as ExpensesApplication).repository,
+                (application as ExpensesApplication).expensesRepository,
                 args.desiredDate
             )
 

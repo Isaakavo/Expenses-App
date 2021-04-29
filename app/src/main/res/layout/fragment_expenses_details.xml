@@ -28,7 +28,7 @@
             android:text="@string/concept_title"
             android:textSize="18sp"
             android:textStyle="bold"
-            app:conceptText="@{expenses.expenses}"
+            app:conceptText="@{expenses.expenses.concept}"
             app:layout_constraintBottom_toTopOf="@id/items_recyclerview"
             app:layout_constraintEnd_toStartOf="@id/details_date"
             app:layout_constraintStart_toStartOf="parent"
@@ -78,7 +78,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/items_recyclerview"
             app:layout_constraintVertical_bias="0.0"
-            app:totalText="@{expenses.expenses}" />
+            app:total="@{expenses.expenses.total}" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

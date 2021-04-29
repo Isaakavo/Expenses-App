@@ -5,8 +5,20 @@
     <data>
 
         <variable
-            name="expense"
-            type="com.example.monthlyexpenses.data.Expenses" />
+            name="id"
+            type="Long" />
+
+        <variable
+            name="date"
+            type="Long" />
+
+        <variable
+            name="concept"
+            type="String" />
+
+        <variable
+            name="total"
+            type="Float" />
 
         <variable
             name="clicklistener"
@@ -17,7 +29,7 @@
         android:id="@+id/item_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="@{() -> clicklistener.onClick(expense)}">
+        android:onClick="@{() -> clicklistener.onClick(id)}">
 
         <View
             android:id="@+id/itemDivider"
@@ -44,7 +56,7 @@
             android:textColor="@color/black"
             android:textSize="14sp"
             android:textStyle="bold"
-            app:formattedDate="@{expense}"
+            app:formattedDate="@{date}"
             app:layout_constraintBottom_toTopOf="@id/linearLayout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -74,7 +86,7 @@
                 android:text="@string/expense"
                 android:textSize="14sp"
                 android:textStyle="bold"
-                app:conceptText="@{expense}" />
+                app:conceptText="@{concept}" />
 
             <TextView
                 android:id="@+id/tvTotal"
@@ -84,10 +96,11 @@
                 android:layout_weight="1"
                 android:text="@string/total"
                 android:paddingStart="5dp"
+                android:paddingEnd="5dp"
                 android:paddingTop="5dp"
                 android:textColor="@color/red"
                 android:textSize="14sp"
-                app:total="@{expense}" />
+                app:total="@{total}" />
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
